@@ -30,9 +30,18 @@ class Plugin
     private static ?DependencyContainer $container = null;
 
     /**
-     * Initialize the plugin
+     * Initialize the plugin (legacy method for backwards compatibility)
      */
     public static function init(): void
+    {
+        self::initContainer();
+        self::initServices();
+    }
+
+    /**
+     * Initialize the dependency container and register default services
+     */
+    public static function initContainer(): void
     {
         if (self::$container === null) {
             self::$container = new DependencyContainer();
@@ -43,6 +52,16 @@ class Plugin
                 dirname(__DIR__, 2) . '/Unity.php',
                 [self::class, 'deactivate']
             );
+        }
+    }
+
+    /**
+     * Initialize and resolve all core services
+     */
+    public static function initServices(): void
+    {
+        if (self::$container === null) {
+            throw new RuntimeException('Container not initialized. Call initContainer() first.');
         }
 
         // Initialize core services

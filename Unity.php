@@ -67,8 +67,24 @@ add_action('plugins_loaded', function() {
             throw new \Exception('Unity\Plugin class not found. Check that Plugin.php exists in the src/ directory.');
         }
 
-        \Unity\Plugin::init();
+        \Unity\Plugin::initContainer();
 
+        /**
+         * Fires after Unity's container is created but before services are resolved.
+         * Use this hook to register custom service implementations (e.g., MeetingFactoryInterface).
+         *
+         * @param \Unity\Core\DependencyContainer $container The dependency container
+         */
+        do_action('unity_register_services', \Unity\Plugin::getContainer());
+
+        \Unity\Plugin::initServices();
+
+        /**
+         * Fires after Unity is fully loaded and all services are initialized.
+         * Use this hook for code that depends on Unity services being available.
+         *
+         * @param \Unity\Core\DependencyContainer $container The dependency container
+         */
         do_action('unity_loaded', \Unity\Plugin::getContainer());
 
     } catch (\Exception $e) {
