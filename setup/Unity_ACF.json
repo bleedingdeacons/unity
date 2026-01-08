@@ -1,0 +1,830 @@
+[
+    {
+        "key": "group_6647e599250f2",
+        "title": "Group",
+        "fields": [
+            {
+                "key": "field_6647e59a0876d",
+                "label": "Meeting",
+                "name": "meeting",
+                "aria-label": "",
+                "type": "relationship",
+                "instructions": "",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "15",
+                    "class": "",
+                    "id": ""
+                },
+                "post_type": [
+                    "tsml_meeting"
+                ],
+                "post_status": "",
+                "taxonomy": "",
+                "filters": [
+                    "search"
+                ],
+                "return_format": "id",
+                "min": 1,
+                "max": 5,
+                "allow_in_bindings": 1,
+                "elements": "",
+                "bidirectional": 0,
+                "bidirectional_target": []
+            },
+            {
+                "key": "field_66defcee91474",
+                "label": "Generic Email",
+                "name": "generic-email",
+                "aria-label": "",
+                "type": "email",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "allow_in_bindings": 0,
+                "placeholder": "",
+                "prepend": "",
+                "append": ""
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "post"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": false,
+        "description": "",
+        "show_in_rest": 0,
+        "display_title": ""
+    },
+    {
+        "key": "group_664557f65667c",
+        "title": "Position",
+        "fields": [
+            {
+                "key": "field_66460a8365f33",
+                "label": "Minimum Sobriety",
+                "name": "position-minimum-sobriety",
+                "aria-label": "",
+                "type": "number",
+                "instructions": "Minimum Sobriety in Months",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "10",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 6,
+                "min": 6,
+                "max": 80,
+                "placeholder": "",
+                "step": 6,
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_66460b6165f34",
+                "label": "Position Term",
+                "name": "position-term-years",
+                "aria-label": "",
+                "type": "number",
+                "instructions": "Term in Years",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "10",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 1,
+                "min": 1,
+                "max": 20,
+                "placeholder": "",
+                "step": "",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_66460ba265f35",
+                "label": "Email Address",
+                "name": "position-generic-email-address",
+                "aria-label": "",
+                "type": "email",
+                "instructions": "Positions Generic Email Address",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "10",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "e.g position@aa-bristol.org",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_66720958da8b5",
+                "label": "Position Name",
+                "name": "position-long-name",
+                "aria-label": "",
+                "type": "text",
+                "instructions": "This is the  full name of the position.",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "15",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "maxlength": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_66460c5765f36",
+                "label": "Short Description",
+                "name": "position-short-description",
+                "aria-label": "",
+                "type": "text",
+                "instructions": "Used to assist in selecting correct Officer\/Position in the directory.",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "25",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "maxlength": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_66460c98bc643",
+                "label": "Summary",
+                "name": "position-summary",
+                "aria-label": "",
+                "type": "wysiwyg",
+                "instructions": "A summary of the position.",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "100",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "tabs": "all",
+                "toolbar": "full",
+                "media_upload": 1,
+                "delay": 0
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "intergroup-position"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "seamless",
+        "label_placement": "top",
+        "instruction_placement": "field",
+        "hide_on_screen": "",
+        "active": true,
+        "description": "",
+        "show_in_rest": 0,
+        "display_title": ""
+    },
+    {
+        "key": "group_664617965f796",
+        "title": "Member",
+        "fields": [
+            {
+                "key": "field_66463390e46e8",
+                "label": "About",
+                "name": "about-layout-group",
+                "aria-label": "",
+                "type": "group",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "layout": "block",
+                "sub_fields": [
+                    {
+                        "key": "field_66461796ab271",
+                        "label": "Anonymous Name",
+                        "name": "anonymous-name",
+                        "aria-label": "",
+                        "type": "text",
+                        "instructions": "Anonymous Name of Member",
+                        "required": 1,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "10",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "maxlength": "",
+                        "placeholder": "e.g. Bill W",
+                        "prepend": "",
+                        "append": ""
+                    },
+                    {
+                        "key": "field_664639baf383d",
+                        "label": "Display Anonymous Name",
+                        "name": "show-anonymous-name",
+                        "aria-label": "",
+                        "type": "true_false",
+                        "instructions": "Display the Anonymous Name in the Position Directory",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "15",
+                            "class": "",
+                            "id": ""
+                        },
+                        "message": "",
+                        "default_value": 0,
+                        "ui_on_text": "",
+                        "ui_off_text": "",
+                        "ui": 1
+                    },
+                    {
+                        "key": "field_66461d642ea9a",
+                        "label": "Show Member Profile",
+                        "name": "show-member-profile",
+                        "aria-label": "",
+                        "type": "true_false",
+                        "instructions": "Member Profile shown in Meet the Intergroup.",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "20",
+                            "class": "",
+                            "id": ""
+                        },
+                        "message": "",
+                        "default_value": 0,
+                        "ui_on_text": "",
+                        "ui_off_text": "",
+                        "ui": 1
+                    },
+                    {
+                        "key": "field_664633fae46e9",
+                        "label": "Anonymous Profile",
+                        "name": "anonymous-profile",
+                        "aria-label": "",
+                        "type": "wysiwyg",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": [
+                            [
+                                {
+                                    "field": "field_66461d642ea9a",
+                                    "operator": "==",
+                                    "value": "1"
+                                }
+                            ]
+                        ],
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "tabs": "all",
+                        "toolbar": "full",
+                        "media_upload": 1,
+                        "delay": 0
+                    },
+                    {
+                        "key": "field_67d0eabc277cb",
+                        "label": "Personal Email",
+                        "name": "personal-email",
+                        "aria-label": "",
+                        "type": "email",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "allow_in_bindings": 0,
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": ""
+                    },
+                    {
+                        "key": "field_67d0eaea7cdea",
+                        "label": "Mobile Number",
+                        "name": "mobile-number",
+                        "aria-label": "",
+                        "type": "text",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "maxlength": "",
+                        "allow_in_bindings": 0,
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": ""
+                    }
+                ]
+            },
+            {
+                "key": "field_66463517212ea",
+                "label": "Service",
+                "name": "service-layout-group",
+                "aria-label": "",
+                "type": "group",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_66461796ab271",
+                            "operator": "!=empty"
+                        }
+                    ]
+                ],
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "layout": "block",
+                "sub_fields": [
+                    {
+                        "key": "field_664617e5ab272",
+                        "label": "Intergroup Position",
+                        "name": "intergroup-position",
+                        "aria-label": "",
+                        "type": "relationship",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "25",
+                            "class": "",
+                            "id": ""
+                        },
+                        "post_type": [
+                            "intergroup-position"
+                        ],
+                        "post_status": "",
+                        "taxonomy": "",
+                        "filters": [
+                            "search"
+                        ],
+                        "return_format": "id",
+                        "min": "",
+                        "max": 1,
+                        "allow_in_bindings": 1,
+                        "elements": "",
+                        "bidirectional": 0,
+                        "bidirectional_target": []
+                    },
+                    {
+                        "key": "field_66461acc64b73",
+                        "label": "Position Rotates On",
+                        "name": "intergroup-position-rotation",
+                        "aria-label": "",
+                        "type": "date_picker",
+                        "instructions": "",
+                        "required": 1,
+                        "conditional_logic": [
+                            [
+                                {
+                                    "field": "field_664617e5ab272",
+                                    "operator": "!=empty"
+                                }
+                            ]
+                        ],
+                        "wrapper": {
+                            "width": "20",
+                            "class": "",
+                            "id": ""
+                        },
+                        "display_format": "d\/m\/Y",
+                        "return_format": "d\/m\/Y",
+                        "first_day": 1,
+                        "allow_in_bindings": 1,
+                        "default_to_current_date": 0
+                    }
+                ]
+            },
+            {
+                "key": "field_6646349ab4267",
+                "label": "Home",
+                "name": "home-layout-group",
+                "aria-label": "",
+                "type": "group",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "layout": "block",
+                "sub_fields": [
+                    {
+                        "key": "field_66461c6975633",
+                        "label": "Home Group",
+                        "name": "home-group",
+                        "aria-label": "",
+                        "type": "relationship",
+                        "instructions": "The home of the member.",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "15",
+                            "class": "",
+                            "id": ""
+                        },
+                        "post_type": [
+                            "tsml_meeting"
+                        ],
+                        "post_status": "",
+                        "taxonomy": "",
+                        "filters": [
+                            "search"
+                        ],
+                        "return_format": "object",
+                        "min": "",
+                        "max": "",
+                        "elements": "",
+                        "bidirectional": 0,
+                        "bidirectional_target": []
+                    },
+                    {
+                        "key": "field_66461d2aa877d",
+                        "label": "Is GSR?",
+                        "name": "homegroup-gsr",
+                        "aria-label": "",
+                        "type": "true_false",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "10",
+                            "class": "",
+                            "id": ""
+                        },
+                        "message": "",
+                        "default_value": 0,
+                        "ui_on_text": "",
+                        "ui_off_text": "",
+                        "ui": 1
+                    },
+                    {
+                        "key": "field_664949846b5ea",
+                        "label": "Meeting PO",
+                        "name": "meeting_po",
+                        "aria-label": "",
+                        "type": "post_object",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "post_type": [
+                            "tsml_meeting"
+                        ],
+                        "post_status": "",
+                        "taxonomy": "",
+                        "return_format": "object",
+                        "multiple": 0,
+                        "allow_null": 0,
+                        "bidirectional": 0,
+                        "ui": 1,
+                        "bidirectional_target": []
+                    }
+                ]
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "intergroup-member"
+                }
+            ]
+        ],
+        "menu_order": 25,
+        "position": "normal",
+        "style": "seamless",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": "",
+        "show_in_rest": 0,
+        "display_title": ""
+    },
+    {
+        "key": "post_type_6647e55941426",
+        "title": "Groups",
+        "menu_order": 0,
+        "active": true,
+        "post_type": "home-group",
+        "advanced_configuration": true,
+        "import_source": "",
+        "import_date": "",
+        "labels": {
+            "name": "Groups",
+            "singular_name": "Group",
+            "menu_name": "Groups",
+            "all_items": "All Groups",
+            "edit_item": "Edit Group",
+            "view_item": "View Group",
+            "view_items": "View Groups",
+            "add_new_item": "Add New Group",
+            "add_new": "Add New Group",
+            "new_item": "New Group",
+            "parent_item_colon": "Parent Group:",
+            "search_items": "Search Groups",
+            "not_found": "No groups found",
+            "not_found_in_trash": "No groups found in the bin",
+            "archives": "Group Archives",
+            "attributes": "Group Attributes",
+            "featured_image": "",
+            "set_featured_image": "",
+            "remove_featured_image": "",
+            "use_featured_image": "",
+            "insert_into_item": "Insert into group",
+            "uploaded_to_this_item": "Uploaded to this group",
+            "filter_items_list": "Filter groups list",
+            "filter_by_date": "Filter groups by date",
+            "items_list_navigation": "Groups list navigation",
+            "items_list": "Groups list",
+            "item_published": "Group published.",
+            "item_published_privately": "Group published privately.",
+            "item_reverted_to_draft": "Group reverted to draft.",
+            "item_scheduled": "Group scheduled.",
+            "item_updated": "Group updated.",
+            "item_link": "Group Link",
+            "item_link_description": "A link to a group."
+        },
+        "description": "Home groups of BADI",
+        "public": false,
+        "hierarchical": false,
+        "exclude_from_search": false,
+        "publicly_queryable": true,
+        "show_ui": true,
+        "show_in_menu": true,
+        "admin_menu_parent": "",
+        "show_in_admin_bar": true,
+        "show_in_nav_menus": true,
+        "show_in_rest": true,
+        "rest_base": "",
+        "rest_namespace": "wp\/v2",
+        "rest_controller_class": "WP_REST_Posts_Controller",
+        "menu_position": "",
+        "menu_icon": {
+            "type": "dashicons",
+            "value": "dashicons-admin-home"
+        },
+        "rename_capabilities": false,
+        "singular_capability_name": "post",
+        "plural_capability_name": "posts",
+        "supports": [
+            "title",
+            "editor",
+            "thumbnail"
+        ],
+        "taxonomies": "",
+        "has_archive": false,
+        "has_archive_slug": "",
+        "rewrite": {
+            "permalink_rewrite": "post_type_key",
+            "with_front": "1",
+            "feeds": "0",
+            "pages": "1"
+        },
+        "query_var": "post_type_key",
+        "query_var_name": "",
+        "can_export": true,
+        "delete_with_user": false,
+        "register_meta_box_cb": "",
+        "enter_title_here": ""
+    },
+    {
+        "key": "post_type_664617389e416",
+        "title": "Members",
+        "menu_order": 0,
+        "active": true,
+        "post_type": "intergroup-member",
+        "advanced_configuration": true,
+        "import_source": "",
+        "import_date": "",
+        "labels": {
+            "name": "Members",
+            "singular_name": "Member",
+            "menu_name": "Members",
+            "all_items": "All Members",
+            "edit_item": "Edit Member",
+            "view_item": "View Member",
+            "view_items": "View Members",
+            "add_new_item": "Add New Member",
+            "add_new": "Add New Member",
+            "new_item": "New Member",
+            "parent_item_colon": "Parent Member:",
+            "search_items": "Search Members",
+            "not_found": "No members found",
+            "not_found_in_trash": "No members found in Trash",
+            "archives": "Member Archives",
+            "attributes": "Member Attributes",
+            "featured_image": "",
+            "set_featured_image": "",
+            "remove_featured_image": "",
+            "use_featured_image": "",
+            "insert_into_item": "Insert into member",
+            "uploaded_to_this_item": "Uploaded to this member",
+            "filter_items_list": "Filter members list",
+            "filter_by_date": "Filter members by date",
+            "items_list_navigation": "Members list navigation",
+            "items_list": "Members list",
+            "item_published": "Member published.",
+            "item_published_privately": "Member published privately.",
+            "item_reverted_to_draft": "Member reverted to draft.",
+            "item_scheduled": "Member scheduled.",
+            "item_updated": "Member updated.",
+            "item_link": "Member Link",
+            "item_link_description": "A link to a member."
+        },
+        "description": "Members of AA & BADI",
+        "public": false,
+        "hierarchical": false,
+        "exclude_from_search": true,
+        "publicly_queryable": false,
+        "show_ui": true,
+        "show_in_menu": true,
+        "admin_menu_parent": "",
+        "show_in_admin_bar": true,
+        "show_in_nav_menus": false,
+        "show_in_rest": true,
+        "rest_base": "",
+        "rest_namespace": "wp\/v2",
+        "rest_controller_class": "WP_REST_Posts_Controller",
+        "menu_position": "",
+        "menu_icon": {
+            "type": "dashicons",
+            "value": "dashicons-businessperson"
+        },
+        "rename_capabilities": false,
+        "singular_capability_name": "post",
+        "plural_capability_name": "posts",
+        "supports": "",
+        "taxonomies": "",
+        "has_archive": false,
+        "has_archive_slug": "",
+        "rewrite": {
+            "permalink_rewrite": "post_type_key",
+            "with_front": "0",
+            "feeds": "0",
+            "pages": "1"
+        },
+        "query_var": "post_type_key",
+        "query_var_name": "",
+        "can_export": true,
+        "delete_with_user": false,
+        "register_meta_box_cb": "",
+        "enter_title_here": ""
+    },
+    {
+        "key": "post_type_6646150d53bd3",
+        "title": "Positions",
+        "menu_order": 0,
+        "active": true,
+        "post_type": "intergroup-position",
+        "advanced_configuration": true,
+        "import_source": "",
+        "import_date": "",
+        "labels": {
+            "name": "Positions",
+            "singular_name": "Position",
+            "menu_name": "Positions",
+            "all_items": "All Positions",
+            "edit_item": "Edit Position",
+            "view_item": "View Position",
+            "view_items": "View Positions",
+            "add_new_item": "Add New Position",
+            "add_new": "Add New Position",
+            "new_item": "New Position",
+            "parent_item_colon": "Parent Position:",
+            "search_items": "Search Positions",
+            "not_found": "No positions found",
+            "not_found_in_trash": "No positions found in the bin",
+            "archives": "Position Archives",
+            "attributes": "Position Attributes",
+            "featured_image": "",
+            "set_featured_image": "",
+            "remove_featured_image": "",
+            "use_featured_image": "",
+            "insert_into_item": "Insert into position",
+            "uploaded_to_this_item": "Uploaded to this position",
+            "filter_items_list": "Filter positions list",
+            "filter_by_date": "Filter positions by date",
+            "items_list_navigation": "Positions list navigation",
+            "items_list": "Positions list",
+            "item_published": "Position published.",
+            "item_published_privately": "Position published privately.",
+            "item_reverted_to_draft": "Position reverted to draft.",
+            "item_scheduled": "Position scheduled.",
+            "item_updated": "Position updated.",
+            "item_link": "Position Link",
+            "item_link_description": "A link to a position."
+        },
+        "description": "Service Positions in BADI",
+        "public": true,
+        "hierarchical": true,
+        "exclude_from_search": false,
+        "publicly_queryable": true,
+        "show_ui": true,
+        "show_in_menu": true,
+        "admin_menu_parent": "",
+        "show_in_admin_bar": true,
+        "show_in_nav_menus": true,
+        "show_in_rest": true,
+        "rest_base": "",
+        "rest_namespace": "wp\/v2",
+        "rest_controller_class": "WP_REST_Posts_Controller",
+        "menu_position": "",
+        "menu_icon": {
+            "type": "dashicons",
+            "value": "dashicons-smiley"
+        },
+        "rename_capabilities": false,
+        "singular_capability_name": "post",
+        "plural_capability_name": "posts",
+        "supports": [
+            "title",
+            "editor",
+            "thumbnail"
+        ],
+        "taxonomies": "",
+        "has_archive": false,
+        "has_archive_slug": "",
+        "rewrite": {
+            "permalink_rewrite": "custom_permalink",
+            "slug": "positions",
+            "with_front": "1",
+            "feeds": "0",
+            "pages": "1"
+        },
+        "query_var": "post_type_key",
+        "query_var_name": "",
+        "can_export": true,
+        "delete_with_user": false,
+        "register_meta_box_cb": "",
+        "enter_title_here": ""
+    }
+]
