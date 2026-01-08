@@ -17,7 +17,7 @@ use Unity\Intergroup\IntergroupManager;
 use Unity\Meetings\Interfaces\MeetingFactoryInterface;
 use Unity\Meetings\Interfaces\MeetingRepositoryInterface;
 use Unity\Meetings\MeetingRepository;
-use Unity\Meetings\TsmlMeetingFactory;
+//use Unity\Meetings\TsmlMeetingFactory;
 use Unity\Members\Interfaces\MemberFactoryInterface;
 use Unity\Members\Interfaces\MemberRepositoryInterface;
 use Unity\Members\MemberFactory;
@@ -49,10 +49,10 @@ class UnityServiceProvider
             return new WordPressCache();
         });
 
-        // Register Meeting Factory
-        $container->register(MeetingFactoryInterface::class, function () {
-            return new TsmlMeetingFactory();
-        });
+//        // Register Meeting Factory
+//        $container->register(MeetingFactoryInterface::class, function () {
+//            return new TsmlMeetingFactory();
+//        });
 
         // Register Meeting Repository
         $container->register(MeetingRepositoryInterface::class, function (DependencyContainer $c) {
