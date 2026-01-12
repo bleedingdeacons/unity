@@ -6,6 +6,7 @@ namespace Unity\Tests\Unit\Groups;
 
 use PHPUnit\Framework\TestCase;
 use Unity\Groups\Group;
+use Unity\Groups\Interfaces\GroupInterface;
 
 /**
  * Tests for Group entity
@@ -24,38 +25,68 @@ class GroupTest extends TestCase
         $this->assertEquals('', $group->getEmail());
         $this->assertEquals([], $group->getMeetingIds());
         $this->assertEquals('', $group->getLink());
+        $this->assertEquals('', $group->getGroupNotes());
+        $this->assertEquals('', $group->getWebsite());
+        $this->assertEquals('', $group->getPhone());
+        $this->assertEquals('', $group->getVenmo());
+        $this->assertEquals('', $group->getPaypal());
+        $this->assertEquals('', $group->getSquare());
+        $this->assertNull($group->getDistrictId());
+        $this->assertNull($group->getLastContact());
+        $this->assertEquals([], $group->getContacts());
     }
 
     /**
      * @test
      */
-    public function it_can_be_instantiated_with_values(): void
+    public function it_can_be_instantiated_with_all_values(): void
     {
+        $contacts = [
+            ['name' => 'John', 'email' => 'john@example.com', 'phone' => '555-1234'],
+            ['name' => 'Jane', 'email' => 'jane@example.com', 'phone' => '555-5678'],
+        ];
+
         $group = new Group(
             id: 123,
             title: 'Test Group',
-            email: 'test@example.com',
+            email: 'group@example.com',
             meetingIds: [1, 2, 3],
-            link: 'https://example.com/group/test-group'
+            link: 'https://example.com/group/test-group',
+            groupNotes: 'Group history and notes',
+            website: 'https://testgroup.org',
+            phone: '555-GROUP',
+            venmo: '@TestGroup',
+            paypal: 'TestGroupAA',
+            square: '$TestGroup',
+            districtId: 42,
+            lastContact: '2024-01-15',
+            contacts: $contacts
         );
 
         $this->assertEquals(123, $group->getId());
         $this->assertEquals('Test Group', $group->getTitle());
-        $this->assertEquals('test@example.com', $group->getEmail());
+        $this->assertEquals('group@example.com', $group->getEmail());
         $this->assertEquals([1, 2, 3], $group->getMeetingIds());
         $this->assertEquals('https://example.com/group/test-group', $group->getLink());
+        $this->assertEquals('Group history and notes', $group->getGroupNotes());
+        $this->assertEquals('https://testgroup.org', $group->getWebsite());
+        $this->assertEquals('555-GROUP', $group->getPhone());
+        $this->assertEquals('@TestGroup', $group->getVenmo());
+        $this->assertEquals('TestGroupAA', $group->getPaypal());
+        $this->assertEquals('$TestGroup', $group->getSquare());
+        $this->assertEquals(42, $group->getDistrictId());
+        $this->assertEquals('2024-01-15', $group->getLastContact());
+        $this->assertEquals($contacts, $group->getContacts());
     }
 
     /**
      * @test
      */
-    public function it_is_valid_when_has_id_title_and_at_least_one_meeting(): void
+    public function it_is_valid_when_has_id_and_title(): void
     {
         $group = new Group(
             id: 1,
-            title: 'Valid Group',
-            email: '',
-            meetingIds: [100]
+            title: 'Valid Group'
         );
 
         $this->assertTrue($group->isValid());
@@ -68,8 +99,7 @@ class GroupTest extends TestCase
     {
         $group = new Group(
             id: 0,
-            title: 'Group',
-            meetingIds: [1]
+            title: 'Group'
         );
 
         $this->assertFalse($group->isValid());
@@ -82,8 +112,7 @@ class GroupTest extends TestCase
     {
         $group = new Group(
             id: 1,
-            title: '',
-            meetingIds: [1]
+            title: ''
         );
 
         $this->assertFalse($group->isValid());
@@ -92,7 +121,7 @@ class GroupTest extends TestCase
     /**
      * @test
      */
-    public function it_is_invalid_when_has_no_meetings(): void
+    public function it_is_valid_without_meetings(): void
     {
         $group = new Group(
             id: 1,
@@ -100,7 +129,7 @@ class GroupTest extends TestCase
             meetingIds: []
         );
 
-        $this->assertFalse($group->isValid());
+        $this->assertTrue($group->isValid());
     }
 
     /**
@@ -126,15 +155,13 @@ class GroupTest extends TestCase
         $groupWithEmail = new Group(
             id: 1,
             title: 'Group',
-            email: 'email@example.com',
-            meetingIds: [1]
+            email: 'email@example.com'
         );
 
         $groupWithoutEmail = new Group(
             id: 1,
             title: 'Group',
-            email: '',
-            meetingIds: [1]
+            email: ''
         );
 
         $this->assertTrue($groupWithEmail->isValid());
@@ -149,10 +176,90 @@ class GroupTest extends TestCase
         $group = new Group(
             id: 1,
             title: 'Group',
-            meetingIds: [1],
             link: ''
         );
 
         $this->assertTrue($group->isValid());
+    }
+
+    /**
+     * @test
+     */
+    public function hasContributionOptions_returns_true_when_venmo_set(): void
+    {
+        $group = new Group(
+            id: 1,
+            title: 'Group',
+            venmo: '@GroupVenmo'
+        );
+
+        $this->assertTrue($group->hasContributionOptions());
+    }
+
+    /**
+     * @test
+     */
+    public function hasContributionOptions_returns_true_when_paypal_set(): void
+    {
+        $group = new Group(
+            id: 1,
+            title: 'Group',
+            paypal: 'GroupPaypal'
+        );
+
+        $this->assertTrue($group->hasContributionOptions());
+    }
+
+    /**
+     * @test
+     */
+    public function hasContributionOptions_returns_true_when_square_set(): void
+    {
+        $group = new Group(
+            id: 1,
+            title: 'Group',
+            square: '$GroupSquare'
+        );
+
+        $this->assertTrue($group->hasContributionOptions());
+    }
+
+    /**
+     * @test
+     */
+    public function hasContributionOptions_returns_false_when_none_set(): void
+    {
+        $group = new Group(
+            id: 1,
+            title: 'Group'
+        );
+
+        $this->assertFalse($group->hasContributionOptions());
+    }
+
+    /**
+     * @test
+     */
+    public function hasContributionOptions_returns_true_when_multiple_set(): void
+    {
+        $group = new Group(
+            id: 1,
+            title: 'Group',
+            venmo: '@GroupVenmo',
+            paypal: 'GroupPaypal',
+            square: '$GroupSquare'
+        );
+
+        $this->assertTrue($group->hasContributionOptions());
+    }
+
+    /**
+     * @test
+     */
+    public function it_implements_group_interface(): void
+    {
+        $group = new Group();
+        
+        $this->assertInstanceOf(GroupInterface::class, $group);
     }
 }
