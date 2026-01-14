@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Groups;
 
+use Unity\Contact\Interfaces\ContactInterface;
 use Unity\Groups\Interfaces\GroupInterface;
 
 /**

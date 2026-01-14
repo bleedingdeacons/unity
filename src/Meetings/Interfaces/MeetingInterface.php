@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Unity\Meetings\Interfaces;
 
+use Unity\Contact\Interfaces\ContactInterface;
+use Unity\Locations\Interfaces\LocationInterface;
+
 /**
  * Interface MeetingInterface
  *
@@ -35,9 +38,9 @@ interface MeetingInterface
     /**
      * Get meeting location.
      *
-     * @return string Meeting location.
+     * @return LocationInterface|null Meeting location or null if not set.
      */
-    public function getLocation(): string;
+    public function getLocation(): ?LocationInterface;
 
     /**
      * Get meeting URL.
@@ -98,7 +101,7 @@ interface MeetingInterface
     /**
      * Get meeting contacts.
      *
-     * @return array Array of Contact objects.
+     * @return ContactInterface[] Array of Contact objects.
      */
     public function getContacts(): array;
 

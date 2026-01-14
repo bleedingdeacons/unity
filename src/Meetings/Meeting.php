@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Unity\Meetings;
 
 use Unity\Meetings\Interfaces\MeetingInterface;
+use Unity\Locations\Interfaces\LocationInterface;
 
 /**
  * Class Meeting
@@ -16,7 +17,7 @@ class Meeting implements MeetingInterface
     private int $id;
     private string $name;
     private string $slug;
-    private string $location;
+    private ?LocationInterface $location;
     private string $url;
     private int $day;
     private string $dayOfWeek;
@@ -36,7 +37,7 @@ class Meeting implements MeetingInterface
      * @param int $id Meeting ID
      * @param string $name Meeting name
      * @param string $slug Meeting slug
-     * @param string $location Meeting location
+     * @param LocationInterface|null $location Meeting location
      * @param string $url Meeting URL
      * @param int $day Meeting day
      * @param string $dayOfWeek Day of the week
@@ -54,7 +55,7 @@ class Meeting implements MeetingInterface
         int $id,
         string $name,
         string $slug,
-        string $location,
+        ?LocationInterface $location,
         string $url,
         int $day,
         string $dayOfWeek,
@@ -113,7 +114,7 @@ class Meeting implements MeetingInterface
     /**
      * {@inheritdoc}
      */
-    public function getLocation(): string
+    public function getLocation(): ?LocationInterface
     {
         return $this->location;
     }

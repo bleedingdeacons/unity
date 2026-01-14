@@ -138,7 +138,7 @@ class UnityServiceProvider
             );
         });
 
-        // Register Location Repository (requires LocationFactoryInterface to be registered by TSML-for-Unity)
+        // Register Locations Repository (requires LocationFactoryInterface to be registered by TSML-for-Unity)
         $container->register(LocationRepositoryInterface::class, function (DependencyContainer $c) {
             return new LocationRepository(
                 $c->get(LocationFactoryInterface::class)

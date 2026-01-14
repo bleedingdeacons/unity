@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Unity\Locations\Interfaces;
 
 /**
- * Interface for Location Factory
+ * Interface for Locations Factory
  */
 interface LocationFactoryInterface
 {

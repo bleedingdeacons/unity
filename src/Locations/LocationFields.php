@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Unity\Locations;
 
 /**
- * ACF Field Constants for Location
+ * ACF Field Constants for Locations
  *
  * These field names correspond to the TSML plugin's location post type fields.
  */
@@ -17,7 +17,7 @@ final class LocationFields
     public const LOCATION_POST_TYPE = 'tsml_location';
 
     /**
-     * Location name/title field
+     * Locations name/title field
      */
     public const NAME = 'location-name';
 
@@ -52,7 +52,7 @@ final class LocationFields
     public const REGION = 'region';
 
     /**
-     * Location notes/description field
+     * Locations notes/description field
      */
     public const NOTES = 'location_notes';
 

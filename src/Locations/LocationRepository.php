@@ -12,9 +12,9 @@ use function get_posts;
 use function wp_parse_args;
 
 /**
- * Concrete Location Repository class
+ * Concrete Locations Repository class
  *
- * Handles retrieval of Location entities from the WordPress database.
+ * Handles retrieval of Locations entities from the WordPress database.
  * Save/update/delete operations are not implemented as locations are
  * typically managed by the TSML plugin.
  */

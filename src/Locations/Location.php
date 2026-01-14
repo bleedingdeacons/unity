@@ -7,7 +7,7 @@ namespace Unity\Locations;
 use Unity\Locations\Interfaces\LocationInterface;
 
 /**
- * Location entity class
+ * Locations entity class
  *
  * Implements LocationInterface with all fields needed for location management
  * including address information and geographic coordinates.
@@ -30,17 +30,17 @@ class Location implements LocationInterface
     private array $meetingIds;
 
     /**
-     * Location constructor
+     * Locations constructor
      *
      * @param int        $id         WordPress post ID
-     * @param string     $name       Location name/title
+     * @param string     $name       Locations name/title
      * @param string     $address    Street address
      * @param string     $city       City name
      * @param string     $state      State/province
      * @param string     $postalCode Postal/zip code
      * @param string     $country    Country name
      * @param string     $region     Region name
-     * @param string     $notes      Location notes/description
+     * @param string     $notes      Locations notes/description
      * @param string     $link       Permalink URL
      * @param float|null $latitude   Latitude coordinate
      * @param float|null $longitude  Longitude coordinate

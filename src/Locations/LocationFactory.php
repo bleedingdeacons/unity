@@ -12,9 +12,9 @@ use function get_post_meta;
 use function wp_get_post_terms;
 
 /**
- * Concrete Location Factory class
+ * Concrete Locations Factory class
  *
- * Creates Location objects from WordPress post IDs, typically
+ * Creates Locations objects from WordPress post IDs, typically
  * from the TSML plugin's tsml_location post type.
  */
 class LocationFactory implements LocationFactoryInterface

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Unity\Locations\Interfaces;
 
 /**
- * Interface for Location entity
+ * Interface for Locations entity
  */
 interface LocationInterface
 {
@@ -68,7 +68,7 @@ interface LocationInterface
     /**
      * Get the location notes
      *
-     * @return string Location notes/description
+     * @return string Locations notes/description
      */
     public function getNotes(): string;
 

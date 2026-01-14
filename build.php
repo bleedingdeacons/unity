@@ -247,7 +247,7 @@ class PluginBuilder
         $size = $this->formatBytes(filesize($archiveName));
         $this->log("Archive created successfully: " . basename($archiveName));
         $this->log("File size: {$size}");
-        $this->log("Location: {$archiveName}");
+        $this->log("Locations: {$archiveName}");
     }
 
     /**
