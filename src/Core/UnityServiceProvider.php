@@ -6,6 +6,8 @@ namespace Unity\Core;
 
 use Unity\Common\Interfaces\CacheInterface;
 use Unity\Common\WordPressCache;
+use Unity\Contact\ContactFactory;
+use Unity\Contact\Interfaces\ContactFactoryInterface;
 use Unity\Groups\GroupChangeTracker;
 use Unity\Groups\GroupFactory;
 use Unity\Groups\GroupRepository;
@@ -50,6 +52,11 @@ class UnityServiceProvider
         // Register Cache
         $container->register(CacheInterface::class, function () {
             return new WordPressCache();
+        });
+
+        // Register Contact Factory
+        $container->register(ContactFactoryInterface::class, function () {
+            return new ContactFactory();
         });
 
 //        // Register Meeting Factory

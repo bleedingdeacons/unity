@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Unity\Groups\Interfaces;
 
+use Unity\Contact\Interfaces\ContactInterface;
+
 /**
  * Interface for Group entity
  */
@@ -110,10 +112,7 @@ interface GroupInterface
     /**
      * Get the contacts array
      * 
-     * @return array Array of contact information with keys like:
-     *               - name: Contact name
-     *               - email: Contact email
-     *               - phone: Contact phone
+     * @return ContactInterface[] Array of Contact objects.
      */
     public function getContacts(): array;
 
