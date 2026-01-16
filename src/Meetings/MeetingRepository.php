@@ -8,271 +8,241 @@ use Unity\Common\Interfaces\CacheInterface;
 use Unity\Meetings\Interfaces\MeetingFactoryInterface;
 use Unity\Meetings\Interfaces\MeetingInterface;
 use Unity\Meetings\Interfaces\MeetingRepositoryInterface;
-use Exception;
-use RuntimeException;
 
 /**
  * Class MeetingRepository
  *
- * Implementation of MeetingRepositoryInterface that retrieves meetings
- * using the TSML plugin with caching.
+ * Repository for retrieving Meeting objects from WordPress.
  */
 class MeetingRepository implements MeetingRepositoryInterface
 {
-    private const MEETINGS_CACHE_KEY = 'trumpet_meetings';
+    private const POST_TYPE = 'tsml_meeting';
+    private const CACHE_GROUP = 'unity_meetings';
+    private const CACHE_TTL = 3600; // 1 hour
 
-    private int $cacheDuration;
     private MeetingFactoryInterface $factory;
-    private CacheInterface $cache;
-    private array $cachedArgs = [];
+    private ?CacheInterface $cache;
 
     /**
-     * Constructor.
+     * MeetingRepository constructor.
      *
-     * @param MeetingFactoryInterface $factory Meeting factory.
-     * @param CacheInterface $cache Cache implementation.
-     * @param int $cacheDuration Cache duration in seconds (defaults to 60 seconds).
+     * @param MeetingFactoryInterface $factory Meeting factory
+     * @param CacheInterface|null $cache Optional cache implementation
      */
     public function __construct(
         MeetingFactoryInterface $factory,
-        CacheInterface $cache,
-        int $cacheDuration = 60
+        ?CacheInterface $cache = null
     ) {
         $this->factory = $factory;
         $this->cache = $cache;
-        $this->cacheDuration = $cacheDuration;
     }
 
     /**
-     * Find all meetings.
-     *
-     * @param array $args Optional arguments to filter meetings.
-     * @return array Array of MeetingInterface objects.
-     */
-    public function findAll(array $args = []): array
-    {
-        $argsHash = md5(serialize($args));
-        $cacheKey = self::MEETINGS_CACHE_KEY . '_' . $argsHash;
-        
-        $meetings = $this->cache->get($cacheKey);
-        if ($meetings !== false) {
-            return $meetings;
-        }
-
-        $meetings = $this->fetchMeetings($args);
-
-        $this->cache->set($cacheKey, $meetings, '', $this->cacheDuration);
-        $this->cachedArgs = $args;
-
-        return $meetings;
-    }
-
-    /**
-     * Find a meeting by ID.
-     *
-     * @param int $id Meeting ID.
-     * @return MeetingInterface|null Meeting object or null if not found.
+     * {@inheritdoc}
      */
     public function find(int $id): ?MeetingInterface
     {
         if ($id <= 0) {
-            $this->logError("Invalid meeting ID: {$id}");
             return null;
         }
 
-        $cacheKey = self::MEETINGS_CACHE_KEY . '_' . $id;
-        $meeting = $this->cache->get($cacheKey);
-        if ($meeting !== false) {
-            return $meeting;
-        }
-
-        try {
-            $allMeetings = $this->fetchMeetings();
-
-            foreach ($allMeetings as $meeting) {
-                if ($meeting instanceof MeetingInterface && $meeting->getId() === $id) {
-                    $this->cache->set($cacheKey, $meeting, '', $this->cacheDuration);
-                    return $meeting;
-                }
+        // Try cache first
+        $cacheKey = "meeting_{$id}";
+        if ($this->cache) {
+            $cached = $this->cache->get($cacheKey, self::CACHE_GROUP);
+            if ($cached !== false) {
+                return $cached;
             }
-        } catch (Exception $e) {
-            $this->logError("Error finding meeting with ID {$id}: " . $e->getMessage());
         }
 
-        return null;
+        // Get post
+        $post = get_post($id);
+        if (!$post || $post->post_type !== self::POST_TYPE) {
+            return null;
+        }
+
+        // Create meeting from post
+        $meeting = $this->createMeetingFromPost($post);
+
+        // Cache result
+        if ($meeting && $this->cache) {
+            $this->cache->set($cacheKey, $meeting, self::CACHE_GROUP, self::CACHE_TTL);
+        }
+
+        return $meeting;
     }
 
     /**
-     * Clear the cache.
-     *
-     * @param int|null $id Optional meeting ID to clear specific cache entry.
-     * @return void
+     * {@inheritdoc}
      */
-    public function clearCache(?int $id = null): void
+    public function findAll(array $args = []): array
     {
-        if ($id === null) {
-            $allCacheKeys = $this->getAllCacheKeys();
-            foreach ($allCacheKeys as $key) {
-                $this->cache->delete($key);
+        $defaults = [
+            'post_type' => self::POST_TYPE,
+            'post_status' => 'publish',
+            'posts_per_page' => 100,
+            'orderby' => 'title',
+            'order' => 'ASC',
+        ];
+
+        $args = array_merge($defaults, $args);
+
+        $posts = get_posts($args);
+        return $this->createMeetingsFromPosts($posts);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByDay(int $day, array $args = []): array
+    {
+        $args['meta_query'] = $args['meta_query'] ?? [];
+        $args['meta_query'][] = [
+            'key' => 'day',
+            'value' => $day,
+            'compare' => '=',
+        ];
+
+        return $this->findAll($args);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findOnline(array $args = []): array
+    {
+        $args['meta_query'] = $args['meta_query'] ?? [];
+        $args['meta_query'][] = [
+            'key' => 'attendance_option',
+            'value' => 'online',
+            'compare' => '=',
+        ];
+
+        return $this->findAll($args);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findInPerson(array $args = []): array
+    {
+        $args['meta_query'] = $args['meta_query'] ?? [];
+        $args['meta_query'][] = [
+            'key' => 'attendance_option',
+            'value' => 'in_person',
+            'compare' => '=',
+        ];
+
+        return $this->findAll($args);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByGroupId(int $groupId, array $args = []): array
+    {
+        if ($groupId <= 0) {
+            return [];
+        }
+
+        $args['meta_query'] = $args['meta_query'] ?? [];
+        $args['meta_query'][] = [
+            'key' => 'group_id',
+            'value' => $groupId,
+            'compare' => '=',
+        ];
+
+        return $this->findAll($args);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByLocationId(int $locationId, array $args = []): array
+    {
+        if ($locationId <= 0) {
+            return [];
+        }
+
+        $args['meta_query'] = $args['meta_query'] ?? [];
+        $args['meta_query'][] = [
+            'key' => 'location_id',
+            'value' => $locationId,
+            'compare' => '=',
+        ];
+
+        return $this->findAll($args);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function search(string $keyword, array $args = []): array
+    {
+        if (empty($keyword)) {
+            return [];
+        }
+
+        $args['s'] = $keyword;
+        return $this->findAll($args);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count(array $args = []): int
+    {
+        $args['fields'] = 'ids';
+        $args['posts_per_page'] = -1;
+
+        $posts = $this->findAll($args);
+        return count($posts);
+    }
+
+    /**
+     * Create a Meeting object from a WordPress post.
+     *
+     * @param \WP_Post $post WordPress post object
+     * @return MeetingInterface|null Meeting object or null if creation fails
+     */
+    private function createMeetingFromPost(\WP_Post $post): ?MeetingInterface
+    {
+        $meta = get_post_meta($post->ID);
+
+        $source = [
+            'id' => $post->ID,
+            'name' => $post->post_title,
+            'slug' => $post->post_name,
+            'meta' => $meta,
+        ];
+
+        // Add common meta fields to source for easier access
+        foreach ($meta as $key => $value) {
+            if (!isset($source[$key]) && isset($value[0])) {
+                $source[$key] = $value[0];
             }
-        } else {
-            $this->cache->delete(self::MEETINGS_CACHE_KEY . '_' . $id);
         }
+
+        return $this->factory->createFromSource($source);
     }
 
     /**
-     * Get all potential cache keys for meetings
-     * 
-     * @return array Array of cache keys
-     */
-    private function getAllCacheKeys(): array
-    {
-        $keys = [self::MEETINGS_CACHE_KEY];
-        
-        if (!empty($this->cachedArgs)) {
-            $keys[] = self::MEETINGS_CACHE_KEY . '_' . md5(serialize($this->cachedArgs));
-        }
-        
-        return $keys;
-    }
-
-    /**
-     * Fetch meetings from the TSML plugin and convert to Meeting objects.
+     * Create Meeting objects from an array of WordPress posts.
      *
-     * @param array $args Arguments to pass to tsml_get_meetings.
-     * @return array Array of MeetingInterface objects.
+     * @param \WP_Post[] $posts Array of WordPress post objects
+     * @return MeetingInterface[] Array of Meeting objects
      */
-    private function fetchMeetings(array $args = []): array
+    private function createMeetingsFromPosts(array $posts): array
     {
         $meetings = [];
 
-        try {
-            $posts = $this->fetchMeetingPosts($args);
-
-            if (empty($posts) || !is_array($posts)) {
-                return $meetings;
+        foreach ($posts as $post) {
+            $meeting = $this->createMeetingFromPost($post);
+            if ($meeting !== null) {
+                $meetings[] = $meeting;
             }
-
-            foreach ($posts as $post) {
-                $meeting = $this->factory->createFromSource($post);
-                if ($meeting !== null) {
-                    $meetings[] = $meeting;
-                }
-            }
-        } catch (Exception $e) {
-            $this->logError("Error fetching meetings: " . $e->getMessage(), [
-                'args' => $args
-            ]);
         }
 
         return $meetings;
-    }
-
-    /**
-     * Fetch raw meeting data from the TSML plugin.
-     *
-     * @param array $args Arguments to pass to tsml_get_meetings.
-     * @return array Array of meeting data or empty array if error.
-     * @throws RuntimeException If TSML plugin is not available.
-     */
-    private function fetchMeetingPosts(array $args = []): array
-    {
-        if (!function_exists('tsml_get_meetings')) {
-            throw new RuntimeException('The TSML plugin must be installed and activated');
-        }
-
-        $sanitizedArgs = $this->sanitizeArgs($args);
-        $posts = tsml_get_meetings($sanitizedArgs);
-
-        if (empty($posts)) {
-            $this->logError('No meetings found with the specified criteria.', [
-                'args' => $sanitizedArgs
-            ]);
-            return [];
-        }
-
-        if (!is_array($posts)) {
-            $this->logError('Unexpected result when retrieving meeting posts.', [
-                'args' => $sanitizedArgs,
-                'result_type' => gettype($posts)
-            ]);
-            return [];
-        }
-
-        return $posts;
-    }
-
-    /**
-     * Sanitize arguments for querying meetings.
-     *
-     * @param array $args Raw arguments.
-     * @return array Sanitized arguments.
-     */
-    private function sanitizeArgs(array $args): array
-    {
-        $sanitized = [];
-
-        $allowedArgs = [
-            'post__in' => function ($val) {
-                return is_array($val) ? array_map('intval', $val) : (intval($val) ? [intval($val)] : []);
-            },
-            'day' => function ($val) {
-                return in_array($val, range(0, 6)) ? strval($val) : null;
-            },
-            'time' => function ($val) {
-                return preg_match('/^\d{1,2}:\d{2}$/', $val) ? $val : null;
-            },
-            'region' => function ($val) {
-                return sanitize_text_field($val);
-            },
-            'type' => function ($val) {
-                return sanitize_text_field($val);
-            },
-            'types' => function ($val) {
-                return is_array($val) ? array_map('sanitize_text_field', $val) : [sanitize_text_field($val)];
-            },
-            'location_id' => function ($val) {
-                return intval($val);
-            },
-            'group_id' => function ($val) {
-                return intval($val);
-            },
-            's' => function ($val) {
-                return sanitize_text_field($val);
-            }
-        ];
-
-        foreach ($args as $key => $value) {
-            if (isset($allowedArgs[$key])) {
-                $sanitizedValue = $allowedArgs[$key]($value);
-                if ($sanitizedValue !== null) {
-                    $sanitized[$key] = $sanitizedValue;
-                }
-            }
-        }
-
-        return $sanitized;
-    }
-
-    /**
-     * Log an error message with context.
-     *
-     * @param string $message Error message.
-     * @param array $context Additional context data.
-     * @return void
-     */
-    private function logError(string $message, array $context = []): void
-    {
-        if (!isset($context['class'])) {
-            $context['class'] = __CLASS__;
-        }
-
-        if (!isset($context['method'])) {
-            $context['method'] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'] ?? __METHOD__;
-        }
-
-        $contextStr = empty($context) ? '' : ' ' . json_encode($context);
-
-        error_log("[Meeting Repository Error] {$message}{$contextStr}");
     }
 }

@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Unity\Groups;
 
-use Unity\Contact\Interfaces\ContactInterface;
 use Unity\Groups\Interfaces\GroupInterface;
+use Unity\Contact\Interfaces\ContactInterface;
+use Unity\Meetings\Interfaces\MeetingInterface;
 
 /**
- * Group entity class
- * 
- * Implements GroupInterface with all fields needed for group management
- * including contact information and contribution options.
+ * Class Group
+ *
+ * Implementation of GroupInterface.
  */
 class Group implements GroupInterface
 {
     private int $id;
     private string $title;
     private string $email;
-    private array $meetingIds;
+    private array $meetings;
     private string $link;
     private string $groupNotes;
     private string $website;
@@ -31,28 +31,28 @@ class Group implements GroupInterface
     private array $contacts;
 
     /**
-     * Group constructor
-     * 
-     * @param int         $id          WordPress post ID
-     * @param string      $title       Group title/name
-     * @param string      $email       Group email address
-     * @param array       $meetingIds  Associated meeting post IDs
-     * @param string      $link        Permalink URL
-     * @param string      $groupNotes  Group notes/description
-     * @param string      $website     Group website URL
-     * @param string      $phone       Group phone number
-     * @param string      $venmo       Venmo handle for contributions
-     * @param string      $paypal      PayPal username for contributions
-     * @param string      $square      Square Cash App cashtag for contributions
-     * @param int|null    $districtId  District ID
+     * Constructor.
+     *
+     * @param int $id Group ID
+     * @param string $title Group title
+     * @param string $email Group email address
+     * @param MeetingInterface[] $meetings Array of Meeting objects
+     * @param string $link Group link/URL
+     * @param string $groupNotes Group notes/description
+     * @param string $website Group website URL
+     * @param string $phone Group phone number
+     * @param string $venmo Venmo handle for contributions
+     * @param string $paypal PayPal username for contributions
+     * @param string $square Square Cash App cashtag for contributions
+     * @param int|null $districtId District ID
      * @param string|null $lastContact Last contact timestamp
-     * @param array       $contacts    Array of contact information
+     * @param ContactInterface[] $contacts Array of Contact objects
      */
     public function __construct(
-        int $id = 0,
+        int $id,
         string $title = '',
         string $email = '',
-        array $meetingIds = [],
+        array $meetings = [],
         string $link = '',
         string $groupNotes = '',
         string $website = '',
@@ -67,7 +67,7 @@ class Group implements GroupInterface
         $this->id = $id;
         $this->title = $title;
         $this->email = $email;
-        $this->meetingIds = $meetingIds;
+        $this->meetings = $meetings;
         $this->link = $link;
         $this->groupNotes = $groupNotes;
         $this->website = $website;
@@ -107,9 +107,9 @@ class Group implements GroupInterface
     /**
      * {@inheritdoc}
      */
-    public function getMeetingIds(): array
+    public function getMeetings(): array
     {
-        return $this->meetingIds;
+        return $this->meetings;
     }
 
     /**
@@ -125,8 +125,8 @@ class Group implements GroupInterface
      */
     public function isValid(): bool
     {
-        return $this->id > 0
-            && !empty($this->title);
+        // A group is considered valid if it has an ID and a title
+        return $this->id > 0 && !empty($this->title);
     }
 
     /**
@@ -206,8 +206,8 @@ class Group implements GroupInterface
      */
     public function hasContributionOptions(): bool
     {
-        return !empty($this->venmo) 
-            || !empty($this->paypal) 
+        return !empty($this->venmo)
+            || !empty($this->paypal)
             || !empty($this->square);
     }
 }
