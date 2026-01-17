@@ -49,7 +49,7 @@ class PositionView implements PositionViewInterface
                 if (!empty($rotationStr)) {
                     $this->rotationDate = DateTime::createFromFormat('d/m/Y', $rotationStr);
                     if ($this->rotationDate) {
-                        $this->rotationDate->setTime(0, 0, 0);
+                        $this->rotationDate->setTime(0, 0);
                     }
                 }
             } catch (Exception $ex) {
@@ -85,9 +85,9 @@ class PositionView implements PositionViewInterface
     /**
      * {@inheritdoc}
      */
-    public function getPrivateDisplayName(): ?string
+    public function getPrivateDisplayName(): string
     {
-        return $this->member !== null ? $this->member->getPrivateName() : null;
+        return $this->member ? $this->member->getPrivateName() : '';
     }
 
     /**
