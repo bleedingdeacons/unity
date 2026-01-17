@@ -11,7 +11,7 @@ interface PositionRepositoryInterface
 {
     /**
      * Find a position by ID
-     * 
+     *
      * @param int $id The position ID
      * @return PositionInterface|null The position or null if not found
      */
@@ -19,15 +19,23 @@ interface PositionRepositoryInterface
 
     /**
      * Find all positions
-     * 
+     *
      * @param array $args Optional arguments for querying positions
      * @return array Array of PositionInterface objects
      */
     public function findAll(array $args = []): array;
 
     /**
+     * Get total count of positions matching criteria
+     *
+     * @param array $args Query arguments
+     * @return int Total count
+     */
+    public function count(array $args = []): int;
+
+    /**
      * Save a position
-     * 
+     *
      * @param PositionInterface $position The position to save
      * @return bool Whether the save was successful
      */
@@ -35,7 +43,7 @@ interface PositionRepositoryInterface
 
     /**
      * Update a position
-     * 
+     *
      * @param PositionInterface $position The position to update
      * @return bool Whether the update was successful
      */
@@ -43,7 +51,7 @@ interface PositionRepositoryInterface
 
     /**
      * Delete a position
-     * 
+     *
      * @param int $id The ID of the position to delete
      * @return bool Whether the deletion was successful
      */

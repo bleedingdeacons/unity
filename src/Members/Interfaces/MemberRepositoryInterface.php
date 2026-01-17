@@ -26,6 +26,14 @@ interface MemberRepositoryInterface
     public function findAll(array $args = []): array;
 
     /**
+     * Get total count of members matching criteria
+     *
+     * @param array $args Query arguments
+     * @return int Total count
+     */
+    public function count(array $args = []): int;
+
+    /**
      * Save a member
      *
      * @param MemberInterface $member

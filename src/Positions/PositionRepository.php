@@ -21,10 +21,10 @@ use function wp_update_post;
 class PositionRepository implements PositionRepositoryInterface
 {
     private PositionFactoryInterface $factory;
-    
+
     /**
      * PositionRepository constructor
-     * 
+     *
      * @param PositionFactoryInterface $factory The position factory
      */
     public function __construct(PositionFactoryInterface $factory)
@@ -68,10 +68,28 @@ class PositionRepository implements PositionRepositoryInterface
     /**
      * {@inheritdoc}
      */
+    public function count(array $args = []): int
+    {
+        $defaultArgs = [
+            'post_type' => PositionFields::POSITION_POST_TYPE,
+            'posts_per_page' => -1,
+            'post_status' => 'publish',
+            'fields' => 'ids',
+        ];
+
+        $queryArgs = wp_parse_args($args, $defaultArgs);
+        $posts = get_posts($queryArgs);
+
+        return is_array($posts) ? count($posts) : 0;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function save(PositionInterface $position): bool
     {
         $postId = $position->getId();
-        
+
         if ($postId > 0) {
             return $this->update($position);
         }
@@ -106,14 +124,14 @@ class PositionRepository implements PositionRepositoryInterface
 
         return true;
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function update(PositionInterface $position): bool
     {
         $postId = $position->getId();
-        
+
         if ($postId <= 0) {
             return false;
         }
@@ -146,7 +164,7 @@ class PositionRepository implements PositionRepositoryInterface
 
         return true;
     }
-    
+
     /**
      * {@inheritdoc}
      */
