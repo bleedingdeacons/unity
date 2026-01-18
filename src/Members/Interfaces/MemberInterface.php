@@ -18,7 +18,7 @@ interface MemberInterface
     public function getAnonymousProfile(): string;
     public function getIntergroupPosition(): int;
     public function getIntergroupPositionRotation(): string;
-    public function getHomeGroup(): mixed;
+    public function getHomeGroup(): int;
     public function isGSR(): bool;
     public function getMeetingPO(): mixed;
     public function getPersonalEmail(): string;

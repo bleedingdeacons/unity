@@ -20,7 +20,7 @@ class Member implements MemberInterface
     private string $anonymousProfile;
     private int $intergroupPosition;
     private string $intergroupPositionRotation;
-    private mixed $homeGroup;
+    private int $homeGroup;
     private bool $isGSR;
     private mixed $meetingPO;
     private string $personalEmail;
@@ -28,7 +28,7 @@ class Member implements MemberInterface
 
     /**
      * Member constructor
-     * 
+     *
      * @param int $id Post ID
      * @param string $anonymousName Anonymous name
      * @param string $privateName Private name
@@ -38,7 +38,7 @@ class Member implements MemberInterface
      * @param string $anonymousProfile Anonymous profile text
      * @param int $intergroupPosition Intergroup position ID
      * @param string $intergroupPositionRotation Intergroup position rotation info
-     * @param mixed $homeGroup Home group reference
+     * @param int $homeGroup Home group ID
      * @param bool $isGSR GSR flag
      * @param mixed $meetingPO Meeting PO reference
      * @param string $personalEmail Personal email address
@@ -54,9 +54,9 @@ class Member implements MemberInterface
         string $anonymousProfile = '',
         int $intergroupPosition = 0,
         string $intergroupPositionRotation = '',
-        mixed $homeGroup = null,
+        int $homeGroup = 0,
         bool $isGSR = false,
-        mixed $meetingPO = null,
+        mixed $meetingPO = null, // Need to removed
         string $personalEmail = '',
         string $mobileNumber = ''
     ) {
@@ -121,7 +121,7 @@ class Member implements MemberInterface
         return $this->intergroupPositionRotation;
     }
 
-    public function getHomeGroup(): mixed
+    public function getHomeGroup(): int
     {
         return $this->homeGroup;
     }

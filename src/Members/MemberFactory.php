@@ -16,12 +16,22 @@ class MemberFactory implements MemberFactoryInterface
 {
     /**
      * Create a new Member instance from a WordPress post ID
-     * 
+     *
      * @param int $id WordPress post ID
      * @return MemberInterface
      */
     public function createFromSource(int $id): MemberInterface
     {
+        $homeGroupField = get_field(MemberConstants::FIELD_HOME_GROUP, $id);
+        $homeGroupId = 0;
+
+        if (is_array($homeGroupField) && !empty($homeGroupField)) {
+            // ACF relationship field returns array of post IDs
+            $homeGroupId = (int) $homeGroupField[0];
+        } elseif (is_numeric($homeGroupField)) {
+            $homeGroupId = (int) $homeGroupField;
+        }
+
         return new Member(
             $id,
             get_field(MemberConstants::FIELD_ANONYMOUS_NAME, $id) ?? '',
@@ -32,7 +42,7 @@ class MemberFactory implements MemberFactoryInterface
             get_field(MemberConstants::FIELD_ANONYMOUS_PROFILE, $id) ?? '',
             (int) (get_field(MemberConstants::FIELD_INTERGROUP_POSITION, $id) ?? 0),
             get_field(MemberConstants::FIELD_INTERGROUP_POSITION_ROTATION, $id) ?? '',
-            get_field(MemberConstants::FIELD_HOME_GROUP, $id) ?? null,
+            $homeGroupId,
             (bool) (get_field(MemberConstants::FIELD_HOMEGROUP_GSR, $id) ?? false),
             get_field(MemberConstants::FIELD_MEETING_PO, $id) ?? null,
             get_field(MemberConstants::FIELD_PERSONAL_EMAIL, $id) ?? '',
