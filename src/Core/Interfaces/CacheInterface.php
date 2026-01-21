@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Unity\Common\Interfaces;
+namespace Unity\Core\Interfaces;
 
 /**
  * Interface CacheInterface

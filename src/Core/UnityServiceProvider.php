@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Unity\Core;
 
-use Unity\Common\Interfaces\CacheInterface;
-use Unity\Common\WordPressCache;
 use Unity\Contact\ContactFactory;
 use Unity\Contact\Interfaces\ContactFactoryInterface;
+use Unity\Core\Interfaces\CacheInterface;
 use Unity\Groups\GroupChangeTracker;
 use Unity\Groups\GroupFactory;
 use Unity\Groups\GroupRepository;
@@ -15,7 +14,6 @@ use Unity\Groups\GroupViewFactory;
 use Unity\Groups\Interfaces\GroupFactoryInterface;
 use Unity\Groups\Interfaces\GroupRepositoryInterface;
 use Unity\Groups\Interfaces\GroupViewFactoryInterface;
-use Unity\Intergroup\IntergroupManager;
 use Unity\Locations\Interfaces\LocationFactoryInterface;
 use Unity\Locations\Interfaces\LocationRepositoryInterface;
 use Unity\Locations\LocationFactory;
@@ -37,7 +35,7 @@ use Unity\Positions\PositionViewFactory;
 
 /**
  * Class UnityServiceProvider
- * 
+ *
  * Registers all plugin services
  */
 class UnityServiceProvider
@@ -132,13 +130,6 @@ class UnityServiceProvider
             return new GroupViewFactory(
                 $c->get(GroupRepositoryInterface::class),
                 $c->get(MeetingRepositoryInterface::class)
-            );
-        });
-
-        // Register Intergroup Manager
-        $container->register(IntergroupManager::class, function (DependencyContainer $c) {
-            return new IntergroupManager(
-                $c->get(PositionViewFactoryInterface::class)
             );
         });
 

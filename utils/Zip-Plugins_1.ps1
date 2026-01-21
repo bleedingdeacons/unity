@@ -16,6 +16,7 @@ if (-not [string]::IsNullOrWhiteSpace($QuickSelect)) {
         "t" { $PluginNames = @("tsml-for-unity") }
         "a" { $PluginNames = @("amber") }
         "tr" { $PluginNames = @("trumpet") }
+		"uta" { $PluginNames = @("unity", "tsml-for-unity", "amber") }
         "uit" { $PluginNames = @("unity", "integrity", "tsml-for-unity") }
         "all" { $PluginNames = @("unity", "integrity", "tsml-for-unity", "amber", "trumpet") }
         default {

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Unity;
 
-use Unity\Common\Interfaces\CacheInterface;
-use Unity\Core\UnityServiceProvider;
+use RuntimeException;
 use Unity\Core\DependencyContainer;
+use Unity\Core\Interfaces\CacheInterface;
+use Unity\Core\UnityServiceProvider;
 use Unity\Groups\GroupChangeTracker;
 use Unity\Groups\Interfaces\GroupFactoryInterface;
 use Unity\Groups\Interfaces\GroupRepositoryInterface;
 use Unity\Groups\Interfaces\GroupViewFactoryInterface;
-use Unity\Intergroup\IntergroupManager;
 use Unity\Meetings\Interfaces\MeetingFactoryInterface;
 use Unity\Meetings\Interfaces\MeetingRepositoryInterface;
 use Unity\Members\Interfaces\MemberFactoryInterface;
@@ -19,7 +19,6 @@ use Unity\Members\Interfaces\MemberRepositoryInterface;
 use Unity\Positions\Interfaces\PositionFactoryInterface;
 use Unity\Positions\Interfaces\PositionRepositoryInterface;
 use Unity\Positions\Interfaces\PositionViewFactoryInterface;
-use RuntimeException;
 use function register_deactivation_hook;
 
 /**
@@ -77,7 +76,6 @@ class Plugin
         self::$container->get(MemberFactoryInterface::class);
         self::$container->get(MemberRepositoryInterface::class);
         self::$container->get(PositionViewFactoryInterface::class);
-        self::$container->get(IntergroupManager::class);
     }
 
     /**

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Unity\Intergroup;
 
-use Unity\Common\Functions;
+use Amber\Common\Functions;
+use Exception;
 use Unity\Configuration\UnityConfiguration;
 use Unity\Configuration\UnityFields;
 use Unity\Positions\Interfaces\PositionViewFactoryInterface;
-use Exception;
 use function add_action;
 use function add_post_meta;
 use function add_shortcode;

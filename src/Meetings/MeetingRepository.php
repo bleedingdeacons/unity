@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Unity\Meetings;
 
-use Unity\Common\Interfaces\CacheInterface;
 use Unity\Core\DummyImplementationException;
+use Unity\Core\Interfaces\CacheInterface;
 use Unity\Meetings\Interfaces\MeetingFactoryInterface;
 use Unity\Meetings\Interfaces\MeetingInterface;
 use Unity\Meetings\Interfaces\MeetingRepositoryInterface;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Unity\Common;
+namespace Unity\Core;
 
-use Unity\Common\Interfaces\CacheInterface;
+use Unity\Core\Interfaces\CacheInterface;
 use function wp_cache_delete;
 use function wp_cache_flush;
 use function wp_cache_get;

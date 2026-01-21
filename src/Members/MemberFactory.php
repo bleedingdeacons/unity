@@ -7,8 +7,6 @@ namespace Unity\Members;
 use Unity\Core\DummyImplementationException;
 use Unity\Members\Interfaces\MemberFactoryInterface;
 use Unity\Members\Interfaces\MemberInterface;
-use function get_field;
-use function get_the_title;
 
 /**
  * Member Factory Implementation
