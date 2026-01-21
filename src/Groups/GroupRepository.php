@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Unity\Groups;
 
+use Exception;
+use TsmlForUnity\TsmlGroupFields;
 use Unity\Groups\Interfaces\GroupFactoryInterface;
 use Unity\Groups\Interfaces\GroupInterface;
 use Unity\Groups\Interfaces\GroupRepositoryInterface;
-use Exception;
 use function get_posts;
 use function is_wp_error;
 use function update_field;
@@ -46,7 +47,7 @@ class GroupRepository implements GroupRepositoryInterface
     public function findAll(array $args = []): array
     {
         $defaultArgs = [
-            'post_type' => GroupFields::GROUP_POST_TYPE,
+            'post_type' => TsmlGroupFields::GROUP_POST_TYPE,
             'posts_per_page' => -1,
             'post_status' => 'publish',
         ];
@@ -81,7 +82,7 @@ class GroupRepository implements GroupRepositoryInterface
         }
 
         $postData = [
-            'post_type' => GroupFields::GROUP_POST_TYPE,
+            'post_type' => TsmlGroupFields::GROUP_POST_TYPE,
             'post_status' => 'publish',
             'post_title' => $group->getTitle(),
             'post_content' => '',
@@ -96,9 +97,9 @@ class GroupRepository implements GroupRepositoryInterface
         $postId = $result;
 
         if (function_exists('update_field')) {
-            update_field(GroupFields::TITLE, $group->getTitle(), $postId);
-            update_field(GroupFields::GENERIC_EMAIL, $group->getEmail(), $postId);
-            update_field(GroupFields::MEETING, $group->getMeetingIds(), $postId);
+            update_field(TsmlGroupFields::TITLE, $group->getTitle(), $postId);
+            update_field(TsmlGroupFields::GENERIC_EMAIL, $group->getEmail(), $postId);
+            update_field(TsmlGroupFields::MEETING, $group->getMeetingIds(), $postId);
         }
 
         return true;
@@ -122,7 +123,7 @@ class GroupRepository implements GroupRepositoryInterface
         $postData = [
             'ID' => $postId,
             'post_title' => $group->getTitle(),
-            'post_type' => GroupFields::GROUP_POST_TYPE,
+            'post_type' => TsmlGroupFields::GROUP_POST_TYPE,
             'post_status' => 'publish',
         ];
 
@@ -133,9 +134,9 @@ class GroupRepository implements GroupRepositoryInterface
         }
 
         if (function_exists('update_field')) {
-            update_field(GroupFields::TITLE, $group->getTitle(), $postId);
-            update_field(GroupFields::GENERIC_EMAIL, $group->getEmail(), $postId);
-            update_field(GroupFields::MEETING, $group->getMeetingIds(), $postId);
+            update_field(TsmlGroupFields::TITLE, $group->getTitle(), $postId);
+            update_field(TsmlGroupFields::GENERIC_EMAIL, $group->getEmail(), $postId);
+            update_field(TsmlGroupFields::MEETING, $group->getMeetingIds(), $postId);
         }
 
         return true;

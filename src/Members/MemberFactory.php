@@ -22,7 +22,7 @@ class MemberFactory implements MemberFactoryInterface
      */
     public function createFromSource(int $id): MemberInterface
     {
-        $homeGroupField = get_field(MemberConstants::FIELD_HOME_GROUP, $id);
+        $homeGroupField = get_field(MemberFields::FIELD_HOME_GROUP, $id);
         $homeGroupId = 0;
 
         if (is_array($homeGroupField) && !empty($homeGroupField)) {
@@ -34,19 +34,19 @@ class MemberFactory implements MemberFactoryInterface
 
         return new Member(
             $id,
-            get_field(MemberConstants::FIELD_ANONYMOUS_NAME, $id) ?? '',
+            get_field(MemberFields::FIELD_ANONYMOUS_NAME, $id) ?? '',
             get_the_title($id) ?? '',
-            get_field(MemberConstants::FIELD_PERSONAL_EMAIL, $id) ?? '',
-            (bool) (get_field(MemberConstants::FIELD_SHOW_ANONYMOUS_NAME, $id) ?? false),
-            (bool) (get_field(MemberConstants::FIELD_SHOW_MEMBER_PROFILE, $id) ?? false),
-            get_field(MemberConstants::FIELD_ANONYMOUS_PROFILE, $id) ?? '',
-            (int) (get_field(MemberConstants::FIELD_INTERGROUP_POSITION, $id) ?? 0),
-            get_field(MemberConstants::FIELD_INTERGROUP_POSITION_ROTATION, $id) ?? '',
+            get_field(MemberFields::FIELD_PERSONAL_EMAIL, $id) ?? '',
+            (bool) (get_field(MemberFields::FIELD_SHOW_ANONYMOUS_NAME, $id) ?? false),
+            (bool) (get_field(MemberFields::FIELD_SHOW_MEMBER_PROFILE, $id) ?? false),
+            get_field(MemberFields::FIELD_ANONYMOUS_PROFILE, $id) ?? '',
+            (int) (get_field(MemberFields::FIELD_INTERGROUP_POSITION, $id) ?? 0),
+            get_field(MemberFields::FIELD_INTERGROUP_POSITION_ROTATION, $id) ?? '',
             $homeGroupId,
-            (bool) (get_field(MemberConstants::FIELD_HOMEGROUP_GSR, $id) ?? false),
-            get_field(MemberConstants::FIELD_MEETING_PO, $id) ?? null,
-            get_field(MemberConstants::FIELD_PERSONAL_EMAIL, $id) ?? '',
-            get_field(MemberConstants::FIELD_MOBILE_NUMBER, $id) ?? ''
+            (bool) (get_field(MemberFields::FIELD_HOMEGROUP_GSR, $id) ?? false),
+            get_field(MemberFields::FIELD_MEETING_PO, $id) ?? null,
+            get_field(MemberFields::FIELD_PERSONAL_EMAIL, $id) ?? '',
+            get_field(MemberFields::FIELD_MOBILE_NUMBER, $id) ?? ''
         );
     }
 }

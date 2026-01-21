@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Groups;
 
+use TsmlForUnity\TsmlGroupFields;
 use Unity\Groups\Interfaces\GroupFactoryInterface;
 use Unity\Groups\Interfaces\GroupInterface;
 use function get_fields;
@@ -22,7 +23,7 @@ class GroupFactory implements GroupFactoryInterface
     {
         $post = get_post($sourceId);
         
-        if (!$post || $post->post_type !== GroupFields::GROUP_POST_TYPE) {
+        if (!$post || $post->post_type !== TsmlGroupFields::GROUP_POST_TYPE) {
             return null;
         }
         
@@ -33,22 +34,22 @@ class GroupFactory implements GroupFactoryInterface
         }
     
         $acfData = array_merge([
-            GroupFields::TITLE => '',
-            GroupFields::GENERIC_EMAIL => '',
-            GroupFields::MEETING => [],
+            TsmlGroupFields::TITLE => '',
+            TsmlGroupFields::GENERIC_EMAIL => '',
+            TsmlGroupFields::MEETING => [],
         ], $acfData);
 
         $link = get_permalink($sourceId) ?: '';
 
-        $meetingIds = $acfData[GroupFields::MEETING];
+        $meetingIds = $acfData[TsmlGroupFields::MEETING];
         if (!is_array($meetingIds)) {
             $meetingIds = empty($meetingIds) ? [] : [$meetingIds];
         }
         
         return new Group(
             $sourceId,
-            (string) $acfData[GroupFields::TITLE],
-            (string) $acfData[GroupFields::GENERIC_EMAIL],
+            (string) $acfData[TsmlGroupFields::TITLE],
+            (string) $acfData[TsmlGroupFields::GENERIC_EMAIL],
             $meetingIds,
             $link
         );
