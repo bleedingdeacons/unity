@@ -6,7 +6,7 @@ namespace Unity\Positions;
 
 use Unity\Members\Interfaces\MemberInterface;
 use Unity\Members\Interfaces\MemberRepositoryInterface;
-use Unity\Members\MemberFields;
+use Unity\Members\MemberConstants;
 use Unity\Positions\Interfaces\PositionRepositoryInterface;
 use Unity\Positions\Interfaces\PositionViewFactoryInterface;
 use Unity\Positions\Interfaces\PositionViewInterface;
@@ -51,7 +51,7 @@ class PositionViewFactory implements PositionViewFactoryInterface
         $members = $this->memberRepository->findAll([
             'meta_query' => [
                 [
-                    'key' => MemberFields::FIELD_INTERGROUP_POSITION,
+                    'key' => MemberConstants::FIELD_INTERGROUP_POSITION,
                     'value' => $value,
                     'compare' => '='
                 ]

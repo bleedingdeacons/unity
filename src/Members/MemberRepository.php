@@ -39,7 +39,7 @@ class MemberRepository implements MemberRepositoryInterface
     {
         $post = get_post($id);
 
-        if (!$post || $post->post_type !== MemberFields::MEMBER_POST_TYPE) {
+        if (!$post || $post->post_type !== MemberConstants::MEMBER_POST_TYPE) {
             return null;
         }
 
@@ -55,7 +55,7 @@ class MemberRepository implements MemberRepositoryInterface
     public function findAll(array $args = []): array
     {
         $defaultArgs = [
-            'post_type' => MemberFields::MEMBER_POST_TYPE,
+            'post_type' => MemberConstants::MEMBER_POST_TYPE,
             'numberposts' => -1,
             'post_status' => 'publish'
         ];
@@ -85,7 +85,7 @@ class MemberRepository implements MemberRepositoryInterface
     public function count(array $args = []): int
     {
         $defaultArgs = [
-            'post_type' => MemberFields::MEMBER_POST_TYPE,
+            'post_type' => MemberConstants::MEMBER_POST_TYPE,
             'numberposts' => -1,
             'post_status' => 'publish',
             'fields' => 'ids'
@@ -107,21 +107,21 @@ class MemberRepository implements MemberRepositoryInterface
     {
         $id = $member->getId();
 
-        if (!update_field(MemberFields::FIELD_ANONYMOUS_NAME, $member->getAnonymousName(), $id)) {
+        if (!update_field(MemberConstants::FIELD_ANONYMOUS_NAME, $member->getAnonymousName(), $id)) {
             return false;
         }
 
-        update_field(MemberFields::FIELD_PERSONAL_EMAIL, $member->getEmail(), $id);
-        update_field(MemberFields::FIELD_SHOW_ANONYMOUS_NAME, $member->showAnonymousName(), $id);
-        update_field(MemberFields::FIELD_SHOW_MEMBER_PROFILE, $member->showMemberProfile(), $id);
-        update_field(MemberFields::FIELD_ANONYMOUS_PROFILE, $member->getAnonymousProfile(), $id);
-        update_field(MemberFields::FIELD_INTERGROUP_POSITION, $member->getIntergroupPosition(), $id);
-        update_field(MemberFields::FIELD_INTERGROUP_POSITION_ROTATION, $member->getIntergroupPositionRotation(), $id);
-        update_field(MemberFields::FIELD_HOME_GROUP, $member->getHomeGroup(), $id);
-        update_field(MemberFields::FIELD_HOMEGROUP_GSR, $member->isGSR(), $id);
-        update_field(MemberFields::FIELD_MEETING_PO, $member->getMeetingPO(), $id);
-        update_field(MemberFields::FIELD_PERSONAL_EMAIL, $member->getPersonalEmail(), $id);
-        update_field(MemberFields::FIELD_MOBILE_NUMBER, $member->getMobileNumber(), $id);
+        update_field(MemberConstants::FIELD_PERSONAL_EMAIL, $member->getEmail(), $id);
+        update_field(MemberConstants::FIELD_SHOW_ANONYMOUS_NAME, $member->showAnonymousName(), $id);
+        update_field(MemberConstants::FIELD_SHOW_MEMBER_PROFILE, $member->showMemberProfile(), $id);
+        update_field(MemberConstants::FIELD_ANONYMOUS_PROFILE, $member->getAnonymousProfile(), $id);
+        update_field(MemberConstants::FIELD_INTERGROUP_POSITION, $member->getIntergroupPosition(), $id);
+        update_field(MemberConstants::FIELD_INTERGROUP_POSITION_ROTATION, $member->getIntergroupPositionRotation(), $id);
+        update_field(MemberConstants::FIELD_HOME_GROUP, $member->getHomeGroup(), $id);
+        update_field(MemberConstants::FIELD_HOMEGROUP_GSR, $member->isGSR(), $id);
+        update_field(MemberConstants::FIELD_MEETING_PO, $member->getMeetingPO(), $id);
+        update_field(MemberConstants::FIELD_PERSONAL_EMAIL, $member->getPersonalEmail(), $id);
+        update_field(MemberConstants::FIELD_MOBILE_NUMBER, $member->getMobileNumber(), $id);
 
         return true;
     }

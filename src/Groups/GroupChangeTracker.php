@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Unity\Groups;
 
-use Exception;
-use TsmlForUnity\TsmlGroupFields;
 use Unity\Groups\Interfaces\GroupInterface;
 use Unity\Groups\Interfaces\GroupRepositoryInterface;
+use Exception;
 use function add_action;
 use function do_action;
 use function get_post;
@@ -47,7 +46,7 @@ class GroupChangeTracker
      */
     public function captureOriginalGroup(int $postId): void
     {
-        if (get_post_type($postId) !== TsmlGroupFields::GROUP_POST_TYPE) {
+        if (get_post_type($postId) !== GroupFields::GROUP_POST_TYPE) {
             return;
         }
 
@@ -70,7 +69,7 @@ class GroupChangeTracker
      */
     public function checkForChanges(int $postId): void
     {
-        if (get_post_type($postId) !== TsmlGroupFields::GROUP_POST_TYPE) {
+        if (get_post_type($postId) !== GroupFields::GROUP_POST_TYPE) {
             return;
         }
 
