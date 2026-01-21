@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Locations;
 
-use Unity\Locations\Interfaces\LocationFactoryInterface;
+use Unity\Core\DummyImplementationException;
 use Unity\Locations\Interfaces\LocationInterface;
 use Unity\Locations\Interfaces\LocationRepositoryInterface;
 use Exception;
@@ -34,97 +34,68 @@ class LocationRepository implements LocationRepositoryInterface
      */
     public function __construct(LocationFactoryInterface $factory)
     {
-        $this->factory = $factory;
     }
 
     /**
      * {@inheritdoc}
+     * @throws DummyImplementationException
      */
     public function findById(int $id): ?LocationInterface
     {
-        return $this->factory->createFromSource($id);
+        throw new DummyImplementationException(LocationRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
+     * @throws DummyImplementationException
      */
     public function findAll(array $args = []): array
     {
-        $defaultArgs = [
-            'post_type' => self::LOCATION_POST_TYPE,
-            'posts_per_page' => -1,
-            'post_status' => 'publish',
-            'orderby' => 'title',
-            'order' => 'ASC',
-        ];
-
-        $queryArgs = wp_parse_args($args, $defaultArgs);
-        $posts = get_posts($queryArgs);
-        $locations = [];
-
-        foreach ($posts as $post) {
-            $location = $this->factory->createFromSource($post->ID);
-            if ($location !== null) {
-                $locations[] = $location;
-            }
-        }
-
-        return $locations;
+        throw new DummyImplementationException(LocationRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
+     * @throws DummyImplementationException
      */
     public function findByCity(string $city): array
     {
-        return $this->findAll([
-            'meta_query' => [
-                [
-                    'key' => 'city',
-                    'value' => $city,
-                    'compare' => '=',
-                ],
-            ],
-        ]);
+        throw new DummyImplementationException(LocationRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
+     * @throws DummyImplementationException
      */
     public function findByRegion(string $region): array
     {
-        return $this->findAll([
-            'tax_query' => [
-                [
-                    'taxonomy' => 'tsml_region',
-                    'field' => 'name',
-                    'terms' => $region,
-                ],
-            ],
-        ]);
+        throw new DummyImplementationException(LocationRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
+     * @throws DummyImplementationException
      */
     public function save(LocationInterface $location): bool
     {
-        throw new Exception('Save is not implemented - locations are managed by the TSML plugin');
+        throw new DummyImplementationException(LocationRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
+     * @throws DummyImplementationException
      */
     public function update(LocationInterface $location): bool
     {
-        throw new Exception('Update is not implemented - locations are managed by the TSML plugin');
+        throw new DummyImplementationException(LocationRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
+     * @throws DummyImplementationException
      */
     public function delete(int $id): bool
     {
-        throw new Exception('Delete is not implemented - locations are managed by the TSML plugin');
+        throw new DummyImplementationException(LocationRepositoryInterface::class);
     }
 }

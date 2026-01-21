@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Members;
 
+use Unity\Core\DummyImplementationException;
 use Unity\Members\Interfaces\MemberFactoryInterface;
 use Unity\Members\Interfaces\MemberInterface;
 use Unity\Members\Interfaces\MemberRepositoryInterface;
@@ -26,7 +27,6 @@ class MemberRepository implements MemberRepositoryInterface
      */
     public function __construct(MemberFactoryInterface $memberFactory)
     {
-        $this->memberFactory = $memberFactory;
     }
 
     /**
@@ -34,16 +34,11 @@ class MemberRepository implements MemberRepositoryInterface
      *
      * @param int $id
      * @return MemberInterface|null
+     * @throws DummyImplementationException
      */
     public function find(int $id): ?MemberInterface
     {
-        $post = get_post($id);
-
-        if (!$post || $post->post_type !== MemberConstants::MEMBER_POST_TYPE) {
-            return null;
-        }
-
-        return $this->memberFactory->createFromSource($id);
+        throw new DummyImplementationException(MemberRepositoryInterface::class);
     }
 
     /**
@@ -51,29 +46,11 @@ class MemberRepository implements MemberRepositoryInterface
      *
      * @param array $args Optional get_posts arguments
      * @return array Array of MemberInterface objects
+     * @throws DummyImplementationException
      */
     public function findAll(array $args = []): array
     {
-        $defaultArgs = [
-            'post_type' => MemberConstants::MEMBER_POST_TYPE,
-            'numberposts' => -1,
-            'post_status' => 'publish'
-        ];
-
-        $queryArgs = array_merge($defaultArgs, $args);
-        $posts = get_posts($queryArgs);
-        $members = [];
-
-        if (!empty($posts)) {
-            foreach ($posts as $post) {
-                $member = $this->find($post->ID);
-                if ($member) {
-                    $members[] = $member;
-                }
-            }
-        }
-
-        return $members;
+        throw new DummyImplementationException(MemberRepositoryInterface::class);
     }
 
     /**
@@ -81,20 +58,12 @@ class MemberRepository implements MemberRepositoryInterface
      *
      * @param array $args Query arguments
      * @return int Total count
+     * @throws DummyImplementationException
      */
     public function count(array $args = []): int
     {
-        $defaultArgs = [
-            'post_type' => MemberConstants::MEMBER_POST_TYPE,
-            'numberposts' => -1,
-            'post_status' => 'publish',
-            'fields' => 'ids'
-        ];
+        throw new DummyImplementationException(MemberRepositoryInterface::class);
 
-        $queryArgs = array_merge($defaultArgs, $args);
-        $posts = get_posts($queryArgs);
-
-        return is_array($posts) ? count($posts) : 0;
     }
 
     /**
@@ -102,28 +71,11 @@ class MemberRepository implements MemberRepositoryInterface
      *
      * @param MemberInterface $member
      * @return bool
+     * @throws DummyImplementationException
      */
     public function save(MemberInterface $member): bool
     {
-        $id = $member->getId();
-
-        if (!update_field(MemberConstants::FIELD_ANONYMOUS_NAME, $member->getAnonymousName(), $id)) {
-            return false;
-        }
-
-        update_field(MemberConstants::FIELD_PERSONAL_EMAIL, $member->getEmail(), $id);
-        update_field(MemberConstants::FIELD_SHOW_ANONYMOUS_NAME, $member->showAnonymousName(), $id);
-        update_field(MemberConstants::FIELD_SHOW_MEMBER_PROFILE, $member->showMemberProfile(), $id);
-        update_field(MemberConstants::FIELD_ANONYMOUS_PROFILE, $member->getAnonymousProfile(), $id);
-        update_field(MemberConstants::FIELD_INTERGROUP_POSITION, $member->getIntergroupPosition(), $id);
-        update_field(MemberConstants::FIELD_INTERGROUP_POSITION_ROTATION, $member->getIntergroupPositionRotation(), $id);
-        update_field(MemberConstants::FIELD_HOME_GROUP, $member->getHomeGroup(), $id);
-        update_field(MemberConstants::FIELD_HOMEGROUP_GSR, $member->isGSR(), $id);
-        update_field(MemberConstants::FIELD_MEETING_PO, $member->getMeetingPO(), $id);
-        update_field(MemberConstants::FIELD_PERSONAL_EMAIL, $member->getPersonalEmail(), $id);
-        update_field(MemberConstants::FIELD_MOBILE_NUMBER, $member->getMobileNumber(), $id);
-
-        return true;
+        throw new DummyImplementationException(MemberRepositoryInterface::class);
     }
 
     /**
@@ -131,9 +83,10 @@ class MemberRepository implements MemberRepositoryInterface
      *
      * @param int $id
      * @return bool
+     * @throws DummyImplementationException
      */
     public function delete(int $id): bool
     {
-        return (bool) wp_delete_post($id, true);
+        throw new DummyImplementationException(MemberRepositoryInterface::class);
     }
 }

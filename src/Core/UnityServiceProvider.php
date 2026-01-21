@@ -58,11 +58,6 @@ class UnityServiceProvider
             return new ContactFactory();
         });
 
-//        // Register Meeting Factory
-//        $container->register(MeetingFactoryInterface::class, function () {
-//            return new TsmlMeetingFactory();
-//        });
-
         // Register Meeting Repository
         $container->register(MeetingRepositoryInterface::class, function (DependencyContainer $c) {
             return new MeetingRepository(
