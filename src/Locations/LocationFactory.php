@@ -22,6 +22,7 @@ class LocationFactory implements LocationFactoryInterface
 {
     /**
      * {@inheritdoc}
+     * @throws DummyImplementationException
      */
     public function createFromSource(int $sourceId): ?LocationInterface
     {

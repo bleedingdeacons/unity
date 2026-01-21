@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Unity\Locations;
 
 use Unity\Core\DummyImplementationException;
+use Unity\Locations\Interfaces\LocationFactoryInterface;
 use Unity\Locations\Interfaces\LocationInterface;
 use Unity\Locations\Interfaces\LocationRepositoryInterface;
 use Exception;

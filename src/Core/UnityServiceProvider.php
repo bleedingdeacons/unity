@@ -18,9 +18,11 @@ use Unity\Groups\Interfaces\GroupViewFactoryInterface;
 use Unity\Intergroup\IntergroupManager;
 use Unity\Locations\Interfaces\LocationFactoryInterface;
 use Unity\Locations\Interfaces\LocationRepositoryInterface;
+use Unity\Locations\LocationFactory;
 use Unity\Locations\LocationRepository;
 use Unity\Meetings\Interfaces\MeetingFactoryInterface;
 use Unity\Meetings\Interfaces\MeetingRepositoryInterface;
+use Unity\Meetings\MeetingFactory;
 use Unity\Meetings\MeetingRepository;
 use Unity\Members\Interfaces\MemberFactoryInterface;
 use Unity\Members\Interfaces\MemberRepositoryInterface;
@@ -56,6 +58,14 @@ class UnityServiceProvider
         // Register Contact Factory
         $container->register(ContactFactoryInterface::class, function () {
             return new ContactFactory();
+        });
+
+        // Register Meeting Factory
+        $container->register(MeetingFactoryInterface::class, function (DependencyContainer $c) {
+            return new MeetingFactory(
+                $c->get(ContactFactoryInterface::class),
+                $c->get(LocationRepositoryInterface::class)
+            );
         });
 
         // Register Meeting Repository
@@ -130,6 +140,11 @@ class UnityServiceProvider
             return new IntergroupManager(
                 $c->get(PositionViewFactoryInterface::class)
             );
+        });
+
+        // Register Location Factory
+        $container->register(LocationFactoryInterface::class, function () {
+            return new LocationFactory();
         });
 
         // Register Locations Repository (requires LocationFactoryInterface to be registered by TSML-for-Unity)
