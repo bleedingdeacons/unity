@@ -60,30 +60,34 @@ class UnityServiceProvider
 
         // Register Meeting Factory
         $container->register(MeetingFactoryInterface::class, function (DependencyContainer $c) {
-            return new MeetingFactory(
-                $c->get(ContactFactoryInterface::class),
-                $c->get(LocationRepositoryInterface::class)
-            );
+//            return new MeetingFactory(
+//                $c->get(ContactFactoryInterface::class),
+//                $c->get(LocationRepositoryInterface::class)
+//            );
+            throw new DependencyNotRegisteredException(MeetingFactoryInterface::class);
         });
 
         // Register Meeting Repository
         $container->register(MeetingRepositoryInterface::class, function (DependencyContainer $c) {
-            return new MeetingRepository(
-                $c->get(MeetingFactoryInterface::class),
-                $c->get(CacheInterface::class)
-            );
+//            return new MeetingRepository(
+//                $c->get(MeetingFactoryInterface::class),
+//                $c->get(CacheInterface::class)
+//            );
+            throw new DependencyNotRegisteredException(MeetingRepositoryInterface::class);
         });
 
         // Register Group Factory
         $container->register(GroupFactoryInterface::class, function () {
-            return new GroupFactory();
+//            return new GroupFactory();
+            throw new DependencyNotRegisteredException(GroupFactoryInterface::class);
         });
 
         // Register Group Repository
         $container->register(GroupRepositoryInterface::class, function (DependencyContainer $c) {
-            return new GroupRepository(
-                $c->get(GroupFactoryInterface::class)
-            );
+//            return new GroupRepository(
+//                $c->get(GroupFactoryInterface::class)
+//            );
+            throw new DependencyNotRegisteredException(GroupRepositoryInterface::class);
         });
 
         // Register GroupChangeTracker
@@ -95,26 +99,30 @@ class UnityServiceProvider
 
         // Register Position Factory
         $container->register(PositionFactoryInterface::class, function () {
-            return new PositionFactory();
+//            return new PositionFactory();
+            throw new DependencyNotRegisteredException(PositionFactoryInterface::class);
         });
 
         // Register Position Repository
         $container->register(PositionRepositoryInterface::class, function (DependencyContainer $c) {
-            return new PositionRepository(
-                $c->get(PositionFactoryInterface::class)
-            );
+//            return new PositionRepository(
+//                $c->get(PositionFactoryInterface::class)
+//            );
+            throw new DependencyNotRegisteredException(PositionRepositoryInterface::class);
         });
 
         // Register Member Factory
         $container->register(MemberFactoryInterface::class, function () {
-            return new MemberFactory();
+//            return new MemberFactory();
+            throw new DependencyNotRegisteredException(MemberFactoryInterface::class);
         });
 
         // Register Member Repository
         $container->register(MemberRepositoryInterface::class, function (DependencyContainer $c) {
-            return new MemberRepository(
-                $c->get(MemberFactoryInterface::class)
-            );
+//            return new MemberRepository(
+//                $c->get(MemberFactoryInterface::class)
+//            );
+            throw new DependencyNotRegisteredException(MemberRepositoryInterface::class);
         });
 
         // Register Position View Factory
@@ -123,6 +131,7 @@ class UnityServiceProvider
                 $c->get(PositionRepositoryInterface::class),
                 $c->get(MemberRepositoryInterface::class)
             );
+//            throw new DependencyNotRegisteredException(PositionViewFactoryInterface::class);
         });
 
         // Register Group View Factory
@@ -131,18 +140,21 @@ class UnityServiceProvider
                 $c->get(GroupRepositoryInterface::class),
                 $c->get(MeetingRepositoryInterface::class)
             );
+//            throw new DependencyNotRegisteredException(GroupViewFactoryInterface::class);
         });
 
         // Register Location Factory
         $container->register(LocationFactoryInterface::class, function () {
-            return new LocationFactory();
+//            return new LocationFactory();
+            throw new DependencyNotRegisteredException(LocationFactoryInterface::class);
         });
 
         // Register Locations Repository (requires LocationFactoryInterface to be registered by TSML-for-Unity)
         $container->register(LocationRepositoryInterface::class, function (DependencyContainer $c) {
-            return new LocationRepository(
-                $c->get(LocationFactoryInterface::class)
-            );
+//            return new LocationRepository(
+//                $c->get(LocationFactoryInterface::class)
+//            );
+            throw new DependencyNotRegisteredException(LocationRepositoryInterface::class);
         });
     }
 }

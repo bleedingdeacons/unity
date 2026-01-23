@@ -8,10 +8,10 @@ use RuntimeException;
 
 /**
  * Class DependencyContainer
- * 
+ *
  * Simple dependency injection container
  */
-class DependencyContainer
+class DependencyContainer implements ContainerInterface
 {
     /**
      * @var array<string, mixed>
@@ -24,11 +24,7 @@ class DependencyContainer
     private array $factories = [];
 
     /**
-     * Register a service factory
-     *
-     * @param string $id Service identifier
-     * @param callable $factory Factory callable that creates the service
-     * @return void
+     * @inheritDoc
      */
     public function register(string $id, callable $factory): void
     {
@@ -36,11 +32,7 @@ class DependencyContainer
     }
 
     /**
-     * Get a service by identifier
-     *
-     * @param string $id Service identifier
-     * @return mixed The service instance
-     * @throws RuntimeException If service is not found
+     * @inheritDoc
      */
     public function get(string $id): mixed
     {
@@ -54,10 +46,7 @@ class DependencyContainer
     }
 
     /**
-     * Check if a service is registered
-     *
-     * @param string $id Service identifier
-     * @return bool
+     * @inheritDoc
      */
     public function has(string $id): bool
     {

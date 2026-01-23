@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Members;
 
-use Unity\Core\DummyImplementationException;
+use Unity\Core\DependencyNotRegisteredException;
 use Unity\Members\Interfaces\MemberFactoryInterface;
 use Unity\Members\Interfaces\MemberInterface;
 
@@ -18,10 +18,10 @@ class MemberFactory implements MemberFactoryInterface
      *
      * @param int $id WordPress post ID
      * @return MemberInterface
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function createFromSource(int $id): MemberInterface
     {
-        throw new DummyImplementationException(MemberFactoryInterface::class);
+        throw new DependencyNotRegisteredException(MemberFactoryInterface::class);
     }
 }

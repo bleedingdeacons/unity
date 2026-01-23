@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Members;
 
-use Unity\Core\DummyImplementationException;
+use Unity\Core\DependencyNotRegisteredException;
 use Unity\Members\Interfaces\MemberFactoryInterface;
 use Unity\Members\Interfaces\MemberInterface;
 use Unity\Members\Interfaces\MemberRepositoryInterface;
@@ -34,11 +34,11 @@ class MemberRepository implements MemberRepositoryInterface
      *
      * @param int $id
      * @return MemberInterface|null
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function find(int $id): ?MemberInterface
     {
-        throw new DummyImplementationException(MemberRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MemberRepositoryInterface::class);
     }
 
     /**
@@ -46,11 +46,11 @@ class MemberRepository implements MemberRepositoryInterface
      *
      * @param array $args Optional get_posts arguments
      * @return array Array of MemberInterface objects
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findAll(array $args = []): array
     {
-        throw new DummyImplementationException(MemberRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MemberRepositoryInterface::class);
     }
 
     /**
@@ -58,11 +58,11 @@ class MemberRepository implements MemberRepositoryInterface
      *
      * @param array $args Query arguments
      * @return int Total count
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function count(array $args = []): int
     {
-        throw new DummyImplementationException(MemberRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MemberRepositoryInterface::class);
 
     }
 
@@ -71,11 +71,11 @@ class MemberRepository implements MemberRepositoryInterface
      *
      * @param MemberInterface $member
      * @return bool
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function save(MemberInterface $member): bool
     {
-        throw new DummyImplementationException(MemberRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MemberRepositoryInterface::class);
     }
 
     /**
@@ -83,10 +83,10 @@ class MemberRepository implements MemberRepositoryInterface
      *
      * @param int $id
      * @return bool
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function delete(int $id): bool
     {
-        throw new DummyImplementationException(MemberRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MemberRepositoryInterface::class);
     }
 }

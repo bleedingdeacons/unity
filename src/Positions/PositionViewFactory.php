@@ -30,10 +30,7 @@ class PositionViewFactory implements PositionViewFactoryInterface
     public function __construct(
         PositionRepositoryInterface $positionRepository,
         MemberRepositoryInterface $memberRepository
-    ) {
-        $this->positionRepository = $positionRepository;
-        $this->memberRepository = $memberRepository;
-    }
+    ) { }
 
     /**
      * {@inheritdoc}

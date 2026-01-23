@@ -4,11 +4,11 @@ namespace Unity\Core;
 
 use Exception;
 
-class DummyImplementationException extends Exception {
+class DependencyNotRegisteredException extends Exception {
     private $className;
 
     public function __construct($className, $code = 0, Exception $previous = null) {
-        $message = "Attempt to use the Dummy Implementation";
+        $message = "Dependency not registered: $className";
         parent::__construct($message, $code, $previous);
         $this->className = $className;
     }

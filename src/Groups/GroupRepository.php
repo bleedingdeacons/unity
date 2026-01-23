@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Groups;
 
-use Unity\Core\DummyImplementationException;
+use Unity\Core\DependencyNotRegisteredException;
 use Unity\Groups\Interfaces\GroupFactoryInterface;
 use Unity\Groups\Interfaces\GroupInterface;
 use Unity\Groups\Interfaces\GroupRepositoryInterface;
@@ -34,38 +34,38 @@ class GroupRepository implements GroupRepositoryInterface
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findById(int $id): ?GroupInterface
     {
-        throw new DummyImplementationException(GroupRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(GroupRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findAll(array $args = []): array
     {
-        throw new DummyImplementationException(GroupRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(GroupRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function save(GroupInterface $group): bool
     {
-        throw new DummyImplementationException(GroupRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(GroupRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function update(GroupInterface $group): bool
     {
-        throw new DummyImplementationException(GroupRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(GroupRepositoryInterface::class);
     }
     
     /**

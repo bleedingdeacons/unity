@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Locations;
 
-use Unity\Core\DummyImplementationException;
+use Unity\Core\DependencyNotRegisteredException;
 use Unity\Locations\Interfaces\LocationFactoryInterface;
 use Unity\Locations\Interfaces\LocationInterface;
 use function get_permalink;
@@ -22,11 +22,11 @@ class LocationFactory implements LocationFactoryInterface
 {
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function createFromSource(int $sourceId): ?LocationInterface
     {
-        throw new DummyImplementationException(LocationFactoryInterface::class);
+        throw new DependencyNotRegisteredException(LocationFactoryInterface::class);
     }
 
 }

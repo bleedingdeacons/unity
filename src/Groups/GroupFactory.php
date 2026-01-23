@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Groups;
 
-use Unity\Core\DummyImplementationException;
+use Unity\Core\DependencyNotRegisteredException;
 use Unity\Groups\Interfaces\GroupFactoryInterface;
 use Unity\Groups\Interfaces\GroupInterface;
 use function get_fields;
@@ -21,6 +21,6 @@ class GroupFactory implements GroupFactoryInterface
      */
     public function createFromSource(int $sourceId): ?GroupInterface
     {
-        throw new DummyImplementationException(GroupFactoryInterface::class);
+        throw new DependencyNotRegisteredException(GroupFactoryInterface::class);
     }
 }

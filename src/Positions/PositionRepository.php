@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Positions;
 
-use Unity\Core\DummyImplementationException;
+use Unity\Core\DependencyNotRegisteredException;
 use Unity\Positions\Interfaces\PositionFactoryInterface;
 use Unity\Positions\Interfaces\PositionInterface;
 use Unity\Positions\Interfaces\PositionRepositoryInterface;
@@ -35,55 +35,55 @@ class PositionRepository implements PositionRepositoryInterface
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findById(int $id): ?PositionInterface
     {
-        throw new DummyImplementationException(PositionRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(PositionRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findAll(array $args = []): array
     {
-        throw new DummyImplementationException(PositionRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(PositionRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function count(array $args = []): int
     {
-        throw new DummyImplementationException(PositionRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(PositionRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function save(PositionInterface $position): bool
     {
-        throw new DummyImplementationException(PositionRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(PositionRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function update(PositionInterface $position): bool
     {
-        throw new DummyImplementationException(PositionRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(PositionRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function delete(int $id): bool
     {
-        throw new DummyImplementationException(PositionRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(PositionRepositoryInterface::class);
     }
 }

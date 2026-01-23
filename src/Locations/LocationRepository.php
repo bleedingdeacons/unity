@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Locations;
 
-use Unity\Core\DummyImplementationException;
+use Unity\Core\DependencyNotRegisteredException;
 use Unity\Locations\Interfaces\LocationFactoryInterface;
 use Unity\Locations\Interfaces\LocationInterface;
 use Unity\Locations\Interfaces\LocationRepositoryInterface;
@@ -39,64 +39,64 @@ class LocationRepository implements LocationRepositoryInterface
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findById(int $id): ?LocationInterface
     {
-        throw new DummyImplementationException(LocationRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(LocationRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findAll(array $args = []): array
     {
-        throw new DummyImplementationException(LocationRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(LocationRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findByCity(string $city): array
     {
-        throw new DummyImplementationException(LocationRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(LocationRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findByRegion(string $region): array
     {
-        throw new DummyImplementationException(LocationRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(LocationRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function save(LocationInterface $location): bool
     {
-        throw new DummyImplementationException(LocationRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(LocationRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function update(LocationInterface $location): bool
     {
-        throw new DummyImplementationException(LocationRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(LocationRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function delete(int $id): bool
     {
-        throw new DummyImplementationException(LocationRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(LocationRepositoryInterface::class);
     }
 }

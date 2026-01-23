@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Meetings;
 
-use Unity\Core\DummyImplementationException;
+use Unity\Core\DependencyNotRegisteredException;
 use Unity\Core\Interfaces\CacheInterface;
 use Unity\Meetings\Interfaces\MeetingFactoryInterface;
 use Unity\Meetings\Interfaces\MeetingInterface;
@@ -40,83 +40,83 @@ class MeetingRepository implements MeetingRepositoryInterface
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function find(int $id): ?MeetingInterface
     {
-        throw new DummyImplementationException(MeetingRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MeetingRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findAll(array $args = []): array
     {
-        throw new DummyImplementationException(MeetingRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MeetingRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findByDay(int $day, array $args = []): array
     {
-        throw new DummyImplementationException(MeetingRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MeetingRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findOnline(array $args = []): array
     {
-        throw new DummyImplementationException(MeetingRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MeetingRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findInPerson(array $args = []): array
     {
-        throw new DummyImplementationException(MeetingRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MeetingRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findByGroupId(int $groupId, array $args = []): array
     {
-        throw new DummyImplementationException(MeetingRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MeetingRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function findByLocationId(int $locationId, array $args = []): array
     {
-        throw new DummyImplementationException(MeetingRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MeetingRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function search(string $keyword, array $args = []): array
     {
-        throw new DummyImplementationException(MeetingRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MeetingRepositoryInterface::class);
     }
 
     /**
      * {@inheritdoc}
-     * @throws DummyImplementationException
+     * @throws DependencyNotRegisteredException
      */
     public function count(array $args = []): int
     {
-        throw new DummyImplementationException(MeetingRepositoryInterface::class);
+        throw new DependencyNotRegisteredException(MeetingRepositoryInterface::class);
     }
 
 }
