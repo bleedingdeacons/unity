@@ -23,14 +23,17 @@ class PositionViewFactory implements PositionViewFactoryInterface
 
     /**
      * Constructor
-     * 
+     *
      * @param PositionRepositoryInterface $positionRepository Position repository
      * @param MemberRepositoryInterface $memberRepository Member repository
      */
     public function __construct(
         PositionRepositoryInterface $positionRepository,
         MemberRepositoryInterface $memberRepository
-    ) { }
+    ) {
+        $this->positionRepository = $positionRepository;
+        $this->memberRepository = $memberRepository;
+    }
 
     /**
      * {@inheritdoc}
@@ -88,7 +91,7 @@ class PositionViewFactory implements PositionViewFactoryInterface
         usort($views, function(PositionViewInterface $a, PositionViewInterface $b) {
             $titleA = $a->getTitle() ?? '';
             $titleB = $b->getTitle() ?? '';
-            
+
             return strcasecmp($titleA, $titleB);
         });
 
@@ -97,7 +100,7 @@ class PositionViewFactory implements PositionViewFactoryInterface
 
     /**
      * Find the member with the latest rotation date from a list of members
-     * 
+     *
      * @param array $members Array of MemberInterface objects
      * @return MemberInterface The member with the latest rotation date
      */
