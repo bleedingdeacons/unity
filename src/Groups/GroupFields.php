@@ -12,7 +12,7 @@ final class GroupFields
     public const TITLE = 'group-title';
     public const GENERIC_EMAIL = 'generic-email';
     public const MEETING = 'meeting';
-    public const GROUP_POST_TYPE = 'home-group';
+    public const GROUP_POST_TYPE = 'tsml_group';
 
     private function __construct()
     {
