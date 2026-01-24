@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Core;
 
+use Unity\Core\Interfaces\ContainerInterface;
 use RuntimeException;
 
 /**

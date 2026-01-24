@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Unity\Core;
+namespace Unity\Core\Interfaces;
 
 use RuntimeException;
 
