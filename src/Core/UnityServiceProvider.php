@@ -12,6 +12,8 @@ use Unity\Groups\GroupViewFactory;
 use Unity\Groups\Interfaces\GroupFactoryInterface;
 use Unity\Groups\Interfaces\GroupRepositoryInterface;
 use Unity\Groups\Interfaces\GroupViewFactoryInterface;
+use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingFactoryInterface;
+use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingRepositoryInterface;
 use Unity\Locations\Interfaces\LocationFactoryInterface;
 use Unity\Locations\Interfaces\LocationRepositoryInterface;
 use Unity\Meetings\Interfaces\MeetingFactoryInterface;
@@ -113,6 +115,20 @@ class UnityServiceProvider
 //                $c->get(MemberFactoryInterface::class)
 //            );
             throw new DependencyNotRegisteredException(MemberRepositoryInterface::class);
+        });
+
+        // Register Intergroup Meeting Factory
+        $container->register(IntergroupMeetingFactoryInterface::class, function () {
+//            return new IntergroupMeetingFactory();
+            throw new DependencyNotRegisteredException(IntergroupMeetingFactoryInterface::class);
+        });
+
+        // Register Intergroup Meeting Repository
+        $container->register(IntergroupMeetingRepositoryInterface::class, function (DependencyContainer $c) {
+//            return new IntergroupMeetingRepository(
+//                $c->get(IntergroupMeetingFactoryInterface::class)
+//            );
+            throw new DependencyNotRegisteredException(IntergroupMeetingRepositoryInterface::class);
         });
 
         // Register Position View Factory
