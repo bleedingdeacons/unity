@@ -4,7 +4,7 @@ param(
     [string]$PluginsPath = "C:\Users\David\Local Sites\unity-dev\app\public\wp-content\plugins",
     [string[]]$PluginNames = @("unity", "integrity", "tsml-for-unity"),
     [string]$OutputPath = (Get-Location).Path,
-    [string[]]$ExcludeFolders = @("obj", "bin", ".git", "vendor", "node_modules", "build")
+    [string[]]$ExcludeFolders = @("obj", "bin", ".git", ".idea", "vendor", "node_modules", "build", "utils")
 )
 
 # Handle quick select shortcuts
@@ -16,7 +16,7 @@ if (-not [string]::IsNullOrWhiteSpace($QuickSelect)) {
         "t" { $PluginNames = @("tsml-for-unity") }
         "a" { $PluginNames = @("amber") }
         "tr" { $PluginNames = @("trumpet") }
-		"uta" { $PluginNames = @("unity", "tsml-for-unity", "amber") }
+        "uta" { $PluginNames = @("unity", "tsml-for-unity", "amber") }
         "uit" { $PluginNames = @("unity", "integrity", "tsml-for-unity") }
         "all" { $PluginNames = @("unity", "integrity", "tsml-for-unity", "amber", "trumpet") }
         default {
