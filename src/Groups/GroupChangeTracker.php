@@ -16,7 +16,7 @@ use const WP_DEBUG;
 
 /**
  * Class GroupChangeTracker
- * 
+ *
  * Tracks changes to groups via ACF and fires the group_changed hook
  * when actual changes are detected.
  */
@@ -27,7 +27,7 @@ class GroupChangeTracker
 
     /**
      * Constructor
-     * 
+     *
      * @param GroupRepositoryInterface $repository Repository for accessing groups
      */
     public function __construct(GroupRepositoryInterface $repository)
@@ -40,7 +40,7 @@ class GroupChangeTracker
 
     /**
      * Capture the original group before ACF makes changes
-     * 
+     *
      * @param int $postId The post ID being saved
      * @return void
      */
@@ -56,6 +56,8 @@ class GroupChangeTracker
             if (defined('WP_DEBUG') && WP_DEBUG) {
                 error_log('Original group captured for post ID: ' . $postId);
             }
+
+            do_action('group_before_save', $postId, self::$originalGroup);
         } catch (Exception $e) {
             error_log('Error capturing original group: ' . $e->getMessage());
         }
@@ -63,7 +65,7 @@ class GroupChangeTracker
 
     /**
      * Check for changes after ACF has saved all fields
-     * 
+     *
      * @param int $postId The post ID being saved
      * @return void
      */
@@ -108,6 +110,8 @@ class GroupChangeTracker
                 }
             }
 
+            do_action('group_after_save', $postId, $updatedGroup, self::$originalGroup);
+
             self::$originalGroup = null;
         } catch (Exception $e) {
             error_log('Error checking for group changes: ' . $e->getMessage());
@@ -116,7 +120,7 @@ class GroupChangeTracker
 
     /**
      * Check if a group has changed by comparing its properties
-     * 
+     *
      * @param GroupInterface $originalGroup The original group before changes
      * @param GroupInterface $updatedGroup The updated group after changes
      * @return bool True if the group has changed, false otherwise

@@ -20,9 +20,11 @@ use Unity\Meetings\Interfaces\MeetingFactoryInterface;
 use Unity\Meetings\Interfaces\MeetingRepositoryInterface;
 use Unity\Members\Interfaces\MemberFactoryInterface;
 use Unity\Members\Interfaces\MemberRepositoryInterface;
+use Unity\Members\MemberChangeTracker;
 use Unity\Positions\Interfaces\PositionFactoryInterface;
 use Unity\Positions\Interfaces\PositionRepositoryInterface;
 use Unity\Positions\Interfaces\PositionViewFactoryInterface;
+use Unity\Positions\PositionChangeTracker;
 use Unity\Positions\PositionViewFactory;
 
 /**
@@ -86,6 +88,20 @@ class UnityServiceProvider
         $container->register(GroupChangeTracker::class, function (DependencyContainer $c) {
             return new GroupChangeTracker(
                 $c->get(GroupRepositoryInterface::class)
+            );
+        });
+
+        // Register MemberChangeTracker
+        $container->register(MemberChangeTracker::class, function (DependencyContainer $c) {
+            return new MemberChangeTracker(
+                $c->get(MemberRepositoryInterface::class)
+            );
+        });
+
+        // Register PositionChangeTracker
+        $container->register(PositionChangeTracker::class, function (DependencyContainer $c) {
+            return new PositionChangeTracker(
+                $c->get(PositionRepositoryInterface::class)
             );
         });
 
