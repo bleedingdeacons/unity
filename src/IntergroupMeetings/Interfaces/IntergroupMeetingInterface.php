@@ -21,7 +21,14 @@ interface IntergroupMeetingInterface
      *
      * @return array<int>
      */
-    public function getAttendees(): array;
+    public function getGroupAttendees(): array;
+
+    /**
+     * Get the array of officer IDs attending the meeting
+     *
+     * @return array<int>
+     */
+    public function getOfficersAttending(): array;
 
     /**
      * Get the date of the meeting
