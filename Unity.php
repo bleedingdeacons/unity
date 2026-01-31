@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * Plugin Name: Unity
  * Description: An intergroup management plugin.
- * Version: 1.2.3
+ * Version: 1.2.4
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: The Bleeding Deacons
@@ -75,20 +75,15 @@ add_action('plugins_loaded', function() {
          *
          * @param \Unity\Core\DependencyContainer $container The dependency container
          */
-        $services_registered = false;
-        add_action('unity_register_services', function() use (&$services_registered) {
-            $services_registered = true;
-        }, 1);
-
         do_action('unity_register_services', \Unity\Plugin::getContainer());
 
-        if (!$services_registered && !has_action('unity_register_services')) {
+        if (!has_action('unity_register_services')) {
             if (is_admin()) {
                 add_action('admin_notices', function() {
-                    echo '<div class="notice notice-error is-dismissible"><p><strong>Unity Plugin Error:</strong> Services not registered. No hooks are listening to unity_register_services.</p></div>';
+                    echo '<div class="notice notice-error is-dismissible"><p><strong>Unity Plugin Error:</strong> Services not registered.</p></div>';
                 });
             }
-            error_log('Unity Plugin Warning: unity_register_services action was not executed - no listeners registered.');
+            error_log('Unity Plugin Error: Services not registered - no hooks listening to unity_register_services.');
         }
 
         \Unity\Plugin::initServices();
