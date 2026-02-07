@@ -2,7 +2,7 @@ param(
     [Parameter(Position=0)]
     [string]$QuickSelect = "",
     [string]$PluginsPath = "C:\Users\David\Local Sites\unity-dev\app\public\wp-content\plugins",
-    [string[]]$PluginNames = @("unity", "integrity", "tsml-for-unity"),
+    [string[]]$PluginNames = @("unity", "integrity", "tsml-for-unity", "amber", "trumpet", "reconcile", "scrutiny"),
     [string]$OutputPath = (Get-Location).Path,
     [string[]]$ExcludeFolders = @("obj", "bin", ".git", ".idea", "vendor", "node_modules", "build", "utils")
 )
