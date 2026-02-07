@@ -16,12 +16,11 @@ if (-not [string]::IsNullOrWhiteSpace($QuickSelect)) {
         "t" { $PluginNames = @("tsml-for-unity") }
         "a" { $PluginNames = @("amber") }
         "tr" { $PluginNames = @("trumpet") }
-        "se" { $PluginNames = @("sentinel") }
         "sc" { $PluginNames = @("scrutiny") }
-        "sec" { $PluginNames = @("scrutiny", "sentinel") }
+		"rc" { $PluginNames = @("reconcile") }
         "uta" { $PluginNames = @("unity", "tsml-for-unity", "amber") }
         "uit" { $PluginNames = @("unity", "integrity", "tsml-for-unity") }
-        "all" { $PluginNames = @("unity", "integrity", "tsml-for-unity", "amber", "trumpet", "sentinel", "scrutiny") }
+        "all" { $PluginNames = @("unity", "integrity", "tsml-for-unity", "amber", "trumpet", "reconcile", "scrutiny") }
         default {
             Write-Host "Unknown quick select: $QuickSelect" -ForegroundColor Red
             Write-Host "Valid options: ui, u, i, t, a, tr, se, sc, uit, all" -ForegroundColor Yellow
