@@ -8,13 +8,13 @@
 
 ## Overview
 
-Unity is a comprehensive WordPress plugin designed for managing intergroups, including support groups, recovery meetings, community organizations, and similar structured groups. It provides a robust framework for managing groups, meetings, members, positions, locations, and contacts with a clean, object-oriented architecture.
+Unity is a comprehensive WordPress plugin designed for managing intergroups,  It provides a robust framework for managing groups, meetings, members, positions, locations, and contacts with a clean, object-oriented architecture.
 
 ## Features
 
 ### Core Functionality
 
-- **Group Management**: Create and manage multiple groups with detailed information including contact details, payment options (Venmo, PayPal, Square), and organizational structure
+- **Group Management**: Create and manage multiple groups with detailed information including contact details and organizational structure
 - **Meeting Management**: Track regular meetings with scheduling, location information, online meeting support, and meeting types
 - **Member Management**: Maintain member databases with contact information and role assignments
 - **Position Management**: Define and track organizational positions and responsibilities
