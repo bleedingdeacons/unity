@@ -11,7 +11,7 @@ interface MemberInterface
 {
     public function getId(): int;
     public function getAnonymousName(): string;
-    public function getPrivateName(): string;
+//    public function getPrivateName(): string;
     public function getEmail(): string;
     public function showAnonymousName(): bool;
     public function showMemberProfile(): bool;

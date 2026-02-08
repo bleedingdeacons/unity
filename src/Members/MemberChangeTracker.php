@@ -104,6 +104,7 @@ class MemberChangeTracker
                 }
 
                 do_action('member_changed', $updatedMember, self::$originalMember);
+
             } else {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
                     error_log('No changes detected in member ID: ' . $postId);
@@ -131,9 +132,9 @@ class MemberChangeTracker
             return true;
         }
 
-        if ($originalMember->getPrivateName() !== $updatedMember->getPrivateName()) {
-            return true;
-        }
+//        if ($originalMember->getPrivateName() !== $updatedMember->getPrivateName()) {
+//            return true;
+//        }
 
         if ($originalMember->getEmail() !== $updatedMember->getEmail()) {
             return true;
