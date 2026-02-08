@@ -91,18 +91,20 @@ class UnityServiceProvider
             );
         });
 
-        // Register MemberChangeTracker
+        // Register MemberChangeTracker (requires TSML-for-Unity to provide implementation)
         $container->register(MemberChangeTracker::class, function (DependencyContainer $c) {
-            return new MemberChangeTracker(
-                $c->get(MemberRepositoryInterface::class)
-            );
+//            return new MemberChangeTracker(
+//                $c->get(MemberRepositoryInterface::class)
+//            );
+            throw new DependencyNotRegisteredException(MemberChangeTracker::class);
         });
 
-        // Register PositionChangeTracker
+        // Register PositionChangeTracker (requires TSML-for-Unity to provide implementation)
         $container->register(PositionChangeTracker::class, function (DependencyContainer $c) {
-            return new PositionChangeTracker(
-                $c->get(PositionRepositoryInterface::class)
-            );
+//            return new PositionChangeTracker(
+//                $c->get(PositionRepositoryInterface::class)
+//            );
+            throw new DependencyNotRegisteredException(PositionChangeTracker::class);
         });
 
         // Register Position Factory
@@ -147,13 +149,13 @@ class UnityServiceProvider
             throw new DependencyNotRegisteredException(IntergroupMeetingRepositoryInterface::class);
         });
 
-        // Register Position View Factory
+        // Register Position View Factory (requires TSML-for-Unity to provide implementation)
         $container->register(PositionViewFactoryInterface::class, function (DependencyContainer $c) {
-            return new PositionViewFactory(
-                $c->get(PositionRepositoryInterface::class),
-                $c->get(MemberRepositoryInterface::class)
-            );
-//            throw new DependencyNotRegisteredException(PositionViewFactoryInterface::class);
+//            return new PositionViewFactory(
+//                $c->get(PositionRepositoryInterface::class),
+//                $c->get(MemberRepositoryInterface::class)
+//            );
+            throw new DependencyNotRegisteredException(PositionViewFactoryInterface::class);
         });
 
         // Register Group View Factory
