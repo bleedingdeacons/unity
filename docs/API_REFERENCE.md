@@ -48,7 +48,7 @@ if ($container->has(ServiceInterface::class)) {
 }
 ```
 
-### CacheInterface
+### Cache
 
 WordPress caching integration.
 
@@ -70,7 +70,7 @@ Clear all cached values.
 
 ## Groups
 
-### GroupInterface
+### Group
 
 Represents a group entity.
 
@@ -79,7 +79,7 @@ Represents a group entity.
 - `int $id` - Group ID
 - `string $title` - Group name/title
 - `string $email` - Group contact email
-- `array $meetings` - Array of MeetingInterface objects
+- `array $meetings` - Array of Meeting objects
 - `string $link` - Group website or information link
 - `string $groupNotes` - Internal notes about the group
 - `string $website` - Group website URL
@@ -141,13 +141,13 @@ Get array of contact objects for this group.
 **`hasContributionOptions(): bool`**
 Check if group has any payment methods configured.
 
-### GroupFactoryInterface
+### GroupFactory
 
 Factory for creating group objects.
 
 #### Methods
 
-**`create(array $data): GroupInterface`**
+**`create(array $data): Group`**
 Create a new group object from data array.
 
 ```php
@@ -160,13 +160,13 @@ $group = $groupFactory->create([
 ]);
 ```
 
-### GroupRepositoryInterface
+### GroupRepository
 
 Repository for group data access.
 
 #### Methods
 
-**`findById(int $id): ?GroupInterface`**
+**`findById(int $id): ?Group`**
 Find a group by ID.
 
 **`findAll(): array`**
@@ -175,7 +175,7 @@ Get all groups.
 **`findByDistrict(int $districtId): array`**
 Find groups in a specific district.
 
-**`save(GroupInterface $group): bool`**
+**`save(Group $group): bool`**
 Save group data.
 
 **`delete(int $id): bool`**
@@ -188,7 +188,7 @@ Tracks changes to group data.
 #### Constructor
 
 ```php
-public function __construct(GroupRepositoryInterface $repository)
+public function __construct(GroupRepository $repository)
 ```
 
 #### Usage
@@ -202,7 +202,7 @@ $tracker = $container->get(GroupChangeTracker::class);
 
 ## Meetings
 
-### MeetingInterface
+### Meeting
 
 Represents a meeting entity.
 
@@ -211,7 +211,7 @@ Represents a meeting entity.
 - `int $id` - Meeting ID
 - `string $name` - Meeting name
 - `string $slug` - URL-friendly identifier
-- `?LocationInterface $location` - Meeting location
+- `?Location $location` - Meeting location
 - `string $url` - Meeting information URL
 - `int $day` - Day of week (0-6)
 - `string $dayOfWeek` - Day name
@@ -236,7 +236,7 @@ Get meeting name.
 **`getSlug(): string`**
 Get URL slug.
 
-**`getLocation(): ?LocationInterface`**
+**`getLocation(): ?Location`**
 Get location object (null for online-only meetings).
 
 **`getUrl(): string`**
@@ -275,13 +275,13 @@ Get virtual meeting link.
 **`getOnlineNotes(): string`**
 Get online meeting notes.
 
-### MeetingFactoryInterface
+### MeetingFactory
 
 Factory for creating meeting objects.
 
 #### Methods
 
-**`create(array $data): MeetingInterface`**
+**`create(array $data): Meeting`**
 Create meeting from data array.
 
 ```php
@@ -297,13 +297,13 @@ $meeting = $meetingFactory->create([
 ]);
 ```
 
-### MeetingRepositoryInterface
+### MeetingRepository
 
 Repository for meeting data access.
 
 #### Methods
 
-**`findById(int $id): ?MeetingInterface`**
+**`findById(int $id): ?Meeting`**
 Find meeting by ID.
 
 **`findAll(): array`**
@@ -318,7 +318,7 @@ Find meetings for a specific group.
 **`findOnlineMeetings(): array`**
 Find all online meetings.
 
-**`save(MeetingInterface $meeting): bool`**
+**`save(Meeting $meeting): bool`**
 Save meeting data.
 
 **`delete(int $id): bool`**
@@ -328,7 +328,7 @@ Delete a meeting.
 
 ## Members
 
-### MemberInterface
+### Member
 
 Represents a member entity.
 
@@ -352,22 +352,22 @@ Get groups this member belongs to.
 **`getPositions(): array`**
 Get positions held by this member.
 
-### MemberFactoryInterface
+### MemberFactory
 
 Factory for creating member objects.
 
 #### Methods
 
-**`create(array $data): MemberInterface`**
+**`create(array $data): Member`**
 Create member from data.
 
-### MemberRepositoryInterface
+### MemberRepository
 
 Repository for member data access.
 
 #### Methods
 
-**`findById(int $id): ?MemberInterface`**
+**`findById(int $id): ?Member`**
 Find member by ID.
 
 **`findAll(): array`**
@@ -379,7 +379,7 @@ Find members of a group.
 **`findByPosition(int $positionId): array`**
 Find members with specific position.
 
-**`save(MemberInterface $member): bool`**
+**`save(Member $member): bool`**
 Save member data.
 
 **`delete(int $id): bool`**
@@ -392,14 +392,14 @@ Tracks changes to member data.
 #### Constructor
 
 ```php
-public function __construct(MemberRepositoryInterface $repository)
+public function __construct(MemberRepository $repository)
 ```
 
 ---
 
 ## Positions
 
-### PositionInterface
+### Position
 
 Represents an organizational position.
 
@@ -420,44 +420,44 @@ Get list of responsibilities.
 **`getRequirements(): array`**
 Get position requirements.
 
-### PositionFactoryInterface
+### PositionFactory
 
 Factory for creating position objects.
 
 #### Methods
 
-**`create(array $data): PositionInterface`**
+**`create(array $data): Position`**
 Create position from data.
 
-### PositionRepositoryInterface
+### PositionRepository
 
 Repository for position data access.
 
 #### Methods
 
-**`findById(int $id): ?PositionInterface`**
+**`findById(int $id): ?Position`**
 Find position by ID.
 
 **`findAll(): array`**
 Get all positions.
 
-**`save(PositionInterface $position): bool`**
+**`save(Position $position): bool`**
 Save position data.
 
 **`delete(int $id): bool`**
 Delete a position.
 
-### PositionViewInterface
+### PositionView
 
 Represents a view-specific position representation.
 
-### PositionViewFactoryInterface
+### PositionViewFactory
 
 Factory for creating position view objects.
 
 #### Methods
 
-**`create(PositionInterface $position): PositionViewInterface`**
+**`create(Position $position): PositionView`**
 Create view representation from position.
 
 ### PositionChangeTracker
@@ -467,14 +467,14 @@ Tracks changes to position data.
 #### Constructor
 
 ```php
-public function __construct(PositionRepositoryInterface $repository)
+public function __construct(PositionRepository $repository)
 ```
 
 ---
 
 ## Locations
 
-### LocationInterface
+### Location
 
 Represents a physical location.
 
@@ -513,22 +513,22 @@ Get accessibility information.
 **`getNotes(): string`**
 Get location notes.
 
-### LocationFactoryInterface
+### LocationFactory
 
 Factory for creating location objects.
 
 #### Methods
 
-**`create(array $data): LocationInterface`**
+**`create(array $data): Location`**
 Create location from data.
 
-### LocationRepositoryInterface
+### LocationRepository
 
 Repository for location data access.
 
 #### Methods
 
-**`findById(int $id): ?LocationInterface`**
+**`findById(int $id): ?Location`**
 Find location by ID.
 
 **`findAll(): array`**
@@ -537,7 +537,7 @@ Get all locations.
 **`findByCity(string $city): array`**
 Find locations in a city.
 
-**`save(LocationInterface $location): bool`**
+**`save(Location $location): bool`**
 Save location data.
 
 **`delete(int $id): bool`**
@@ -595,7 +595,7 @@ $contact = $contactFactory->create([
 
 ## Intergroup Meetings
 
-### IntergroupMeetingInterface
+### IntergroupMeeting
 
 Represents meetings between multiple groups.
 
@@ -619,11 +619,11 @@ Get meeting agenda.
 **`getNotes(): string`**
 Get meeting notes.
 
-### IntergroupMeetingFactoryInterface
+### IntergroupMeetingFactory
 
 Factory for creating intergroup meeting objects.
 
-### IntergroupMeetingRepositoryInterface
+### IntergroupMeetingRepository
 
 Repository for intergroup meeting data access.
 
@@ -736,7 +736,7 @@ $container->register(ServiceAInterface::class, function($c) {
 ```php
 // Register services
 add_action('unity_register_services', function($container) {
-    $container->register(MeetingFactoryInterface::class, function($c) {
+    $container->register(MeetingFactory::class, function($c) {
         return new CustomMeetingFactory();
     });
 });
@@ -744,7 +744,7 @@ add_action('unity_register_services', function($container) {
 // Use services after initialization
 add_action('unity_loaded', function($container) {
     $meetings = $container
-        ->get(MeetingRepositoryInterface::class)
+        ->get(MeetingRepository::class)
         ->findAll();
     
     foreach ($meetings as $meeting) {
@@ -783,7 +783,7 @@ try {
 
 ```php
 // Good
-$repository = $container->get(MeetingRepositoryInterface::class);
+$repository = $container->get(MeetingRepository::class);
 
 // Bad
 $repository = new MeetingRepository();
@@ -810,7 +810,7 @@ if ($container->has(ServiceInterface::class)) {
 ### 4. Use Type Hints
 
 ```php
-function processGroup(GroupInterface $group): void {
+function processGroup(Group $group): void {
     // Type safety ensured
 }
 ```
@@ -818,7 +818,7 @@ function processGroup(GroupInterface $group): void {
 ### 5. Leverage Caching
 
 ```php
-$cache = $container->get(CacheInterface::class);
+$cache = $container->get(Cache::class);
 $groups = $cache->get('all_groups');
 
 if ($groups === false) {

@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 namespace Unity\Core;
 
-use Unity\Contact\Interfaces\ContactFactoryInterface;
-use Unity\Core\Interfaces\CacheInterface;
-use Unity\Core\Interfaces\ConfigurationInterface;
-use Unity\Groups\Interfaces\GroupChangeTrackerInterface;
-use Unity\Groups\Interfaces\GroupFactoryInterface;
-use Unity\Groups\Interfaces\GroupRepositoryInterface;
-use Unity\Groups\Interfaces\GroupViewFactoryInterface;
-use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingFactoryInterface;
-use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingRepositoryInterface;
-use Unity\Locations\Interfaces\LocationFactoryInterface;
-use Unity\Locations\Interfaces\LocationRepositoryInterface;
-use Unity\Meetings\Interfaces\MeetingFactoryInterface;
-use Unity\Meetings\Interfaces\MeetingRepositoryInterface;
-use Unity\Members\Interfaces\MemberChangeTrackerInterface;
-use Unity\Members\Interfaces\MemberFactoryInterface;
-use Unity\Members\Interfaces\MemberRepositoryInterface;
-use Unity\Positions\Interfaces\PositionChangeTrackerInterface;
-use Unity\Positions\Interfaces\PositionFactoryInterface;
-use Unity\Positions\Interfaces\PositionRepositoryInterface;
-use Unity\Positions\Interfaces\PositionViewFactoryInterface;
+use Unity\Contacts\Interfaces\ContactFactory;
+use Unity\Core\Interfaces\Cache;
+use Unity\Core\Interfaces\Configuration;
+use Unity\Groups\Interfaces\GroupChangeTracker;
+use Unity\Groups\Interfaces\GroupFactory;
+use Unity\Groups\Interfaces\GroupRepository;
+use Unity\Groups\Interfaces\GroupViewFactory;
+use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingFactory;
+use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingRepository;
+use Unity\Locations\Interfaces\LocationFactory;
+use Unity\Locations\Interfaces\LocationRepository;
+use Unity\Meetings\Interfaces\MeetingFactory;
+use Unity\Meetings\Interfaces\MeetingRepository;
+use Unity\Members\Interfaces\MemberChangeTracker;
+use Unity\Members\Interfaces\MemberFactory;
+use Unity\Members\Interfaces\MemberRepository;
+use Unity\Positions\Interfaces\PositionChangeTracker;
+use Unity\Positions\Interfaces\PositionFactory;
+use Unity\Positions\Interfaces\PositionRepository;
+use Unity\Positions\Interfaces\PositionViewFactory;
 
 /**
  * Class UnityServiceProvider
@@ -41,149 +41,149 @@ class UnityServiceProvider
     public function register(DependencyContainer $container): void
     {
         // Register Cache
-        $container->register(CacheInterface::class, function () {
+        $container->register(Cache::class, function () {
 
             return new WordPressCache();
 
         });
 
-        $container->register(ConfigurationInterface::class, function () {
+        $container->register(Configuration::class, function () {
 
             return new UnityConfiguration();
 
         });
 
 
-        // Register Contact Factory
-        $container->register(ContactFactoryInterface::class, function () {
+        // Register Contacts Factory
+        $container->register(ContactFactory::class, function () {
 
-            throw new DependencyNotRegisteredException(ContactFactoryInterface::class);
+            throw new DependencyNotRegisteredException(ContactFactory::class);
 
         });
 
         // Register Meeting Factory
-        $container->register(MeetingFactoryInterface::class, function (DependencyContainer $c) {
+        $container->register(MeetingFactory::class, function (DependencyContainer $c) {
 //            return new MeetingFactory(
-//                $c->get(ContactFactoryInterface::class),
-//                $c->get(LocationRepositoryInterface::class)
+//                $c->get(ContactFactory::class),
+//                $c->get(LocationRepository::class)
 //            );
-            throw new DependencyNotRegisteredException(MeetingFactoryInterface::class);
+            throw new DependencyNotRegisteredException(MeetingFactory::class);
 
         });
 
         // Register Meeting Repository
-        $container->register(MeetingRepositoryInterface::class, function (DependencyContainer $c) {
+        $container->register(MeetingRepository::class, function (DependencyContainer $c) {
 //            return new MeetingRepository(
-//                $c->get(MeetingFactoryInterface::class),
-//                $c->get(CacheInterface::class)
+//                $c->get(MeetingFactory::class),
+//                $c->get(Cache::class)
 //            );
-            throw new DependencyNotRegisteredException(MeetingRepositoryInterface::class);
+            throw new DependencyNotRegisteredException(MeetingRepository::class);
 
         });
 
         // Register Group Factory
-        $container->register(GroupFactoryInterface::class, function () {
+        $container->register(GroupFactory::class, function () {
 //            return new GroupFactory();
-            throw new DependencyNotRegisteredException(GroupFactoryInterface::class);
+            throw new DependencyNotRegisteredException(GroupFactory::class);
         });
 
         // Register Group Repository
-        $container->register(GroupRepositoryInterface::class, function (DependencyContainer $c) {
+        $container->register(GroupRepository::class, function (DependencyContainer $c) {
 //            return new GroupRepository(
-//                $c->get(GroupFactoryInterface::class)
+//                $c->get(GroupFactory::class)
 //            );
-            throw new DependencyNotRegisteredException(GroupRepositoryInterface::class);
+            throw new DependencyNotRegisteredException(GroupRepository::class);
 
         });
 
         // Register GroupChangeTracker (requires TSML-for-Unity to provide implementation)
-        $container->register(GroupChangeTrackerInterface::class, function (DependencyContainer $c) {
+        $container->register(GroupChangeTracker::class, function (DependencyContainer $c) {
 
-            throw new DependencyNotRegisteredException(GroupChangeTrackerInterface::class);
+            throw new DependencyNotRegisteredException(GroupChangeTracker::class);
 
         });
 
         // Register MemberChangeTracker (requires TSML-for-Unity to provide implementation)
-        $container->register(MemberChangeTrackerInterface::class, function (DependencyContainer $c) {
+        $container->register(MemberChangeTracker::class, function (DependencyContainer $c) {
 
-            throw new DependencyNotRegisteredException(MemberChangeTrackerInterface::class);
+            throw new DependencyNotRegisteredException(MemberChangeTracker::class);
 
         });
 
         // Register PositionChangeTracker (requires TSML-for-Unity to provide implementation)
-        $container->register(PositionChangeTrackerInterface::class, function (DependencyContainer $c) {
+        $container->register(PositionChangeTracker::class, function (DependencyContainer $c) {
 
-            throw new DependencyNotRegisteredException(PositionChangeTrackerInterface::class);
+            throw new DependencyNotRegisteredException(PositionChangeTracker::class);
 
         });
 
         // Register Position Factory
-        $container->register(PositionFactoryInterface::class, function () {
+        $container->register(PositionFactory::class, function () {
 
-            throw new DependencyNotRegisteredException(PositionFactoryInterface::class);
+            throw new DependencyNotRegisteredException(PositionFactory::class);
 
         });
 
         // Register Position Repository
-        $container->register(PositionRepositoryInterface::class, function (DependencyContainer $c) {
+        $container->register(PositionRepository::class, function (DependencyContainer $c) {
 
-            throw new DependencyNotRegisteredException(PositionRepositoryInterface::class);
+            throw new DependencyNotRegisteredException(PositionRepository::class);
 
         });
 
         // Register Member Factory
-        $container->register(MemberFactoryInterface::class, function () {
+        $container->register(MemberFactory::class, function () {
 
-            throw new DependencyNotRegisteredException(MemberFactoryInterface::class);
+            throw new DependencyNotRegisteredException(MemberFactory::class);
 
         });
 
         // Register Member Repository
-        $container->register(MemberRepositoryInterface::class, function (DependencyContainer $c) {
+        $container->register(MemberRepository::class, function (DependencyContainer $c) {
 
-            throw new DependencyNotRegisteredException(MemberRepositoryInterface::class);
+            throw new DependencyNotRegisteredException(MemberRepository::class);
 
         });
 
         // Register Intergroup Meeting Factory
-        $container->register(IntergroupMeetingFactoryInterface::class, function () {
+        $container->register(IntergroupMeetingFactory::class, function () {
 //            return new IntergroupMeetingFactory();
-            throw new DependencyNotRegisteredException(IntergroupMeetingFactoryInterface::class);
+            throw new DependencyNotRegisteredException(IntergroupMeetingFactory::class);
 
         });
 
         // Register Intergroup Meeting Repository
-        $container->register(IntergroupMeetingRepositoryInterface::class, function (DependencyContainer $c) {
+        $container->register(IntergroupMeetingRepository::class, function (DependencyContainer $c) {
 
-            throw new DependencyNotRegisteredException(IntergroupMeetingRepositoryInterface::class);
+            throw new DependencyNotRegisteredException(IntergroupMeetingRepository::class);
 
         });
 
         // Register Position View Factory (requires TSML-for-Unity to provide implementation)
-        $container->register(PositionViewFactoryInterface::class, function (DependencyContainer $c) {
+        $container->register(PositionViewFactory::class, function (DependencyContainer $c) {
 
-            throw new DependencyNotRegisteredException(PositionViewFactoryInterface::class);
+            throw new DependencyNotRegisteredException(PositionViewFactory::class);
 
         });
 
         // Register Group View Factory
-        $container->register(GroupViewFactoryInterface::class, function (DependencyContainer $c) {
+        $container->register(GroupViewFactory::class, function (DependencyContainer $c) {
 
-            throw new DependencyNotRegisteredException(GroupViewFactoryInterface::class);
+            throw new DependencyNotRegisteredException(GroupViewFactory::class);
 
         });
 
         // Register Location Factory
-        $container->register(LocationFactoryInterface::class, function () {
+        $container->register(LocationFactory::class, function () {
 
-            throw new DependencyNotRegisteredException(LocationFactoryInterface::class);
+            throw new DependencyNotRegisteredException(LocationFactory::class);
 
         });
 
-        // Register Locations Repository (requires LocationFactoryInterface to be registered by TSML-for-Unity)
-        $container->register(LocationRepositoryInterface::class, function (DependencyContainer $c) {
+        // Register Locations Repository (requires LocationFactory to be registered by TSML-for-Unity)
+        $container->register(LocationRepository::class, function (DependencyContainer $c) {
 
-            throw new DependencyNotRegisteredException(LocationRepositoryInterface::class);
+            throw new DependencyNotRegisteredException(LocationRepository::class);
 
         });
     }

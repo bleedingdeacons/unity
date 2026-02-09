@@ -87,7 +87,7 @@ Unity/
 $container = unity();
 
 // Resolve services
-$meetingRepo = $container->get(MeetingRepositoryInterface::class);
+$meetingRepo = $container->get(MeetingRepository::class);
 ```
 
 **Repository Pattern**
@@ -115,10 +115,10 @@ Fires after Unity's container is created but before services are resolved. Use t
 
 ```php
 add_action('unity_register_services', function($container) {
-    $container->register(MeetingFactoryInterface::class, function($c) {
+    $container->register(MeetingFactory::class, function($c) {
         return new CustomMeetingFactory(
             $c->get(ContactFactoryInterface::class),
-            $c->get(LocationRepositoryInterface::class)
+            $c->get(LocationRepository::class)
         );
     });
 });
@@ -130,7 +130,7 @@ Fires after Unity is fully loaded and all services are initialized.
 ```php
 add_action('unity_loaded', function($container) {
     // Your code here - all Unity services are available
-    $groups = $container->get(GroupRepositoryInterface::class)->findAll();
+    $groups = $container->get(GroupRepository::class)->findAll();
 });
 ```
 
@@ -138,36 +138,36 @@ add_action('unity_loaded', function($container) {
 
 Unity uses a dependency injection container that requires certain services to be registered by the implementing site. The following services must be registered via the `unity_register_services` hook:
 
-- `MeetingFactoryInterface`
-- `MeetingRepositoryInterface`
-- `GroupFactoryInterface`
-- `GroupRepositoryInterface`
-- `LocationFactoryInterface`
-- `LocationRepositoryInterface`
-- `MemberFactoryInterface`
-- `MemberRepositoryInterface`
-- `PositionFactoryInterface`
-- `PositionRepositoryInterface`
-- `IntergroupMeetingFactoryInterface`
-- `IntergroupMeetingRepositoryInterface`
+- `MeetingFactory`
+- `MeetingRepository`
+- `GroupFactory`
+- `GroupRepository`
+- `LocationFactory`
+- `LocationRepository`
+- `MemberFactory`
+- `MemberRepository`
+- `PositionFactory`
+- `PositionRepository`
+- `IntergroupMeetingFactory`
+- `IntergroupMeetingRepository`
 
 Example implementation:
 
 ```php
 add_action('unity_register_services', function($container) {
     // Register Meeting Factory
-    $container->register(MeetingFactoryInterface::class, function($c) {
+    $container->register(MeetingFactory::class, function($c) {
         return new MeetingFactory(
             $c->get(ContactFactoryInterface::class),
-            $c->get(LocationRepositoryInterface::class)
+            $c->get(LocationRepository::class)
         );
     });
     
     // Register Meeting Repository
-    $container->register(MeetingRepositoryInterface::class, function($c) {
+    $container->register(MeetingRepository::class, function($c) {
         return new MeetingRepository(
-            $c->get(MeetingFactoryInterface::class),
-            $c->get(CacheInterface::class)
+            $c->get(MeetingFactory::class),
+            $c->get(Cache::class)
         );
     });
     
@@ -186,7 +186,7 @@ add_action('unity_register_services', function($container) {
 $container = unity();
 
 // Get the group repository
-$groupRepo = $container->get(GroupRepositoryInterface::class);
+$groupRepo = $container->get(GroupRepository::class);
 
 // Find all groups
 $groups = $groupRepo->findAll();
@@ -212,7 +212,7 @@ if ($group->hasContributionOptions()) {
 #### Working with Meetings
 
 ```php
-$meetingRepo = $container->get(MeetingRepositoryInterface::class);
+$meetingRepo = $container->get(MeetingRepository::class);
 
 $meeting = $meetingRepo->findById(456);
 
@@ -242,7 +242,7 @@ $types = $meeting->getTypes();
 #### Working with Members
 
 ```php
-$memberRepo = $container->get(MemberRepositoryInterface::class);
+$memberRepo = $container->get(MemberRepository::class);
 
 $member = $memberRepo->findById(789);
 
@@ -352,10 +352,10 @@ composer check
 
 ### Core Interfaces
 
-#### GroupInterface
+#### Group
 
 ```php
-interface GroupInterface
+interface Group
 {
     public function getId(): int;
     public function getTitle(): string;
@@ -376,15 +376,15 @@ interface GroupInterface
 }
 ```
 
-#### MeetingInterface
+#### Meeting
 
 ```php
-interface MeetingInterface
+interface Meeting
 {
     public function getId(): int;
     public function getName(): string;
     public function getSlug(): string;
-    public function getLocation(): ?LocationInterface;
+    public function getLocation(): ?Location;
     public function getUrl(): string;
     public function getDay(): int;
     public function getDayOfWeek(): string;
@@ -400,10 +400,10 @@ interface MeetingInterface
 }
 ```
 
-#### MemberInterface
+#### Member
 
 ```php
-interface MemberInterface
+interface Member
 {
     public function getId(): int;
     public function getName(): string;

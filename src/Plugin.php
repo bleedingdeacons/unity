@@ -6,21 +6,21 @@ namespace Unity;
 
 use RuntimeException;
 use Unity\Core\DependencyContainer;
-use Unity\Core\Interfaces\CacheInterface;
+use Unity\Core\Interfaces\Cache;
 use Unity\Core\UnityServiceProvider;
-use Unity\Groups\Interfaces\GroupChangeTrackerInterface;
-use Unity\Groups\Interfaces\GroupFactoryInterface;
-use Unity\Groups\Interfaces\GroupRepositoryInterface;
-use Unity\Groups\Interfaces\GroupViewFactoryInterface;
-use Unity\Meetings\Interfaces\MeetingFactoryInterface;
-use Unity\Meetings\Interfaces\MeetingRepositoryInterface;
-use Unity\Members\Interfaces\MemberChangeTrackerInterface;
-use Unity\Members\Interfaces\MemberFactoryInterface;
-use Unity\Members\Interfaces\MemberRepositoryInterface;
-use Unity\Positions\Interfaces\PositionChangeTrackerInterface;
-use Unity\Positions\Interfaces\PositionFactoryInterface;
-use Unity\Positions\Interfaces\PositionRepositoryInterface;
-use Unity\Positions\Interfaces\PositionViewFactoryInterface;
+use Unity\Groups\Interfaces\GroupChangeTracker;
+use Unity\Groups\Interfaces\GroupFactory;
+use Unity\Groups\Interfaces\GroupRepository;
+use Unity\Groups\Interfaces\GroupViewFactory;
+use Unity\Meetings\Interfaces\MeetingFactory;
+use Unity\Meetings\Interfaces\MeetingRepository;
+use Unity\Members\Interfaces\MemberChangeTracker;
+use Unity\Members\Interfaces\MemberFactory;
+use Unity\Members\Interfaces\MemberRepository;
+use Unity\Positions\Interfaces\PositionChangeTracker;
+use Unity\Positions\Interfaces\PositionFactory;
+use Unity\Positions\Interfaces\PositionRepository;
+use Unity\Positions\Interfaces\PositionViewFactory;
 use function register_deactivation_hook;
 
 /**
@@ -66,20 +66,20 @@ class Plugin
         }
 
         // Initialize core services
-        self::$container->get(CacheInterface::class);
-        self::$container->get(MeetingFactoryInterface::class);
-        self::$container->get(MeetingRepositoryInterface::class);
-        self::$container->get(GroupFactoryInterface::class);
-        self::$container->get(GroupViewFactoryInterface::class);
-        self::$container->get(GroupRepositoryInterface::class);
-        self::$container->get(GroupChangeTrackerInterface::class);
-        self::$container->get(MemberChangeTrackerInterface::class);
-        self::$container->get(PositionChangeTrackerInterface::class);
-        self::$container->get(PositionFactoryInterface::class);
-        self::$container->get(PositionRepositoryInterface::class);
-        self::$container->get(MemberFactoryInterface::class);
-        self::$container->get(MemberRepositoryInterface::class);
-        self::$container->get(PositionViewFactoryInterface::class);
+        self::$container->get(Cache::class);
+        self::$container->get(MeetingFactory::class);
+        self::$container->get(MeetingRepository::class);
+        self::$container->get(GroupFactory::class);
+        self::$container->get(GroupViewFactory::class);
+        self::$container->get(GroupRepository::class);
+        self::$container->get(GroupChangeTracker::class);
+        self::$container->get(MemberChangeTracker::class);
+        self::$container->get(PositionChangeTracker::class);
+        self::$container->get(PositionFactory::class);
+        self::$container->get(PositionRepository::class);
+        self::$container->get(MemberFactory::class);
+        self::$container->get(MemberRepository::class);
+        self::$container->get(PositionViewFactory::class);
     }
 
     /**

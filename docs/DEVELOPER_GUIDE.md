@@ -160,26 +160,26 @@ Unity requires implementations of these interfaces:
 // Example: Custom Meeting Factory
 namespace YourPlugin\Unity;
 
-use Unity\Meetings\Interfaces\MeetingFactoryInterface;
-use Unity\Meetings\Interfaces\MeetingInterface;
+use Unity\Meetings\Interfaces\MeetingFactory;
+use Unity\Meetings\Interfaces\Meeting;
 use Unity\Meetings\Meeting;
-use Unity\Contact\Interfaces\ContactFactoryInterface;
-use Unity\Locations\Interfaces\LocationRepositoryInterface;
+use Unity\Contact\Interfaces\ContactFactory;
+use Unity\Locations\Interfaces\LocationRepository;
 
-class CustomMeetingFactory implements MeetingFactoryInterface
+class CustomMeetingFactory implements MeetingFactory
 {
-    private ContactFactoryInterface $contactFactory;
-    private LocationRepositoryInterface $locationRepository;
+    private ContactFactory $contactFactory;
+    private LocationRepository $locationRepository;
 
     public function __construct(
-        ContactFactoryInterface $contactFactory,
-        LocationRepositoryInterface $locationRepository
+        ContactFactory $contactFactory,
+        LocationRepository $locationRepository
     ) {
         $this->contactFactory = $contactFactory;
         $this->locationRepository = $locationRepository;
     }
 
-    public function create(array $data): MeetingInterface
+    public function create(array $data): Meeting
     {
         // Custom creation logic
         $location = null;
@@ -223,26 +223,26 @@ class CustomMeetingFactory implements MeetingFactoryInterface
 ```php
 namespace YourPlugin\Unity;
 
-use Unity\Meetings\Interfaces\MeetingRepositoryInterface;
-use Unity\Meetings\Interfaces\MeetingInterface;
-use Unity\Meetings\Interfaces\MeetingFactoryInterface;
-use Unity\Core\Interfaces\CacheInterface;
+use Unity\Meetings\Interfaces\MeetingRepository;
+use Unity\Meetings\Interfaces\Meeting;
+use Unity\Meetings\Interfaces\MeetingFactory;
+use Unity\Core\Interfaces\Cache;
 
-class CustomMeetingRepository implements MeetingRepositoryInterface
+class CustomMeetingRepository implements MeetingRepository
 {
-    private MeetingFactoryInterface $factory;
-    private CacheInterface $cache;
+    private MeetingFactory $factory;
+    private Cache $cache;
     private string $postType = 'meeting';
 
     public function __construct(
-        MeetingFactoryInterface $factory,
-        CacheInterface $cache
+        MeetingFactory $factory,
+        Cache $cache
     ) {
         $this->factory = $factory;
         $this->cache = $cache;
     }
 
-    public function findById(int $id): ?MeetingInterface
+    public function findById(int $id): ?Meeting
     {
         $cacheKey = "meeting_{$id}";
         $cached = $this->cache->get($cacheKey);
@@ -301,7 +301,7 @@ class CustomMeetingRepository implements MeetingRepositoryInterface
         return $meetings;
     }
 
-    public function save(MeetingInterface $meeting): bool
+    public function save(Meeting $meeting): bool
     {
         $postData = [
             'ID' => $meeting->getId(),
@@ -341,7 +341,7 @@ class CustomMeetingRepository implements MeetingRepositoryInterface
         return false;
     }
 
-    private function createFromPost(\WP_Post $post): MeetingInterface
+    private function createFromPost(\WP_Post $post): Meeting
     {
         $data = [
             'id' => $post->ID,
@@ -366,22 +366,22 @@ class CustomMeetingRepository implements MeetingRepositoryInterface
 add_action('unity_register_services', function($container) {
     // Register Meeting Factory
     $container->register(
-        \Unity\Meetings\Interfaces\MeetingFactoryInterface::class,
+        \Unity\Meetings\Interfaces\MeetingFactory::class,
         function($c) {
             return new \YourPlugin\Unity\CustomMeetingFactory(
-                $c->get(\Unity\Contact\Interfaces\ContactFactoryInterface::class),
-                $c->get(\Unity\Locations\Interfaces\LocationRepositoryInterface::class)
+                $c->get(\Unity\Contact\Interfaces\ContactFactory::class),
+                $c->get(\Unity\Locations\Interfaces\LocationRepository::class)
             );
         }
     );
 
     // Register Meeting Repository
     $container->register(
-        \Unity\Meetings\Interfaces\MeetingRepositoryInterface::class,
+        \Unity\Meetings\Interfaces\MeetingRepository::class,
         function($c) {
             return new \YourPlugin\Unity\CustomMeetingRepository(
-                $c->get(\Unity\Meetings\Interfaces\MeetingFactoryInterface::class),
-                $c->get(\Unity\Core\Interfaces\CacheInterface::class)
+                $c->get(\Unity\Meetings\Interfaces\MeetingFactory::class),
+                $c->get(\Unity\Core\Interfaces\Cache::class)
             );
         }
     );
@@ -396,75 +396,75 @@ add_action('unity_register_services', function($container) {
 add_action('unity_register_services', function($container) {
     
     // Locations
-    $container->register(LocationFactoryInterface::class, function() {
+    $container->register(LocationFactory::class, function() {
         return new CustomLocationFactory();
     });
     
-    $container->register(LocationRepositoryInterface::class, function($c) {
+    $container->register(LocationRepository::class, function($c) {
         return new CustomLocationRepository(
-            $c->get(LocationFactoryInterface::class)
+            $c->get(LocationFactory::class)
         );
     });
 
     // Meetings
-    $container->register(MeetingFactoryInterface::class, function($c) {
+    $container->register(MeetingFactory::class, function($c) {
         return new CustomMeetingFactory(
             $c->get(ContactFactoryInterface::class),
-            $c->get(LocationRepositoryInterface::class)
+            $c->get(LocationRepository::class)
         );
     });
     
-    $container->register(MeetingRepositoryInterface::class, function($c) {
+    $container->register(MeetingRepository::class, function($c) {
         return new CustomMeetingRepository(
-            $c->get(MeetingFactoryInterface::class),
-            $c->get(CacheInterface::class)
+            $c->get(MeetingFactory::class),
+            $c->get(Cache::class)
         );
     });
 
     // Groups
-    $container->register(GroupFactoryInterface::class, function($c) {
+    $container->register(GroupFactory::class, function($c) {
         return new CustomGroupFactory(
             $c->get(ContactFactoryInterface::class),
-            $c->get(MeetingRepositoryInterface::class)
+            $c->get(MeetingRepository::class)
         );
     });
     
-    $container->register(GroupRepositoryInterface::class, function($c) {
+    $container->register(GroupRepository::class, function($c) {
         return new CustomGroupRepository(
-            $c->get(GroupFactoryInterface::class)
+            $c->get(GroupFactory::class)
         );
     });
 
     // Members
-    $container->register(MemberFactoryInterface::class, function() {
+    $container->register(MemberFactory::class, function() {
         return new CustomMemberFactory();
     });
     
-    $container->register(MemberRepositoryInterface::class, function($c) {
+    $container->register(MemberRepository::class, function($c) {
         return new CustomMemberRepository(
-            $c->get(MemberFactoryInterface::class)
+            $c->get(MemberFactory::class)
         );
     });
 
     // Positions
-    $container->register(PositionFactoryInterface::class, function() {
+    $container->register(PositionFactory::class, function() {
         return new CustomPositionFactory();
     });
     
-    $container->register(PositionRepositoryInterface::class, function($c) {
+    $container->register(PositionRepository::class, function($c) {
         return new CustomPositionRepository(
-            $c->get(PositionFactoryInterface::class)
+            $c->get(PositionFactory::class)
         );
     });
 
     // Intergroup Meetings
-    $container->register(IntergroupMeetingFactoryInterface::class, function() {
+    $container->register(IntergroupMeetingFactory::class, function() {
         return new CustomIntergroupMeetingFactory();
     });
     
-    $container->register(IntergroupMeetingRepositoryInterface::class, function($c) {
+    $container->register(IntergroupMeetingRepository::class, function($c) {
         return new CustomIntergroupMeetingRepository(
-            $c->get(IntergroupMeetingFactoryInterface::class)
+            $c->get(IntergroupMeetingFactory::class)
         );
     });
     
@@ -551,8 +551,8 @@ class MeetingRepositoryTest extends TestCase
 {
     public function testFindById(): void
     {
-        $mockFactory = $this->createMock(MeetingFactoryInterface::class);
-        $mockCache = $this->createMock(CacheInterface::class);
+        $mockFactory = $this->createMock(MeetingFactory::class);
+        $mockCache = $this->createMock(Cache::class);
         
         $repository = new MeetingRepository($mockFactory, $mockCache);
 

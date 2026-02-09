@@ -6,7 +6,7 @@ namespace Unity\Tests\Unit\Groups;
 
 use PHPUnit\Framework\TestCase;
 use Unity\Groups\Group;
-use Unity\Groups\Interfaces\GroupInterface;
+use Unity\Groups\Interfaces\Group;
 
 /**
  * Tests for Group entity
@@ -260,6 +260,6 @@ class GroupTest extends TestCase
     {
         $group = new Group();
         
-        $this->assertInstanceOf(GroupInterface::class, $group);
+        $this->assertInstanceOf(Group::class, $group);
     }
 }

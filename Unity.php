@@ -71,7 +71,7 @@ add_action('plugins_loaded', function() {
 
         /**
          * Fires after Unity's container is created but before services are resolved.
-         * Use this hook to register custom service implementations (e.g., MeetingFactoryInterface).
+         * Use this hook to register custom service implementations (e.g., MeetingFactory).
          *
          * @param \Unity\Core\DependencyContainer $container The dependency container
          */

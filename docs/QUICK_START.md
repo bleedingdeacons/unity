@@ -46,109 +46,109 @@ function my_register_unity_services($container) {
     
     // Register Location services
     $container->register(
-        Unity\Locations\Interfaces\LocationFactoryInterface::class,
+        Unity\Locations\Interfaces\LocationFactory::class,
         function() {
             return new My_Unity_Location_Factory();
         }
     );
     
     $container->register(
-        Unity\Locations\Interfaces\LocationRepositoryInterface::class,
+        Unity\Locations\Interfaces\LocationRepository::class,
         function($c) {
             return new My_Unity_Location_Repository(
-                $c->get(Unity\Locations\Interfaces\LocationFactoryInterface::class)
+                $c->get(Unity\Locations\Interfaces\LocationFactory::class)
             );
         }
     );
 
     // Register Meeting services
     $container->register(
-        Unity\Meetings\Interfaces\MeetingFactoryInterface::class,
+        Unity\Meetings\Interfaces\MeetingFactory::class,
         function($c) {
             return new My_Unity_Meeting_Factory(
-                $c->get(Unity\Contact\Interfaces\ContactFactoryInterface::class),
-                $c->get(Unity\Locations\Interfaces\LocationRepositoryInterface::class)
+                $c->get(Unity\Contact\Interfaces\ContactFactory::class),
+                $c->get(Unity\Locations\Interfaces\LocationRepository::class)
             );
         }
     );
     
     $container->register(
-        Unity\Meetings\Interfaces\MeetingRepositoryInterface::class,
+        Unity\Meetings\Interfaces\MeetingRepository::class,
         function($c) {
             return new My_Unity_Meeting_Repository(
-                $c->get(Unity\Meetings\Interfaces\MeetingFactoryInterface::class),
-                $c->get(Unity\Core\Interfaces\CacheInterface::class)
+                $c->get(Unity\Meetings\Interfaces\MeetingFactory::class),
+                $c->get(Unity\Core\Interfaces\Cache::class)
             );
         }
     );
 
     // Register Group services
     $container->register(
-        Unity\Groups\Interfaces\GroupFactoryInterface::class,
+        Unity\Groups\Interfaces\GroupFactory::class,
         function($c) {
             return new My_Unity_Group_Factory(
-                $c->get(Unity\Contact\Interfaces\ContactFactoryInterface::class),
-                $c->get(Unity\Meetings\Interfaces\MeetingRepositoryInterface::class)
+                $c->get(Unity\Contact\Interfaces\ContactFactory::class),
+                $c->get(Unity\Meetings\Interfaces\MeetingRepository::class)
             );
         }
     );
     
     $container->register(
-        Unity\Groups\Interfaces\GroupRepositoryInterface::class,
+        Unity\Groups\Interfaces\GroupRepository::class,
         function($c) {
             return new My_Unity_Group_Repository(
-                $c->get(Unity\Groups\Interfaces\GroupFactoryInterface::class)
+                $c->get(Unity\Groups\Interfaces\GroupFactory::class)
             );
         }
     );
 
     // Register Member services
     $container->register(
-        Unity\Members\Interfaces\MemberFactoryInterface::class,
+        Unity\Members\Interfaces\MemberFactory::class,
         function() {
             return new My_Unity_Member_Factory();
         }
     );
     
     $container->register(
-        Unity\Members\Interfaces\MemberRepositoryInterface::class,
+        Unity\Members\Interfaces\MemberRepository::class,
         function($c) {
             return new My_Unity_Member_Repository(
-                $c->get(Unity\Members\Interfaces\MemberFactoryInterface::class)
+                $c->get(Unity\Members\Interfaces\MemberFactory::class)
             );
         }
     );
 
     // Register Position services
     $container->register(
-        Unity\Positions\Interfaces\PositionFactoryInterface::class,
+        Unity\Positions\Interfaces\PositionFactory::class,
         function() {
             return new My_Unity_Position_Factory();
         }
     );
     
     $container->register(
-        Unity\Positions\Interfaces\PositionRepositoryInterface::class,
+        Unity\Positions\Interfaces\PositionRepository::class,
         function($c) {
             return new My_Unity_Position_Repository(
-                $c->get(Unity\Positions\Interfaces\PositionFactoryInterface::class)
+                $c->get(Unity\Positions\Interfaces\PositionFactory::class)
             );
         }
     );
 
     // Register Intergroup Meeting services
     $container->register(
-        Unity\IntergroupMeetings\Interfaces\IntergroupMeetingFactoryInterface::class,
+        Unity\IntergroupMeetings\Interfaces\IntergroupMeetingFactory::class,
         function() {
             return new My_Unity_Intergroup_Meeting_Factory();
         }
     );
     
     $container->register(
-        Unity\IntergroupMeetings\Interfaces\IntergroupMeetingRepositoryInterface::class,
+        Unity\IntergroupMeetings\Interfaces\IntergroupMeetingRepository::class,
         function($c) {
             return new My_Unity_Intergroup_Meeting_Repository(
-                $c->get(Unity\IntergroupMeetings\Interfaces\IntergroupMeetingFactoryInterface::class)
+                $c->get(Unity\IntergroupMeetings\Interfaces\IntergroupMeetingFactory::class)
             );
         }
     );
@@ -179,8 +179,8 @@ Here's a simple example to get you started:
  */
 
 // Location Factory
-class My_Unity_Location_Factory implements Unity\Locations\Interfaces\LocationFactoryInterface {
-    public function create(array $data): Unity\Locations\Interfaces\LocationInterface {
+class My_Unity_Location_Factory implements Unity\Locations\Interfaces\LocationFactory {
+    public function create(array $data): Unity\Locations\Interfaces\Location {
         // Simple implementation - extend as needed
         return new Unity\Locations\Location(
             $data['id'] ?? 0,
@@ -194,14 +194,14 @@ class My_Unity_Location_Factory implements Unity\Locations\Interfaces\LocationFa
 }
 
 // Location Repository
-class My_Unity_Location_Repository implements Unity\Locations\Interfaces\LocationRepositoryInterface {
+class My_Unity_Location_Repository implements Unity\Locations\Interfaces\LocationRepository {
     private $factory;
     
-    public function __construct(Unity\Locations\Interfaces\LocationFactoryInterface $factory) {
+    public function __construct(Unity\Locations\Interfaces\LocationFactory $factory) {
         $this->factory = $factory;
     }
     
-    public function findById(int $id): ?Unity\Locations\Interfaces\LocationInterface {
+    public function findById(int $id): ?Unity\Locations\Interfaces\Location {
         $post = get_post($id);
         if (!$post || $post->post_type !== 'location') {
             return null;
@@ -231,7 +231,7 @@ class My_Unity_Location_Repository implements Unity\Locations\Interfaces\Locatio
         return $locations;
     }
     
-    public function save(Unity\Locations\Interfaces\LocationInterface $location): bool {
+    public function save(Unity\Locations\Interfaces\Location $location): bool {
         // Implement save logic
         return true;
     }
@@ -261,7 +261,7 @@ class My_Unity_Location_Repository implements Unity\Locations\Interfaces\Locatio
 ```php
 <?php
 $container = unity();
-$groupRepo = $container->get(Unity\Groups\Interfaces\GroupRepositoryInterface::class);
+$groupRepo = $container->get(Unity\Groups\Interfaces\GroupRepository::class);
 $groups = $groupRepo->findAll();
 
 foreach ($groups as $group) {
@@ -291,7 +291,7 @@ foreach ($groups as $group) {
 ```php
 <?php
 $container = unity();
-$meetingRepo = $container->get(Unity\Meetings\Interfaces\MeetingRepositoryInterface::class);
+$meetingRepo = $container->get(Unity\Meetings\Interfaces\MeetingRepository::class);
 
 $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -340,7 +340,7 @@ function unity_meetings_shortcode($atts) {
     ], $atts);
     
     $container = unity();
-    $meetingRepo = $container->get(Unity\Meetings\Interfaces\MeetingRepositoryInterface::class);
+    $meetingRepo = $container->get(Unity\Meetings\Interfaces\MeetingRepository::class);
     
     if ($atts['day'] !== null) {
         $meetings = $meetingRepo->findByDay((int)$atts['day']);
@@ -410,7 +410,7 @@ Unity includes WordPress caching by default:
 
 ```php
 add_action('unity_loaded', function($container) {
-    $cache = $container->get(Unity\Core\Interfaces\CacheInterface::class);
+    $cache = $container->get(Unity\Core\Interfaces\Cache::class);
     
     // Cache is automatically used by repositories
     // You can also use it directly:
@@ -425,10 +425,10 @@ add_action('unity_loaded', function($container) {
 // Listen for group changes
 add_action('save_post_group', function($post_id) {
     $container = unity();
-    $groupRepo = $container->get(Unity\Groups\Interfaces\GroupRepositoryInterface::class);
+    $groupRepo = $container->get(Unity\Groups\Interfaces\GroupRepository::class);
     
     // Clear cache
-    $cache = $container->get(Unity\Core\Interfaces\CacheInterface::class);
+    $cache = $container->get(Unity\Core\Interfaces\Cache::class);
     $cache->delete("group_{$post_id}");
 }, 10, 1);
 ```

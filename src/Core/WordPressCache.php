@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Core;
 
-use Unity\Core\Interfaces\CacheInterface;
+use Unity\Core\Interfaces\Cache;
 use function wp_cache_delete;
 use function wp_cache_flush;
 use function wp_cache_get;
@@ -13,7 +13,7 @@ use function wp_cache_set;
 /**
  * WordPress cache adapter
  */
-class WordPressCache implements CacheInterface
+class WordPressCache implements Cache
 {
     /**
      * {@inheritdoc}

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Core;
 
-use Unity\Core\Interfaces\ContainerInterface;
+use Unity\Core\Interfaces\Container;
 use RuntimeException;
 
 /**
@@ -12,7 +12,7 @@ use RuntimeException;
  *
  * Simple dependency injection container
  */
-class DependencyContainer implements ContainerInterface
+class DependencyContainer implements Container
 {
     /**
      * @var array<string, mixed>

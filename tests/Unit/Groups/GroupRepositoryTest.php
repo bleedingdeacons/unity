@@ -8,8 +8,8 @@ use Mockery;
 use Unity\Groups\Group;
 use Unity\Groups\GroupFields;
 use Unity\Groups\GroupRepository;
-use Unity\Groups\Interfaces\GroupFactoryInterface;
-use Unity\Groups\Interfaces\GroupInterface;
+use Unity\Groups\Interfaces\GroupFactory;
+use Unity\Groups\Interfaces\Group;
 use Unity\Tests\TestCase;
 use WP_Mock;
 
@@ -18,13 +18,13 @@ use WP_Mock;
  */
 class GroupRepositoryTest extends TestCase
 {
-    private GroupFactoryInterface $factory;
+    private GroupFactory $factory;
     private GroupRepository $repository;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->factory = Mockery::mock(GroupFactoryInterface::class);
+        $this->factory = Mockery::mock(GroupFactory::class);
         $this->repository = new GroupRepository($this->factory);
     }
 
@@ -179,7 +179,7 @@ class GroupRepositoryTest extends TestCase
      */
     public function it_saves_new_group(): void
     {
-        $group = Mockery::mock(GroupInterface::class);
+        $group = Mockery::mock(Group::class);
         $group->shouldReceive('getId')->andReturn(0);
         $group->shouldReceive('isValid')->andReturn(true);
         $group->shouldReceive('getTitle')->andReturn('New Group');
@@ -208,7 +208,7 @@ class GroupRepositoryTest extends TestCase
      */
     public function it_returns_false_when_saving_invalid_new_group(): void
     {
-        $group = Mockery::mock(GroupInterface::class);
+        $group = Mockery::mock(Group::class);
         $group->shouldReceive('getId')->andReturn(0);
         $group->shouldReceive('isValid')->andReturn(false);
 
@@ -222,7 +222,7 @@ class GroupRepositoryTest extends TestCase
      */
     public function it_updates_existing_group(): void
     {
-        $group = Mockery::mock(GroupInterface::class);
+        $group = Mockery::mock(Group::class);
         $group->shouldReceive('getId')->andReturn(50);
         $group->shouldReceive('isValid')->andReturn(true);
         $group->shouldReceive('getTitle')->andReturn('Updated Group');
@@ -251,7 +251,7 @@ class GroupRepositoryTest extends TestCase
      */
     public function it_returns_false_when_updating_group_with_zero_id(): void
     {
-        $group = Mockery::mock(GroupInterface::class);
+        $group = Mockery::mock(Group::class);
         $group->shouldReceive('getId')->andReturn(0);
 
         $result = $this->repository->update($group);
@@ -264,7 +264,7 @@ class GroupRepositoryTest extends TestCase
      */
     public function it_returns_false_when_updating_invalid_group(): void
     {
-        $group = Mockery::mock(GroupInterface::class);
+        $group = Mockery::mock(Group::class);
         $group->shouldReceive('getId')->andReturn(50);
         $group->shouldReceive('isValid')->andReturn(false);
 
@@ -289,7 +289,7 @@ class GroupRepositoryTest extends TestCase
      */
     public function save_calls_update_for_existing_group(): void
     {
-        $group = Mockery::mock(GroupInterface::class);
+        $group = Mockery::mock(Group::class);
         $group->shouldReceive('getId')->andReturn(100); // Existing group
         $group->shouldReceive('isValid')->andReturn(true);
         $group->shouldReceive('getTitle')->andReturn('Existing Group');
