@@ -4,7 +4,7 @@
 # Core
 #
 # Note: if you want to stage/commit WP core files
-# you can delete this whole section/until Configuration.
+# you can delete this whole section/until UnityConfiguration.
 /wp-admin/
 /wp-content/index.php
 /wp-content/languages
@@ -17,7 +17,7 @@
 /wp-*.php
 /xmlrpc.php
 
-# Configuration
+# UnityConfiguration
 wp-config.php
 
 # Example themes
