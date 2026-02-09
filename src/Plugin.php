@@ -8,19 +8,19 @@ use RuntimeException;
 use Unity\Core\DependencyContainer;
 use Unity\Core\Interfaces\CacheInterface;
 use Unity\Core\UnityServiceProvider;
-use Unity\Groups\GroupChangeTracker;
+use Unity\Groups\Interfaces\GroupChangeTrackerInterface;
 use Unity\Groups\Interfaces\GroupFactoryInterface;
 use Unity\Groups\Interfaces\GroupRepositoryInterface;
 use Unity\Groups\Interfaces\GroupViewFactoryInterface;
 use Unity\Meetings\Interfaces\MeetingFactoryInterface;
 use Unity\Meetings\Interfaces\MeetingRepositoryInterface;
+use Unity\Members\Interfaces\MemberChangeTrackerInterface;
 use Unity\Members\Interfaces\MemberFactoryInterface;
 use Unity\Members\Interfaces\MemberRepositoryInterface;
-use Unity\Members\MemberChangeTracker;
+use Unity\Positions\Interfaces\PositionChangeTrackerInterface;
 use Unity\Positions\Interfaces\PositionFactoryInterface;
 use Unity\Positions\Interfaces\PositionRepositoryInterface;
 use Unity\Positions\Interfaces\PositionViewFactoryInterface;
-use Unity\Positions\PositionChangeTracker;
 use function register_deactivation_hook;
 
 /**
@@ -72,9 +72,9 @@ class Plugin
         self::$container->get(GroupFactoryInterface::class);
         self::$container->get(GroupViewFactoryInterface::class);
         self::$container->get(GroupRepositoryInterface::class);
-        self::$container->get(GroupChangeTracker::class);
-        self::$container->get(MemberChangeTracker::class);
-        self::$container->get(PositionChangeTracker::class);
+        self::$container->get(GroupChangeTrackerInterface::class);
+        self::$container->get(MemberChangeTrackerInterface::class);
+        self::$container->get(PositionChangeTrackerInterface::class);
         self::$container->get(PositionFactoryInterface::class);
         self::$container->get(PositionRepositoryInterface::class);
         self::$container->get(MemberFactoryInterface::class);
