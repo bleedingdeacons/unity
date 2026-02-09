@@ -101,7 +101,7 @@ interface MeetingInterface
     /**
      * Get meeting contacts.
      *
-     * @return ContactInterface[] Array of Contact objects.
+     * @return ContactInterface[] Array of TsmlContact objects.
      */
     public function getContacts(): array;
 

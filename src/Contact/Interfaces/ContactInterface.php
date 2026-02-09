@@ -7,28 +7,28 @@ namespace Unity\Contact\Interfaces;
 /**
  * Interface ContactInterface
  *
- * Defines the contract for Contact objects.
+ * Defines the contract for TsmlContact objects.
  */
 interface ContactInterface
 {
     /**
      * Get contact name.
      *
-     * @return string Contact name.
+     * @return string TsmlContact name.
      */
     public function getName(): string;
 
     /**
      * Get contact email.
      *
-     * @return string Contact email.
+     * @return string TsmlContact email.
      */
     public function getEmail(): string;
 
     /**
      * Get contact phone.
      *
-     * @return string Contact phone.
+     * @return string TsmlContact phone.
      */
     public function getPhone(): string;
 }

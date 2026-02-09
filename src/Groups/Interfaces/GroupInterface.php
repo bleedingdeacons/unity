@@ -113,7 +113,7 @@ interface GroupInterface
     /**
      * Get the contacts array
      *
-     * @return ContactInterface[] Array of Contact objects.
+     * @return ContactInterface[] Array of TsmlContact objects.
      */
     public function getContacts(): array;
 

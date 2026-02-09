@@ -94,7 +94,7 @@ interface PositionViewInterface
     /**
      * Get the private mobile number of the member only display in admin
      * 
-     * @return string|null Contact to display on admin.
+     * @return string|null TsmlContact to display on admin.
      */
     public function getPrivateContact(): ?string;
 

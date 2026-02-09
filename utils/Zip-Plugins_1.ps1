@@ -17,7 +17,7 @@ if (-not [string]::IsNullOrWhiteSpace($QuickSelect)) {
         "a" { $PluginNames = @("amber") }
         "tr" { $PluginNames = @("trumpet") }
         "sc" { $PluginNames = @("scrutiny") }
-		"rc" { $PluginNames = @("reconcile") }
+        "rc" { $PluginNames = @("reconcile") }
         "uta" { $PluginNames = @("unity", "tsml-for-unity", "amber") }
         "uit" { $PluginNames = @("unity", "integrity", "tsml-for-unity") }
         "all" { $PluginNames = @("unity", "integrity", "tsml-for-unity", "amber", "trumpet", "reconcile", "scrutiny") }
@@ -40,6 +40,7 @@ Write-Host "Plugins Path: $PluginsPath" -ForegroundColor Yellow
 Write-Host "Output Path: $OutputPath" -ForegroundColor Yellow
 Write-Host "Plugins to zip: $($PluginNames -join ', ')" -ForegroundColor Green
 Write-Host "Excluding folders: $($ExcludeFolders -join ', ')" -ForegroundColor Yellow
+Write-Host "Excluding files: .zip" -ForegroundColor Yellow
 Write-Host ""
 
 # Load System.IO.Compression for cross-platform zip creation
@@ -68,17 +69,25 @@ foreach ($pluginName in $PluginNames) {
     Write-Host "Processing: $pluginName" -ForegroundColor Green
 
     try {
-        # Get all items recursively, excluding specified folders
+        # Get all items recursively, excluding specified folders and .zip files
         $itemsToZip = Get-ChildItem -Path $pluginPath -Recurse -File | Where-Object {
             $filePath = $_.FullName
             $exclude = $false
 
-            foreach ($excludeFolder in $ExcludeFolders) {
-                # Use cross-platform path separator check
-                $separator = [System.IO.Path]::DirectorySeparatorChar
-                if ($filePath -match "$([regex]::Escape($separator))$excludeFolder$([regex]::Escape($separator))") {
-                    $exclude = $true
-                    break
+            # Exclude .zip files
+            if ($_.Extension -eq '.zip') {
+                $exclude = $true
+            }
+
+            # Exclude specified folders
+            if (-not $exclude) {
+                foreach ($excludeFolder in $ExcludeFolders) {
+                    # Use cross-platform path separator check
+                    $separator = [System.IO.Path]::DirectorySeparatorChar
+                    if ($filePath -match "$([regex]::Escape($separator))$excludeFolder$([regex]::Escape($separator))") {
+                        $exclude = $true
+                        break
+                    }
                 }
             }
 

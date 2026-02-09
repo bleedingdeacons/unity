@@ -23,7 +23,7 @@ interface ConfigurationInterface
      * Retrieve configuration field.
      *
      * @param $key The contact source data.
-     * @return array $fields Contact object.
+     * @return array $fields TsmlContact object.
      */
     public function getField(string $key): array;
 
