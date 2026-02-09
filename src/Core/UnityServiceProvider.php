@@ -7,6 +7,7 @@ namespace Unity\Core;
 use Unity\Contact\ContactFactory;
 use Unity\Contact\Interfaces\ContactFactoryInterface;
 use Unity\Core\Interfaces\CacheInterface;
+use Unity\Core\Interfaces\ConfigurationInterface;
 use Unity\Groups\GroupChangeTracker;
 use Unity\Groups\GroupViewFactory;
 use Unity\Groups\Interfaces\GroupFactoryInterface;
@@ -47,6 +48,10 @@ class UnityServiceProvider
             return new WordPressCache();
         });
 
+        $container->register(ConfigurationInterface::class, function () {
+            return new UnityConfiguration();
+        });
+
         // Register Contact Factory
         $container->register(ContactFactoryInterface::class, function () {
             return new ContactFactory();
@@ -84,11 +89,12 @@ class UnityServiceProvider
             throw new DependencyNotRegisteredException(GroupRepositoryInterface::class);
         });
 
-        // Register GroupChangeTracker
+        // Register GroupChangeTracker (requires TSML-for-Unity to provide implementation)
         $container->register(GroupChangeTracker::class, function (DependencyContainer $c) {
-            return new GroupChangeTracker(
-                $c->get(GroupRepositoryInterface::class)
-            );
+//            return new GroupChangeTracker(
+//                $c->get(GroupRepositoryInterface::class)
+//            );
+            throw new DependencyNotRegisteredException(GroupChangeTracker::class);
         });
 
         // Register MemberChangeTracker (requires TSML-for-Unity to provide implementation)
