@@ -4,20 +4,22 @@ declare(strict_types=1);
 
 namespace Unity\Core;
 
-use Unity\Core\Interfaces\ConfigurationInterface;
+use Unity\Core\Interfaces\Configuration;
 
 /**
  * UnityConfiguration class
  */
-final class UnityConfiguration implements ConfigurationInterface
+final class UnityConfiguration implements Configuration
 {
-    public function setField($key, array $source)
+    protected array $storage = [];
+
+    public function setConfig($key, array $source)
     {
-        // TODO: Implement setField() method.
+        $this->storage[$key] = $source;
     }
 
-    public function getField(string $key): array
+    public function getConfig(string $key): ?array
     {
-        // TODO: Implement getField() method.
+        return $this->storage[$key] ?? null;
     }
 }

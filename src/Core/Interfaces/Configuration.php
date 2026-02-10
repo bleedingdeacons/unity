@@ -15,14 +15,14 @@ interface Configuration
      *
      * @param array $source The contact source data.
      */
-    public function setField($key, array $source);
+    public function setConfig($key, array $source);
 
     /**
      * Retrieve configuration field.
      *
-     * @param $key The contact source data.
-     * @return array $fields TsmlContact object.
+     * @param string $key The contact source data.
+     * @return array|null $fields TsmlContact object.
      */
-    public function getField(string $key): array;
+    public function getConfig(string $key): ?array;
 
 }
