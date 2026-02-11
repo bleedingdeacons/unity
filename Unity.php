@@ -75,15 +75,15 @@ add_action('plugins_loaded', function() {
          *
          * @param \Unity\Core\DependencyContainer $container The dependency container
          */
-        do_action('unity_register_services', \Unity\Plugin::getContainer());
+        do_action('unity/register_services', \Unity\Plugin::getContainer());
 
-        if (!has_action('unity_register_services')) {
+        if (!has_action('unity/register_services')) {
             if (is_admin()) {
                 add_action('admin_notices', function() {
                     echo '<div class="notice notice-error is-dismissible"><p><strong>Unity Plugin Error:</strong> Services not registered.</p></div>';
                 });
             }
-            error_log('Unity Plugin Error: Services not registered - no hooks listening to unity_register_services.');
+            error_log('Unity Plugin Error: Services not registered - no hooks listening to unity/register_services.');
         }
 
         \Unity\Plugin::initServices();
@@ -94,7 +94,7 @@ add_action('plugins_loaded', function() {
          *
          * @param \Unity\Core\DependencyContainer $container The dependency container
          */
-        do_action('unity_loaded', \Unity\Plugin::getContainer());
+        do_action('unity/loaded', \Unity\Plugin::getContainer());
 
     } catch (\Exception $e) {
         error_log('Unity Plugin Initialization Error: ' . $e->getMessage());

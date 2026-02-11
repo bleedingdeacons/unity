@@ -110,11 +110,11 @@ $member = $memberFactory->create($memberData);
 
 Unity provides several hooks for extensibility:
 
-**`unity_register_services`**
+**`unity/register_services`**
 Fires after Unity's container is created but before services are resolved. Use this to register custom service implementations.
 
 ```php
-add_action('unity_register_services', function($container) {
+add_action('unity/register_services', function($container) {
     $container->register(MeetingFactory::class, function($c) {
         return new CustomMeetingFactory(
             $c->get(ContactFactoryInterface::class),
@@ -124,11 +124,11 @@ add_action('unity_register_services', function($container) {
 });
 ```
 
-**`unity_loaded`**
+**`unity/loaded`**
 Fires after Unity is fully loaded and all services are initialized.
 
 ```php
-add_action('unity_loaded', function($container) {
+add_action('unity/loaded', function($container) {
     // Your code here - all Unity services are available
     $groups = $container->get(GroupRepository::class)->findAll();
 });
@@ -136,7 +136,7 @@ add_action('unity_loaded', function($container) {
 
 ### Custom Service Registration
 
-Unity uses a dependency injection container that requires certain services to be registered by the implementing site. The following services must be registered via the `unity_register_services` hook:
+Unity uses a dependency injection container that requires certain services to be registered by the implementing site. The following services must be registered via the `unity/register_services` hook:
 
 - `MeetingFactory`
 - `MeetingRepository`
@@ -154,7 +154,7 @@ Unity uses a dependency injection container that requires certain services to be
 Example implementation:
 
 ```php
-add_action('unity_register_services', function($container) {
+add_action('unity/register_services', function($container) {
     // Register Meeting Factory
     $container->register(MeetingFactory::class, function($c) {
         return new MeetingFactory(
@@ -476,13 +476,13 @@ define('WP_DEBUG_LOG', true);
 
 ### Services Not Registered Error
 
-This means required services haven't been registered. Add the `unity_register_services` hook to register all required services (see Configuration section).
+This means required services haven't been registered. Add the `unity/register_services` hook to register all required services (see Configuration section).
 
 ### Missing Dependencies
 
 Ensure all required interfaces are implemented:
 ```php
-add_action('unity_register_services', function($container) {
+add_action('unity/register_services', function($container) {
     // Register all required factories and repositories
 });
 ```

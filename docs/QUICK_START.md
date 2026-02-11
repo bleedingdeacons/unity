@@ -40,7 +40,7 @@ Create a new file in your theme: `unity-setup.php`
  */
 
 // Register all required services
-add_action('unity_register_services', 'my_register_unity_services');
+add_action('unity/register_services', 'my_register_unity_services');
 
 function my_register_unity_services($container) {
     
@@ -409,7 +409,7 @@ add_action('init', 'register_unity_post_types');
 Unity includes WordPress caching by default:
 
 ```php
-add_action('unity_loaded', function($container) {
+add_action('unity/loaded', function($container) {
     $cache = $container->get(Unity\Core\Interfaces\Cache::class);
     
     // Cache is automatically used by repositories
@@ -437,7 +437,7 @@ add_action('save_post_group', function($post_id) {
 
 ### Error: Services not registered
 
-Make sure you've added the `unity_register_services` hook with all required services.
+Make sure you've added the `unity/register_services` hook with all required services.
 
 ### Error: Container not initialized
 

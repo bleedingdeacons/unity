@@ -6,7 +6,7 @@ namespace Unity\Members\Interfaces;
 /**
  * Class MemberChangeTracker
  *
- * Tracks changes to members via ACF and fires the member_changed hook
+ * Tracks changes to members via ACF and fires the amber/member_changing hook
  * when actual changes are detected.
  */
 interface MemberChangeTracker

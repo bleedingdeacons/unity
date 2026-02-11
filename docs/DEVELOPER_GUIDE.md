@@ -137,13 +137,13 @@ Plugin::initContainer() creates DependencyContainer
     ↓
 UnityServiceProvider registers default services
     ↓
-WordPress fires 'unity_register_services' hook
+WordPress fires 'unity/register_services' hook
     ↓
 Custom implementations register their services
     ↓
 Plugin::initServices() resolves core services
     ↓
-WordPress fires 'unity_loaded' hook
+WordPress fires 'unity/loaded' hook
     ↓
 Plugin ready for use
 ```
@@ -363,7 +363,7 @@ class CustomMeetingRepository implements MeetingRepository
 ```php
 // In your theme's functions.php or custom plugin
 
-add_action('unity_register_services', function($container) {
+add_action('unity/register_services', function($container) {
     // Register Meeting Factory
     $container->register(
         \Unity\Meetings\Interfaces\MeetingFactory::class,
@@ -393,7 +393,7 @@ add_action('unity_register_services', function($container) {
 ### Complete Example: All Required Services
 
 ```php
-add_action('unity_register_services', function($container) {
+add_action('unity/register_services', function($container) {
     
     // Locations
     $container->register(LocationFactory::class, function() {
@@ -679,7 +679,7 @@ class CustomService implements CustomServiceInterface
 
 3. **Register Service**
 ```php
-add_action('unity_register_services', function($container) {
+add_action('unity/register_services', function($container) {
     $container->register(
         CustomServiceInterface::class,
         function() {
@@ -691,7 +691,7 @@ add_action('unity_register_services', function($container) {
 
 4. **Use Service**
 ```php
-add_action('unity_loaded', function($container) {
+add_action('unity/loaded', function($container) {
     $service = $container->get(CustomServiceInterface::class);
     $service->doSomething();
 });
@@ -702,11 +702,11 @@ add_action('unity_loaded', function($container) {
 Monitor entity changes:
 
 ```php
-add_action('unity_loaded', function($container) {
+add_action('unity/loaded', function($container) {
     $tracker = $container->get(GroupChangeTracker::class);
     
     // Add custom change handling
-    add_action('unity_group_changed', function($groupId, $changes) {
+    add_action('unity_unity/group_changing', function($groupId, $changes) {
         error_log("Group {$groupId} changed: " . print_r($changes, true));
     }, 10, 2);
 });
@@ -749,7 +749,7 @@ Unity Plugin Error: Services not registered
 ```
 
 **Solution:**
-Ensure you've registered all required services via `unity_register_services` hook.
+Ensure you've registered all required services via `unity/register_services` hook.
 
 #### Class Not Found
 

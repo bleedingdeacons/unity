@@ -6,7 +6,7 @@ namespace Unity\Groups\Interfaces;
 /**
  * Class GroupChangeTracker
  *
- * Tracks changes to groups via ACF and fires the group_changed hook
+ * Tracks changes to groups via ACF and fires the unity/group_changing hook
  * when actual changes are detected.
  */
 interface GroupChangeTracker

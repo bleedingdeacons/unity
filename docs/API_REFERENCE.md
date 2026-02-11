@@ -678,10 +678,10 @@ $container = Unity\Plugin::getContainer();
 
 ### Registering Services
 
-Services must be registered using the `unity_register_services` hook:
+Services must be registered using the `unity/register_services` hook:
 
 ```php
-add_action('unity_register_services', function($container) {
+add_action('unity/register_services', function($container) {
     $container->register(MyServiceInterface::class, function($c) {
         return new MyService(
             $c->get(DependencyInterface::class)
@@ -721,12 +721,12 @@ $container->register(ServiceAInterface::class, function($c) {
 
 ### Actions
 
-**`unity_register_services`**
+**`unity/register_services`**
 - **When:** After container creation, before service resolution
 - **Parameters:** `DependencyContainer $container`
 - **Use:** Register custom service implementations
 
-**`unity_loaded`**
+**`unity/loaded`**
 - **When:** After all services initialized
 - **Parameters:** `DependencyContainer $container`
 - **Use:** Execute code that depends on Unity services
@@ -735,14 +735,14 @@ $container->register(ServiceAInterface::class, function($c) {
 
 ```php
 // Register services
-add_action('unity_register_services', function($container) {
+add_action('unity/register_services', function($container) {
     $container->register(MeetingFactory::class, function($c) {
         return new CustomMeetingFactory();
     });
 });
 
 // Use services after initialization
-add_action('unity_loaded', function($container) {
+add_action('unity/loaded', function($container) {
     $meetings = $container
         ->get(MeetingRepository::class)
         ->findAll();
@@ -792,7 +792,7 @@ $repository = new MeetingRepository();
 ### 2. Register Services Early
 
 ```php
-add_action('unity_register_services', function($container) {
+add_action('unity/register_services', function($container) {
     // Register all services here
 }, 10);
 ```
