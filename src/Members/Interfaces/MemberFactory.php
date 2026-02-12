@@ -17,5 +17,41 @@ interface MemberFactory
      */
     public function createFromSource(int $id): Member;
 
-    public function createFrom(int $id): Member;
+    /**
+     * Create a new Member from imported data without requiring an existing post
+     *
+     * Used by Reconcile (and other importers) to build a Member object
+     * from raw field values. The post is created first via wp_insert_post,
+     * then this method wraps the data as a concrete Member ready for
+     * MemberRepository::save().
+     *
+     * @param int    $id                          WordPress post ID (from wp_insert_post)
+     * @param string $anonymousName               Anonymous name (e.g. "John D.")
+     * @param bool   $showAnonymousName           Whether to display anonymous name publicly
+     * @param bool   $showMemberProfile            Whether to display member profile publicly
+     * @param string $anonymousProfile             Profile text
+     * @param int    $intergroupPosition           Position post ID
+     * @param string $intergroupPositionRotation   Rotation date (Y-m-d)
+     * @param int    $homeGroup                    Home group post ID
+     * @param bool   $isGSR                        GSR flag
+     * @param mixed  $meetingPO                    Meeting PO reference
+     * @param string $personalEmail                Personal email address
+     * @param string $mobileNumber                 Mobile phone number
+     * @return Member
+     */
+    public function createNew(
+        int $id,
+        string $anonymousName = '',
+        bool $showAnonymousName = false,
+        bool $showMemberProfile = false,
+        string $anonymousProfile = '',
+        int $intergroupPosition = 0,
+        string $intergroupPositionRotation = '',
+        int $homeGroup = 0,
+        bool $isGSR = false,
+        mixed $meetingPO = null,
+        string $personalEmail = '',
+        string $mobileNumber = ''
+    ): Member;
+
 }
