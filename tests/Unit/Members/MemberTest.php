@@ -12,6 +12,8 @@ use Unity\Members\Member;
  */
 class MemberTest extends TestCase
 {
+    private $member;
+
     /**
      * @test
      */
@@ -21,7 +23,6 @@ class MemberTest extends TestCase
 
         $this->assertEquals(1, $member->getId());
         $this->assertEquals('', $member->getAnonymousName());
-        $this->assertEquals('', $member->getPrivateName());
         $this->assertEquals('', $member->getEmail());
         $this->assertFalse($member->showAnonymousName());
         $this->assertFalse($member->showMemberProfile());
@@ -43,7 +44,6 @@ class MemberTest extends TestCase
         $member = new Member(
             id: 42,
             anonymousName: 'John D.',
-            privateName: 'John Doe',
             email: 'john@example.com',
             showAnonymousName: true,
             showMemberProfile: true,
@@ -59,7 +59,6 @@ class MemberTest extends TestCase
 
         $this->assertEquals(42, $member->getId());
         $this->assertEquals('John D.', $member->getAnonymousName());
-        $this->assertEquals('John Doe', $member->getPrivateName());
         $this->assertEquals('john@example.com', $member->getEmail());
         $this->assertTrue($member->showAnonymousName());
         $this->assertTrue($member->showMemberProfile());
@@ -142,17 +141,16 @@ class MemberTest extends TestCase
      */
     public function it_handles_empty_strings_for_optional_fields(): void
     {
-        $member = new Member(
+        $this->member = new Member(
             id: 1,
             anonymousName: '',
-            privateName: '',
             email: '',
             personalEmail: '',
             mobileNumber: ''
         );
+        $member = $this->member;
 
         $this->assertEmpty($member->getAnonymousName());
-        $this->assertEmpty($member->getPrivateName());
         $this->assertEmpty($member->getEmail());
         $this->assertEmpty($member->getPersonalEmail());
         $this->assertEmpty($member->getMobileNumber());

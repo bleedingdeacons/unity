@@ -32,6 +32,7 @@ interface Group
      * @return string Email address
      */
     public function getEmail(): string;
+    // TODO: remove email field redundant
 
     /**
      * Get the meetings associated with this group
@@ -74,7 +75,7 @@ interface Group
      * @return string Phone number
      */
     public function getPhone(): string;
-
+    // TODO: remove phone field redundant
     /**
      * Get the Venmo handle for 7th Tradition contributions
      *

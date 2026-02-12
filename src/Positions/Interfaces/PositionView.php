@@ -78,13 +78,6 @@ interface PositionView
     public function getPublicDisplayName(): ?string;
 
     /**
-     * Get the display name for the member only display in admin
-     * 
-     * @return string|null Name to display on admin.
-     */
-    public function getPrivateDisplayName(): ?string;
-
-    /**
      * Get the private email address of the member only display in admin
      * 
      * @return string|null Email to display on admin.

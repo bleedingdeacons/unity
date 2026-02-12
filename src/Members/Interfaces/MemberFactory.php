@@ -16,4 +16,6 @@ interface MemberFactory
      * @return Member
      */
     public function createFromSource(int $id): Member;
+
+    public function createFrom(int $id): Member;
 }

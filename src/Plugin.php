@@ -21,7 +21,6 @@ use Unity\Positions\Interfaces\PositionChangeTracker;
 use Unity\Positions\Interfaces\PositionFactory;
 use Unity\Positions\Interfaces\PositionRepository;
 use Unity\Positions\Interfaces\PositionViewFactory;
-use function register_deactivation_hook;
 
 /**
  * Main Plugin Class

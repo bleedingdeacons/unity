@@ -21,8 +21,10 @@ if (!defined('ABSPATH')) {
 if (!function_exists('get_plugin_data')) {
     require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 }
-$confur_plugin_data = get_plugin_data(__FILE__, false, false);
-define('UNITY_VERSION', $confur_plugin_data['Version']);
+
+$unity_plugin_data = get_plugin_data(__FILE__, false, false);
+
+define('UNITY_VERSION', $unity_plugin_data['Version']);
 define('UNITY_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('UNITY_PLUGIN_URL', plugin_dir_url(__FILE__));
 
