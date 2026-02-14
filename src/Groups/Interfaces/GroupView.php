@@ -43,4 +43,11 @@ interface GroupView
      * @return string Link URL
      */
     public function getLink(): string;
+
+    /**
+     * Get the contacts associated with this group
+     *
+     * @return \Unity\Contacts\Interfaces\Contact[] Array of Contact objects
+     */
+    public function getContacts(): array;
 }
