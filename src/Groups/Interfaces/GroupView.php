@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Unity\Groups\Interfaces;
 
+use Unity\Contacts\Interfaces\Contact;
+use Unity\members\Interfaces\member;
+
 /**
  * Interface for Group View
  */
@@ -47,7 +50,14 @@ interface GroupView
     /**
      * Get the contacts associated with this group
      *
-     * @return \Unity\Contacts\Interfaces\Contact[] Array of Contact objects
+     * @return Contact[] Array of Contact objects
      */
     public function getContacts(): array;
+
+    /**
+     * Get the members associated with this group
+     *
+     * @return member[] Array of Member objects
+     */
+    public function getMembers(): array;
 }
