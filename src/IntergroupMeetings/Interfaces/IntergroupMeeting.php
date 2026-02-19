@@ -60,4 +60,28 @@ interface IntergroupMeeting
      * @return bool
      */
     public function hasGroupAttendee(int $memberId): bool;
+
+    /**
+     * Add an officer ID to the officers attending list
+     *
+     * @param int $officerId
+     * @return bool True if the officer was added, false if already present
+     */
+    public function addOfficerAttendee(int $officerId): bool;
+
+    /**
+     * Remove an officer ID from the officers attending list
+     *
+     * @param int $officerId
+     * @return bool True if the officer was removed, false if not present
+     */
+    public function removeOfficerAttendee(int $officerId): bool;
+
+    /**
+     * Check if an officer ID is in the officers attending list
+     *
+     * @param int $officerId
+     * @return bool
+     */
+    public function hasOfficerAttendee(int $officerId): bool;
 }
