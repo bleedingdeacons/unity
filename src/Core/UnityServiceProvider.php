@@ -14,6 +14,8 @@ use Unity\Groups\Interfaces\GroupViewFactory;
 use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingGroupAttendanceFactory;
 use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingGroupAttendanceRepository;
 use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingFactory;
+use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingOfficerAttendanceFactory;
+use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingOfficerAttendanceRepository;
 use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingRepository;
 use Unity\Locations\Interfaces\LocationFactory;
 use Unity\Locations\Interfaces\LocationRepository;
@@ -172,6 +174,20 @@ class UnityServiceProvider
         $container->register(IntergroupMeetingGroupAttendanceRepository::class, function (DependencyContainer $c) {
 
             throw new DependencyNotRegisteredException(IntergroupMeetingGroupAttendanceRepository::class);
+
+        });
+
+        // Register Intergroup Meeting Officer Attendance Factory
+        $container->register(IntergroupMeetingOfficerAttendanceFactory::class, function () {
+
+            throw new DependencyNotRegisteredException(IntergroupMeetingOfficerAttendanceFactory::class);
+
+        });
+
+        // Register Intergroup Meeting Officer Attendance Repository
+        $container->register(IntergroupMeetingOfficerAttendanceRepository::class, function (DependencyContainer $c) {
+
+            throw new DependencyNotRegisteredException(IntergroupMeetingOfficerAttendanceRepository::class);
 
         });
 
