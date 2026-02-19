@@ -7,21 +7,21 @@ namespace Unity\IntergroupMeetings\Interfaces;
 /**
  * Intergroup Meeting Attendance Repository Interface
  */
-interface IntergroupMeetingAttendanceRepository
+interface IntergroupMeetingGroupAttendanceRepository
 {
     /**
      * Find an attendance record by ID.
      *
      * @param int $id Attendance record ID
-     * @return IntergroupMeetingAttendance|null
+     * @return IntergroupMeetingGroupAttendance|null
      */
-    public function find(int $id): ?IntergroupMeetingAttendance;
+    public function find(int $id): ?IntergroupMeetingGroupAttendance;
 
     /**
      * Find all attendance records matching the given arguments.
      *
      * @param array $args Query arguments
-     * @return array<IntergroupMeetingAttendance>
+     * @return array<IntergroupMeetingGroupAttendance>
      */
     public function findAll(array $args = []): array;
 
@@ -29,7 +29,7 @@ interface IntergroupMeetingAttendanceRepository
      * Find all attendance records for a specific intergroup meeting.
      *
      * @param int $intergroupMeetingId
-     * @return array<IntergroupMeetingAttendance>
+     * @return array<IntergroupMeetingGroupAttendance>
      */
     public function findByIntergroupMeeting(int $intergroupMeetingId): array;
 
@@ -44,10 +44,10 @@ interface IntergroupMeetingAttendanceRepository
     /**
      * Save an attendance record.
      *
-     * @param IntergroupMeetingAttendance $attendance
+     * @param IntergroupMeetingGroupAttendance $attendance
      * @return bool Success status
      */
-    public function save(IntergroupMeetingAttendance $attendance): bool;
+    public function save(IntergroupMeetingGroupAttendance $attendance): bool;
 
     /**
      * Delete an attendance record.

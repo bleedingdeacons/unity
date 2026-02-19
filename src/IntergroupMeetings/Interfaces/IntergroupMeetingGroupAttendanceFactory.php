@@ -7,18 +7,18 @@ namespace Unity\IntergroupMeetings\Interfaces;
 /**
  * Intergroup Meeting Attendance Factory Interface
  */
-interface IntergroupMeetingAttendanceFactory
+interface IntergroupMeetingGroupAttendanceFactory
 {
     /**
-     * Create an IntergroupMeetingAttendance from a source ID.
+     * Create an IntergroupMeetingGroupAttendance from a source ID.
      *
      * @param int $id Row ID in the attendance table
-     * @return IntergroupMeetingAttendance
+     * @return IntergroupMeetingGroupAttendance
      */
-    public function createFromSource(int $id): IntergroupMeetingAttendance;
+    public function createFromSource(int $id): IntergroupMeetingGroupAttendance;
 
     /**
-     * Create a new IntergroupMeetingAttendance instance.
+     * Create a new IntergroupMeetingGroupAttendance instance.
      *
      * @param int    $intergroupMeetingId Parent intergroup meeting ID
      * @param int    $memberId           Member ID
@@ -26,7 +26,7 @@ interface IntergroupMeetingAttendanceFactory
      * @param string $gsrName            GSR name (plain text)
      * @param bool   $gsrProxy           Whether a proxy attended for the GSR
      * @param string $gsrProxyName       Proxy name (plain text)
-     * @return IntergroupMeetingAttendance
+     * @return IntergroupMeetingGroupAttendance
      */
     public function createNew(
         int $intergroupMeetingId,
@@ -35,5 +35,5 @@ interface IntergroupMeetingAttendanceFactory
         string $gsrName,
         bool $gsrProxy = false,
         string $gsrProxyName = ''
-    ): IntergroupMeetingAttendance;
+    ): IntergroupMeetingGroupAttendance;
 }

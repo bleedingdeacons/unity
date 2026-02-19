@@ -10,7 +10,7 @@ namespace Unity\IntergroupMeetings\Interfaces;
  * Records individual attendance at an intergroup meeting.
  * Uses plain text values for meeting/group and GSR name (no relationships).
  */
-interface IntergroupMeetingAttendance
+interface IntergroupMeetingGroupAttendance
 {
     /**
      * Get the attendance record ID.
