@@ -180,11 +180,11 @@ class PluginBuilder
             if (preg_match('/Version:\s*([0-9.]+\s*\w*)/', $content, $matches)) {
                 return trim($matches[1]);
             }
-            if (preg_match("/define\s*\(\s*'AMBER_VERSION'\s*,\s*'([^']+)'/", $content, $matches)) {
+            if (preg_match("/define\s*\(\s*'UNITY_VERSION'\s*,\s*'([^']+)'/", $content, $matches)) {
                 return $matches[1];
             }
         }
-        return '0.0.2';
+        return '0.0.1';
     }
 
     /**
@@ -215,7 +215,7 @@ class PluginBuilder
         $vendorDir = $this->pluginDir . DIRECTORY_SEPARATOR . 'vendor';
         if (!is_dir($vendorDir)) {
             $this->log("Warning: vendor directory not found. Running 'composer install'...");
-            $this->runComposer();
+            $this->runComposer($type);
         }
 
         // Create build directory
