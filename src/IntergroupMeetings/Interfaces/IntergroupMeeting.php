@@ -17,6 +17,13 @@ interface IntergroupMeeting
     public function getId(): int;
 
     /**
+     * Get the title of the intergroup meeting
+     *
+     * @return string The meeting title or empty string if not set
+     */
+    public function getTitle(): string;
+
+    /**
      * Get the array of member IDs attending the meeting
      *
      * @return array<int>
