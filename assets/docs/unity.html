@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unity Plugin — User Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #FAFAF8;
+            --surface: #FFFFFF;
+            --border: #E8E5E0;
+            --text: #1A1A18;
+            --text-secondary: #6B6860;
+            --accent: #D97706;
+            --accent-bg: #FEF3C7;
+            --accent-dark: #B45309;
+            --info: #1D4ED8;
+            --info-bg: #DBEAFE;
+            --danger: #DC2626;
+            --danger-bg: #FEE2E2;
+            --success: #16A34A;
+            --success-bg: #DCFCE7;
+            --purple: #7C3AED;
+            --purple-bg: #EDE9FE;
+            --code-bg: #F5F3EF;
+            --nav-width: 280px;
+            --header-height: 64px;
+            --radius: 10px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-height) + 24px); }
+        body {
+            font-family: 'DM Sans', sans-serif; font-size: 16px; line-height: 1.7;
+            color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased;
+        }
+
+        .site-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            height: var(--header-height); background: rgba(250,250,248,0.92);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; padding: 0 24px; gap: 16px;
+        }
+        .site-header .logo {
+            display: flex; align-items: center; gap: 10px;
+            font-weight: 700; font-size: 20px; color: var(--text);
+            text-decoration: none; letter-spacing: -0.3px;
+        }
+        .site-header .logo span { color: var(--accent); }
+        .site-header .version {
+            font-size: 12px; font-weight: 500; color: var(--text-secondary);
+            background: var(--code-bg); padding: 2px 8px; border-radius: 6px;
+        }
+        .hamburger {
+            display: none; background: none; border: none; cursor: pointer;
+            width: 36px; height: 36px; flex-shrink: 0;
+            border-radius: 8px; align-items: center; justify-content: center;
+        }
+        .hamburger:hover { background: var(--code-bg); }
+        .hamburger svg { width: 22px; height: 22px; color: var(--text); }
+
+        .sidebar {
+            position: fixed; top: var(--header-height); left: 0; bottom: 0;
+            width: var(--nav-width); overflow-y: auto;
+            border-right: 1px solid var(--border);
+            background: var(--bg); padding: 24px 0; z-index: 90;
+        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        .nav-section { padding: 0 20px; margin-bottom: 24px; }
+        .nav-section-title {
+            font-size: 11px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 8px; padding-left: 12px;
+        }
+        .nav-link {
+            display: block; padding: 6px 12px; border-radius: 8px;
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 14px; font-weight: 400; transition: all 0.15s; line-height: 1.5;
+        }
+        .nav-link:hover { color: var(--text); background: var(--surface); }
+        .nav-link.active { color: var(--accent-dark); background: var(--accent-bg); font-weight: 500; }
+
+        .main {
+            margin-left: var(--nav-width);
+            padding: calc(var(--header-height) + 40px) 48px 80px; max-width: 880px;
+        }
+
+        h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.8px; line-height: 1.2; margin-bottom: 12px; }
+        h1 .emoji { font-size: 32px; margin-right: 4px; }
+        .subtitle { font-size: 18px; color: var(--text-secondary); font-weight: 400; margin-bottom: 40px; line-height: 1.6; }
+        h2 {
+            font-size: 24px; font-weight: 700; letter-spacing: -0.4px;
+            margin-top: 56px; margin-bottom: 16px; padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+        h2:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+        h3 { font-size: 18px; font-weight: 600; margin-top: 32px; margin-bottom: 10px; }
+        p { margin-bottom: 16px; }
+        ul, ol { margin-bottom: 16px; padding-left: 24px; }
+        li { margin-bottom: 6px; }
+
+        .card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm);
+        }
+        .card h3 { margin-top: 0; }
+        .callout {
+            border-radius: var(--radius); padding: 16px 20px; margin-bottom: 24px;
+            font-size: 15px; display: flex; gap: 12px; align-items: flex-start; line-height: 1.6;
+        }
+        .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+        .callout.info { background: var(--info-bg); border-left: 4px solid var(--info); }
+        .callout.warning { background: var(--accent-bg); border-left: 4px solid var(--accent); }
+        .callout.danger { background: var(--danger-bg); border-left: 4px solid var(--danger); }
+        .callout.success { background: var(--success-bg); border-left: 4px solid var(--success); }
+
+        code {
+            font-family: 'JetBrains Mono', monospace; font-size: 13.5px;
+            background: var(--code-bg); padding: 2px 7px; border-radius: 5px; color: var(--accent-dark);
+        }
+        pre {
+            background: #1E1E1C; color: #D4D0C8; border-radius: var(--radius);
+            padding: 20px 24px; margin-bottom: 24px; overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7;
+        }
+        pre code { background: none; padding: 0; color: inherit; }
+        pre .c { color: #7A7A6E; }
+        pre .k { color: #C586C0; }
+        pre .s { color: #CE9178; }
+        pre .n { color: #9CDCFE; }
+        pre .f { color: #DCDCAA; }
+        pre .t { color: #4EC9B0; }
+
+        .status-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+        .status-table th {
+            text-align: left; padding: 10px 16px; font-weight: 600;
+            border-bottom: 2px solid var(--border); font-size: 13px;
+            text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);
+        }
+        .status-table td { padding: 10px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+
+        .badge {
+            display: inline-block; padding: 2px 10px; border-radius: 20px;
+            font-size: 13px; font-weight: 600;
+        }
+        .badge-core { background: var(--info-bg); color: var(--info); }
+        .badge-ext { background: var(--purple-bg); color: var(--purple); }
+
+        .steps { counter-reset: step; list-style: none; padding-left: 0; }
+        .steps li {
+            counter-increment: step; padding-left: 44px; position: relative;
+            margin-bottom: 20px; min-height: 32px;
+        }
+        .steps li::before {
+            content: counter(step); position: absolute; left: 0; top: 0;
+            width: 30px; height: 30px; border-radius: 50%;
+            background: var(--accent); color: #fff;
+            font-weight: 700; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .arch-flow {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            margin-bottom: 24px; font-size: 14px; font-weight: 500;
+        }
+        .arch-flow .node {
+            background: var(--surface); border: 1px solid var(--border);
+            padding: 8px 16px; border-radius: 8px; box-shadow: var(--shadow-sm);
+        }
+        .arch-flow .node.highlight { background: var(--accent-bg); border-color: var(--accent); color: var(--accent-dark); }
+        .arch-flow .arrow { color: var(--text-secondary); font-size: 18px; }
+
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 80; }
+
+        @media (max-width: 860px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.25s ease; box-shadow: var(--shadow-md); }
+            .sidebar.open { transform: translateX(0); }
+            .overlay.visible { display: block; }
+            .hamburger { display: flex; }
+            .main { margin-left: 0; padding: calc(var(--header-height) + 24px) 20px 60px; }
+            h1 { font-size: 28px; } h2 { font-size: 20px; }
+            pre { padding: 16px; font-size: 12px; }
+            .status-table { font-size: 14px; }
+            .status-table th, .status-table td { padding: 8px 10px; }
+            .arch-flow { font-size: 12px; }
+        }
+
+        @media print {
+            .site-header, .sidebar, .hamburger, .overlay { display: none !important; }
+            .main { margin-left: 0; padding: 20px; max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <button class="hamburger" onclick="toggleNav()" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <a href="#" class="logo">
+        <span>🧩</span> Unity <span>Docs</span>
+    </a>
+    <span class="version">v1.6.0 · February 2026</span>
+</header>
+
+<div class="overlay" onclick="toggleNav()"></div>
+
+<nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+        <div class="nav-section-title">Getting Started</div>
+        <a href="#overview" class="nav-link active">Overview</a>
+        <a href="#requirements" class="nav-link">Requirements</a>
+        <a href="#installation" class="nav-link">Installation</a>
+        <a href="#plugin-suite" class="nav-link">Plugin Suite</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-title">Architecture</div>
+        <a href="#boot-sequence" class="nav-link">Boot Sequence</a>
+        <a href="#container" class="nav-link">Dependency Container</a>
+        <a href="#service-provider" class="nav-link">Service Provider</a>
+        <a href="#hooks" class="nav-link">WordPress Hooks</a>
+        <a href="#patterns" class="nav-link">Design Patterns</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-title">Domain Model</div>
+        <a href="#groups" class="nav-link">Groups</a>
+        <a href="#meetings" class="nav-link">Meetings</a>
+        <a href="#members" class="nav-link">Members</a>
+        <a href="#positions" class="nav-link">Positions</a>
+        <a href="#locations" class="nav-link">Locations</a>
+        <a href="#contacts" class="nav-link">Contacts</a>
+        <a href="#ig-meetings" class="nav-link">Intergroup Meetings</a>
+        <a href="#change-tracking" class="nav-link">Change Tracking</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-title">Usage</div>
+        <a href="#accessing-services" class="nav-link">Accessing Services</a>
+        <a href="#repository-usage" class="nav-link">Repository Queries</a>
+        <a href="#factory-usage" class="nav-link">Creating Entities</a>
+        <a href="#views" class="nav-link">View Objects</a>
+        <a href="#caching" class="nav-link">Caching</a>
+        <a href="#configuration" class="nav-link">Configuration</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-title">Setup</div>
+        <a href="#acf" class="nav-link">ACF Field Groups</a>
+        <a href="#registering-services" class="nav-link">Registering Services</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-title">Reference</div>
+        <a href="#service-catalogue" class="nav-link">Service Catalogue</a>
+        <a href="#directory-structure" class="nav-link">Directory Structure</a>
+        <a href="#error-handling" class="nav-link">Error Handling</a>
+        <a href="#troubleshooting" class="nav-link">Troubleshooting</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+    </div>
+</nav>
+
+<main class="main">
+
+    <!-- Overview -->
+    <section id="overview">
+        <h1><span class="emoji">🧩</span> Unity Plugin</h1>
+        <p class="subtitle">
+            The core data layer for intergroup management. Unity defines the domain model — Groups, Meetings, Members, Positions, Locations, Contacts, and Intergroup Meetings — as a set of PHP interfaces, repositories, and factories, wired together through a dependency injection container.
+        </p>
+
+        <div class="card">
+            <h3>What Unity Does</h3>
+            <p>Unity is an <strong>abstract framework</strong>. It defines what a Group, Meeting, or Member <em>looks like</em> (via interfaces) and how data is accessed (via repositories), but it does not provide concrete implementations. A companion plugin — typically one that bridges a specific data source like TSML or ACF — hooks into Unity's <code>unity/register_services</code> action to provide the real implementations.</p>
+            <p style="margin-bottom:0;">Every other plugin in the suite (Integrity, Reconcile, Scrutiny, Trumpet, Amber) depends on Unity as the shared data layer. They resolve services from Unity's container and work with the same interfaces, regardless of the underlying storage.</p>
+        </div>
+    </section>
+
+    <!-- Requirements -->
+    <section id="requirements">
+        <h2>Requirements</h2>
+        <ul>
+            <li><strong>WordPress</strong> 6.0 or later</li>
+            <li><strong>PHP</strong> 8.0 or later</li>
+            <li><strong>Advanced Custom Fields (ACF)</strong> — recommended for field configuration (JSON setup files included)</li>
+            <li>A <strong>service implementation plugin</strong> that hooks into <code>unity/register_services</code> and registers concrete factories and repositories</li>
+        </ul>
+    </section>
+
+    <!-- Installation -->
+    <section id="installation">
+        <h2>Installation</h2>
+        <ol class="steps">
+            <li>Upload the <code>unity</code> folder to <code>/wp-content/plugins/</code>, or install via the WordPress plugin uploader.</li>
+            <li>Activate <strong>Unity</strong> in the Plugins screen.</li>
+            <li>Import ACF field groups from the <code>setup/</code> directory (see <a href="#acf">ACF Field Groups</a>).</li>
+            <li>Install and activate a service implementation plugin that registers concrete services via the <code>unity/register_services</code> hook.</li>
+            <li>Activate any dependent plugins (Integrity, Reconcile, Scrutiny, Trumpet, Amber) as needed.</li>
+        </ol>
+
+        <div class="callout warning">
+            <span class="callout-icon">⚠️</span>
+            <div><strong>Unity alone won't do anything visible.</strong> Without a plugin that registers service implementations, resolving any service will throw a <code>DependencyNotRegisteredException</code>. This is by design — Unity is a framework, not a standalone application.</div>
+        </div>
+    </section>
+
+    <!-- Plugin Suite -->
+    <section id="plugin-suite">
+        <h2>Plugin Suite</h2>
+        <p>Unity is the foundation of a modular plugin suite. Each plugin addresses a specific concern while sharing Unity's data layer:</p>
+
+        <table class="status-table">
+            <thead><tr><th>Plugin</th><th>Role</th><th>Depends On</th></tr></thead>
+            <tbody>
+            <tr><td><strong>Unity</strong></td><td>Core data layer — interfaces, container, repositories, factories</td><td>—</td></tr>
+            <tr><td><strong>Scrutiny</strong></td><td>GDPR compliance — personal data obscuring and consent management</td><td>Unity</td></tr>
+            <tr><td><strong>Integrity</strong></td><td>REST API bridge — authenticated, rate-limited API for external applications</td><td>Unity, Scrutiny</td></tr>
+            <tr><td><strong>Reconcile</strong></td><td>Member data import — CSV/XLSX file import and reconciliation</td><td>Unity, Scrutiny</td></tr>
+            <tr><td><strong>Trumpet</strong></td><td>Email notifications — change-driven email alerts</td><td>Unity</td></tr>
+            <tr><td><strong>Amber</strong></td><td>Dashboard and reporting — admin dashboards and data views</td><td>Unity</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Boot Sequence -->
+    <section id="boot-sequence">
+        <h2>Boot Sequence</h2>
+        <p>Unity initialises in a specific order during WordPress's <code>plugins_loaded</code> action (priority 10):</p>
+
+        <div class="arch-flow">
+            <div class="node">plugins_loaded</div>
+            <span class="arrow">→</span>
+            <div class="node highlight">initContainer()</div>
+            <span class="arrow">→</span>
+            <div class="node">unity/register_services</div>
+            <span class="arrow">→</span>
+            <div class="node highlight">initServices()</div>
+            <span class="arrow">→</span>
+            <div class="node">unity/loaded</div>
+        </div>
+
+        <table class="status-table">
+            <thead><tr><th>Step</th><th>What Happens</th></tr></thead>
+            <tbody>
+            <tr><td><strong>1. initContainer()</strong></td><td>Creates the <code>DependencyContainer</code> singleton. The <code>UnityServiceProvider</code> registers default (placeholder) factories for every service — each one throws <code>DependencyNotRegisteredException</code> until overridden.</td></tr>
+            <tr><td><strong>2. unity/register_services</strong></td><td>Action hook. The implementation plugin listens here and <strong>re-registers</strong> each service with a real factory callable. The container is passed as the hook parameter.</td></tr>
+            <tr><td><strong>3. initServices()</strong></td><td>Resolves all core services from the container, triggering lazy instantiation. If any service hasn't been registered by step 2, the placeholder throws an exception and an admin notice is shown.</td></tr>
+            <tr><td><strong>4. unity/loaded</strong></td><td>Action hook. All services are now available. Other plugins (Integrity, Scrutiny, etc.) listen here to initialise themselves. The container is passed as the hook parameter.</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Dependency Container -->
+    <section id="container">
+        <h2>Dependency Container</h2>
+        <p>Unity includes a lightweight dependency injection container (<code>DependencyContainer</code>) that implements the <code>Container</code> interface. It supports three operations:</p>
+
+        <table class="status-table">
+            <thead><tr><th>Method</th><th>Description</th></tr></thead>
+            <tbody>
+            <tr><td><code>register(string $id, callable $factory)</code></td><td>Register a factory callable. Called with the container as its argument, allowing services to resolve their own dependencies.</td></tr>
+            <tr><td><code>get(string $id): mixed</code></td><td>Resolve a service. The factory is called only once — subsequent calls return the cached singleton. Throws <code>RuntimeException</code> if the service is not registered.</td></tr>
+            <tr><td><code>has(string $id): bool</code></td><td>Check if a service or factory is registered.</td></tr>
+            </tbody>
+        </table>
+
+        <p>Services are identified by their <strong>interface class name</strong> (e.g. <code>GroupRepository::class</code>). This means consumer code depends on interfaces, not concrete classes.</p>
+
+        <pre><code><span class="c">// Register a service (in your implementation plugin)</span>
+<span class="n">$container</span>-><span class="f">register</span>(<span class="t">GroupRepository</span>::class, <span class="k">function</span> (<span class="t">DependencyContainer</span> <span class="n">$c</span>) {
+    <span class="k">return new</span> <span class="t">MyGroupRepository</span>(
+        <span class="n">$c</span>-><span class="f">get</span>(<span class="t">GroupFactory</span>::class),
+        <span class="n">$c</span>-><span class="f">get</span>(<span class="t">Cache</span>::class)
+    );
+});
+
+<span class="c">// Resolve a service (anywhere after unity/loaded)</span>
+<span class="n">$groupRepo</span> = <span class="f">unity</span>()-><span class="f">get</span>(<span class="t">GroupRepository</span>::class);</code></pre>
+    </section>
+
+    <!-- Service Provider -->
+    <section id="service-provider">
+        <h2>Service Provider</h2>
+        <p>The <code>UnityServiceProvider</code> registers placeholder factories for every service during <code>initContainer()</code>. Each placeholder throws <code>DependencyNotRegisteredException</code> to give a clear error message if the implementation plugin fails to register a service.</p>
+        <p>Only two services have real default implementations built into Unity:</p>
+
+        <table class="status-table">
+            <thead><tr><th>Service</th><th>Default Implementation</th></tr></thead>
+            <tbody>
+            <tr><td><code>Cache</code></td><td><code>WordPressCache</code> — wraps <code>wp_cache_get</code>, <code>wp_cache_set</code>, <code>wp_cache_delete</code>, <code>wp_cache_flush</code>.</td></tr>
+            <tr><td><code>Configuration</code></td><td><code>UnityConfiguration</code> — simple in-memory key/value store for cross-plugin configuration.</td></tr>
+            </tbody>
+        </table>
+
+        <p>All other services (every Factory, Repository, ChangeTracker, and ViewFactory) must be registered by the implementation plugin.</p>
+    </section>
+
+    <!-- WordPress Hooks -->
+    <section id="hooks">
+        <h2>WordPress Hooks</h2>
+
+        <div class="card">
+            <h3><code>unity/register_services</code></h3>
+            <p>Fires after the container is created but before services are resolved. This is where your implementation plugin registers concrete factories and repositories.</p>
+            <p><strong>Parameter:</strong> <code>DependencyContainer $container</code></p>
+            <p style="margin-bottom:0;"><strong>Priority:</strong> default (10). If you need to override another plugin's registration, use a higher priority.</p>
+        </div>
+
+        <div class="card">
+            <h3><code>unity/loaded</code></h3>
+            <p>Fires after all services are resolved and Unity is fully operational. Other plugins in the suite (Integrity, Reconcile, Scrutiny, Trumpet, Amber) listen on this hook to initialise themselves.</p>
+            <p style="margin-bottom:0;"><strong>Parameter:</strong> <code>DependencyContainer $container</code></p>
+        </div>
+
+        <div class="callout info">
+            <span class="callout-icon">💡</span>
+            <div>If nobody hooks into <code>unity/register_services</code>, Unity detects this and shows an admin notice: <strong>"Services not registered"</strong>. This typically means the implementation plugin is missing or deactivated.</div>
+        </div>
+    </section>
+
+    <!-- Design Patterns -->
+    <section id="patterns">
+        <h2>Design Patterns</h2>
+
+        <div class="card">
+            <h3>Interface-Driven Design</h3>
+            <p style="margin-bottom:0;">Every entity (Group, Meeting, Member, etc.) is defined as a PHP interface in the <code>Interfaces</code> subdirectory of its module. Consumer code depends only on interfaces — never on concrete classes. This allows completely different storage backends (ACF, custom tables, external APIs) to implement the same contracts.</p>
+        </div>
+
+        <div class="card">
+            <h3>Repository Pattern</h3>
+            <p style="margin-bottom:0;">Data access goes through Repository interfaces. Each repository provides <code>find</code>, <code>findAll</code>, <code>save</code>, <code>delete</code>, and domain-specific query methods (e.g. <code>findByDay</code>, <code>findOnline</code>). Repositories are resolved from the container and are typically backed by <code>WP_Query</code> and post meta.</p>
+        </div>
+
+        <div class="card">
+            <h3>Factory Pattern</h3>
+            <p style="margin-bottom:0;">Object creation goes through Factory interfaces. Factories typically accept a WordPress post ID and hydrate a domain object from post meta and ACF fields. Some factories also provide a <code>createNew</code> method for building objects from raw values (used by the Reconcile importer).</p>
+        </div>
+
+        <div class="card">
+            <h3>Dependency Injection</h3>
+            <p style="margin-bottom:0;">Unity's container wires everything together. Factories receive the container in their registration callable and use it to resolve their own dependencies (e.g. a <code>MeetingFactory</code> needs a <code>ContactFactory</code> and a <code>LocationRepository</code>). Services are singletons — created once, reused everywhere.</p>
+        </div>
+    </section>
+
+    <!-- Groups -->
+    <section id="groups">
+        <h2>Groups</h2>
+        <p>A Group represents an organisation (e.g. an AA home group) that holds meetings, has contacts, and may accept digital contributions.</p>
+
+        <table class="status-table">
+            <thead><tr><th>Method</th><th>Returns</th><th>Notes</th></tr></thead>
+            <tbody>
+            <tr><td><code>getId()</code></td><td><code>int</code></td><td>WordPress post ID</td></tr>
+            <tr><td><code>getTitle()</code></td><td><code>string</code></td><td>Group name</td></tr>
+            <tr><td><code>getEmail()</code></td><td><code>string</code></td><td>Group email address</td></tr>
+            <tr><td><code>getPhone()</code></td><td><code>string</code></td><td>Group phone number</td></tr>
+            <tr><td><code>getWebsite()</code></td><td><code>string</code></td><td>Group website URL</td></tr>
+            <tr><td><code>getLink()</code></td><td><code>string</code></td><td>WordPress permalink</td></tr>
+            <tr><td><code>getGroupNotes()</code></td><td><code>string</code></td><td>Description/notes</td></tr>
+            <tr><td><code>getDistrictId()</code></td><td><code>int|null</code></td><td>District association</td></tr>
+            <tr><td><code>getLastContact()</code></td><td><code>string|null</code></td><td>Last contact timestamp</td></tr>
+            <tr><td><code>getMeetings()</code></td><td><code>Meeting[]</code></td><td>Associated meeting objects</td></tr>
+            <tr><td><code>getContacts()</code></td><td><code>Contact[]</code></td><td>Associated contact objects</td></tr>
+            <tr><td><code>getVenmo()</code></td><td><code>string</code></td><td>7th Tradition — Venmo handle</td></tr>
+            <tr><td><code>getPaypal()</code></td><td><code>string</code></td><td>7th Tradition — PayPal username</td></tr>
+            <tr><td><code>getSquare()</code></td><td><code>string</code></td><td>7th Tradition — Square cashtag</td></tr>
+            <tr><td><code>hasContributionOptions()</code></td><td><code>bool</code></td><td>True if any contribution option is set</td></tr>
+            <tr><td><code>isValid()</code></td><td><code>bool</code></td><td>Validity check</td></tr>
+            </tbody>
+        </table>
+
+        <h3>GroupRepository</h3>
+        <p>Methods: <code>findById(int $id)</code>, <code>findAll(array $args)</code>, <code>save(Group)</code>, <code>update(Group)</code>, <code>delete(int $id)</code>.</p>
+    </section>
+
+    <!-- Meetings -->
+    <section id="meetings">
+        <h2>Meetings</h2>
+        <p>A Meeting represents a scheduled gathering with a day, time, location, types, and optional online details.</p>
+
+        <table class="status-table">
+            <thead><tr><th>Method</th><th>Returns</th><th>Notes</th></tr></thead>
+            <tbody>
+            <tr><td><code>getId()</code></td><td><code>int</code></td><td>WordPress post ID</td></tr>
+            <tr><td><code>getName()</code></td><td><code>string</code></td><td>Meeting name</td></tr>
+            <tr><td><code>getSlug()</code></td><td><code>string</code></td><td>URL slug</td></tr>
+            <tr><td><code>getDay()</code></td><td><code>int</code></td><td>Day of week (0=Sunday, 6=Saturday)</td></tr>
+            <tr><td><code>getDayOfWeek()</code></td><td><code>string</code></td><td>Human-readable day name</td></tr>
+            <tr><td><code>getTime()</code></td><td><code>string</code></td><td>Start time</td></tr>
+            <tr><td><code>getEndTime()</code></td><td><code>string</code></td><td>End time</td></tr>
+            <tr><td><code>getTypes()</code></td><td><code>array</code></td><td>Meeting types (e.g. Open, Closed, Speaker)</td></tr>
+            <tr><td><code>getState()</code></td><td><code>string</code></td><td>State/status</td></tr>
+            <tr><td><code>isOnline()</code></td><td><code>bool</code></td><td>Whether the meeting is online</td></tr>
+            <tr><td><code>getOnlineLink()</code></td><td><code>string</code></td><td>Zoom/video link</td></tr>
+            <tr><td><code>getOnlineNotes()</code></td><td><code>string</code></td><td>Notes for online access</td></tr>
+            <tr><td><code>getLocation()</code></td><td><code>Location|null</code></td><td>Physical location object</td></tr>
+            <tr><td><code>getUrl()</code></td><td><code>string</code></td><td>Meeting URL</td></tr>
+            <tr><td><code>getContacts()</code></td><td><code>Contact[]</code></td><td>Associated contacts</td></tr>
+            <tr><td><code>getMeta()</code></td><td><code>array</code></td><td>All post meta data</td></tr>
+            </tbody>
+        </table>
+
+        <h3>MeetingRepository</h3>
+        <p>In addition to the standard <code>find</code>/<code>findAll</code> methods, the meeting repository provides specialised queries:</p>
+        <ul>
+            <li><code>findByDay(int $day)</code> — filter by day of week (0–6)</li>
+            <li><code>findOnline()</code> — online meetings only</li>
+            <li><code>findInPerson()</code> — in-person meetings only</li>
+            <li><code>findByGroupId(int $groupId)</code> — meetings belonging to a specific group</li>
+            <li><code>findByLocationId(int $locationId)</code> — meetings at a specific location</li>
+            <li><code>search(string $keyword)</code> — keyword search</li>
+            <li><code>count(array $args)</code> — total count matching criteria</li>
+        </ul>
+    </section>
+
+    <!-- Members -->
+    <section id="members">
+        <h2>Members</h2>
+        <p>A Member represents an individual associated with the intergroup, with personal details, a home group assignment, an optional position, and privacy controls.</p>
+
+        <table class="status-table">
+            <thead><tr><th>Method</th><th>Returns</th><th>Notes</th></tr></thead>
+            <tbody>
+            <tr><td><code>getId()</code></td><td><code>int</code></td><td>WordPress post ID</td></tr>
+            <tr><td><code>getAnonymousName()</code></td><td><code>string</code></td><td>Public-facing name (e.g. "John D.")</td></tr>
+            <tr><td><code>showAnonymousName()</code></td><td><code>bool</code></td><td>Whether to display the name publicly</td></tr>
+            <tr><td><code>showMemberProfile()</code></td><td><code>bool</code></td><td>Whether to display the profile publicly</td></tr>
+            <tr><td><code>getAnonymousProfile()</code></td><td><code>string</code></td><td>Profile text</td></tr>
+            <tr><td><code>getHomeGroup()</code></td><td><code>int</code></td><td>Home group post ID</td></tr>
+            <tr><td><code>getIntergroupPosition()</code></td><td><code>int</code></td><td>Position post ID</td></tr>
+            <tr><td><code>getIntergroupPositionRotation()</code></td><td><code>string</code></td><td>Rotation date (Y-m-d)</td></tr>
+            <tr><td><code>isGSR()</code></td><td><code>bool</code></td><td>General Service Representative flag</td></tr>
+            <tr><td><code>getMeetingPO()</code></td><td><code>mixed</code></td><td>Meeting PO reference</td></tr>
+            <tr><td><code>getPersonalEmail()</code></td><td><code>string</code></td><td>Personal email (sensitive — obscured by Scrutiny)</td></tr>
+            <tr><td><code>getMobileNumber()</code></td><td><code>string</code></td><td>Mobile number (sensitive — obscured by Scrutiny)</td></tr>
+            </tbody>
+        </table>
+
+        <h3>MemberFactory</h3>
+        <p>The MemberFactory provides two creation methods:</p>
+        <ul>
+            <li><code>createFromSource(int $id)</code> — hydrate from an existing WordPress post ID</li>
+            <li><code>createNew(...)</code> — build from raw field values (used by the Reconcile importer to create members without an existing post backing them). Accepts: id, anonymousName, showAnonymousName, showMemberProfile, anonymousProfile, intergroupPosition, intergroupPositionRotation, homeGroup, isGSR, meetingPO, personalEmail, mobileNumber.</li>
+        </ul>
+
+        <h3>MemberRepository</h3>
+        <p>Methods: <code>find(int $id)</code>, <code>findAll(array $args)</code>, <code>count(array $args)</code>, <code>save(Member)</code>, <code>delete(int $id)</code>.</p>
+    </section>
+
+    <!-- Positions -->
+    <section id="positions">
+        <h2>Positions</h2>
+        <p>A Position represents an intergroup role (e.g. Chair, Treasurer, Secretary) with eligibility requirements and term information.</p>
+
+        <table class="status-table">
+            <thead><tr><th>Method</th><th>Returns</th><th>Notes</th></tr></thead>
+            <tbody>
+            <tr><td><code>getId()</code></td><td><code>int</code></td><td>WordPress post ID</td></tr>
+            <tr><td><code>getLongName()</code></td><td><code>string</code></td><td>Full position name</td></tr>
+            <tr><td><code>getShortDescription()</code></td><td><code>string</code></td><td>Brief description</td></tr>
+            <tr><td><code>getSummary()</code></td><td><code>string</code></td><td>Extended summary</td></tr>
+            <tr><td><code>getEmail()</code></td><td><code>string</code></td><td>Position email address</td></tr>
+            <tr><td><code>getMinimumSobriety()</code></td><td><code>int</code></td><td>Minimum sobriety in months</td></tr>
+            <tr><td><code>getTermYears()</code></td><td><code>int</code></td><td>Term length in years</td></tr>
+            <tr><td><code>getLink()</code></td><td><code>string</code></td><td>WordPress permalink</td></tr>
+            <tr><td><code>isValid()</code></td><td><code>bool</code></td><td>Validity check</td></tr>
+            </tbody>
+        </table>
+
+        <h3>PositionRepository</h3>
+        <p>Methods: <code>findById(int $id)</code>, <code>findAll(array $args)</code>, <code>count(array $args)</code>, <code>save(Position)</code>, <code>update(Position)</code>, <code>delete(int $id)</code>.</p>
+    </section>
+
+    <!-- Locations -->
+    <section id="locations">
+        <h2>Locations</h2>
+        <p>A Location represents a physical meeting venue with full address, coordinates, and timezone.</p>
+
+        <table class="status-table">
+            <thead><tr><th>Method</th><th>Returns</th><th>Notes</th></tr></thead>
+            <tbody>
+            <tr><td><code>getId()</code></td><td><code>int</code></td><td>WordPress post ID</td></tr>
+            <tr><td><code>getName()</code></td><td><code>string</code></td><td>Venue name</td></tr>
+            <tr><td><code>getAddress()</code></td><td><code>string</code></td><td>Street address</td></tr>
+            <tr><td><code>getCity()</code></td><td><code>string</code></td><td>City</td></tr>
+            <tr><td><code>getState()</code></td><td><code>string</code></td><td>State/province</td></tr>
+            <tr><td><code>getPostalCode()</code></td><td><code>string</code></td><td>ZIP/postal code</td></tr>
+            <tr><td><code>getCountry()</code></td><td><code>string</code></td><td>Country</td></tr>
+            <tr><td><code>getRegion()</code></td><td><code>string</code></td><td>Region</td></tr>
+            <tr><td><code>getLatitude()</code> / <code>getLongitude()</code></td><td><code>float|null</code></td><td>GPS coordinates</td></tr>
+            <tr><td><code>getTimezone()</code></td><td><code>string</code></td><td>Timezone identifier</td></tr>
+            <tr><td><code>getFormattedAddress()</code></td><td><code>string</code></td><td>Full formatted address string</td></tr>
+            <tr><td><code>hasCoordinates()</code></td><td><code>bool</code></td><td>True if both lat and lng are set</td></tr>
+            <tr><td><code>getMeetingIds()</code></td><td><code>array</code></td><td>IDs of meetings at this location</td></tr>
+            <tr><td><code>getNotes()</code></td><td><code>string</code></td><td>Location notes</td></tr>
+            <tr><td><code>getLink()</code></td><td><code>string</code></td><td>WordPress permalink</td></tr>
+            <tr><td><code>isValid()</code></td><td><code>bool</code></td><td>Validity check</td></tr>
+            </tbody>
+        </table>
+
+        <h3>LocationRepository</h3>
+        <p>In addition to the standard CRUD methods, the location repository provides: <code>findByCity(string $city)</code> and <code>findByRegion(string $region)</code>.</p>
+    </section>
+
+    <!-- Contacts -->
+    <section id="contacts">
+        <h2>Contacts</h2>
+        <p>A Contact is a simple value object with name, email, and phone. Contacts are associated with Groups and Meetings.</p>
+
+        <table class="status-table">
+            <thead><tr><th>Method</th><th>Returns</th></tr></thead>
+            <tbody>
+            <tr><td><code>getName()</code></td><td><code>string</code></td></tr>
+            <tr><td><code>getEmail()</code></td><td><code>string</code></td></tr>
+            <tr><td><code>getPhone()</code></td><td><code>string</code></td></tr>
+            </tbody>
+        </table>
+
+        <h3>ContactFactory</h3>
+        <p>Two creation methods: <code>createFromSource(array $source)</code> for hydrating from stored data, and <code>create(string $name, string $email, string $phone)</code> for building from individual values.</p>
+    </section>
+
+    <!-- Intergroup Meetings -->
+    <section id="ig-meetings">
+        <h2>Intergroup Meetings</h2>
+        <p>An Intergroup Meeting represents a coordination event between groups. It tracks two types of attendance: group representatives and officers.</p>
+
+        <h3>IntergroupMeeting</h3>
+        <p>Core properties: <code>getId()</code>, <code>getTitle()</code>, <code>getDate()</code> (Y-m-d format). Provides methods to manage attendee lists:</p>
+        <ul>
+            <li><code>addGroupAttendee(int $memberId)</code> / <code>removeGroupAttendee</code> / <code>hasGroupAttendee</code></li>
+            <li><code>addOfficerAttendee(int $officerId)</code> / <code>removeOfficerAttendee</code> / <code>hasOfficerAttendee</code></li>
+            <li><code>getGroupAttendees()</code> — returns array of member IDs</li>
+            <li><code>getOfficersAttending()</code> — returns array of officer IDs</li>
+        </ul>
+
+        <h3>Group Attendance Records</h3>
+        <p>The <code>IntergroupMeetingGroupAttendance</code> interface captures detailed registration data for each attendee:</p>
+        <table class="status-table">
+            <thead><tr><th>Method</th><th>Returns</th><th>Notes</th></tr></thead>
+            <tbody>
+            <tr><td><code>getId()</code></td><td><code>int</code></td><td>Record ID</td></tr>
+            <tr><td><code>getIntergroupMeetingId()</code></td><td><code>int</code></td><td>Parent meeting</td></tr>
+            <tr><td><code>getMemberId()</code></td><td><code>int</code></td><td>Attending member</td></tr>
+            <tr><td><code>getMeetingGroup()</code></td><td><code>string</code></td><td>Group name (plain text)</td></tr>
+            <tr><td><code>getGsrName()</code></td><td><code>string</code></td><td>GSR name (plain text)</td></tr>
+            <tr><td><code>isGsrProxy()</code></td><td><code>bool</code></td><td>Whether a proxy attended</td></tr>
+            <tr><td><code>getGsrProxyName()</code></td><td><code>string</code></td><td>Proxy's name</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Officer Attendance Records</h3>
+        <p>The <code>IntergroupMeetingOfficerAttendance</code> interface captures officer-specific attendance:</p>
+        <table class="status-table">
+            <thead><tr><th>Method</th><th>Returns</th><th>Notes</th></tr></thead>
+            <tbody>
+            <tr><td><code>getId()</code></td><td><code>int</code></td><td>Record ID</td></tr>
+            <tr><td><code>getIntergroupMeetingId()</code></td><td><code>int</code></td><td>Parent meeting</td></tr>
+            <tr><td><code>getOfficerId()</code></td><td><code>int</code></td><td>Officer member ID</td></tr>
+            <tr><td><code>getPositionName()</code></td><td><code>string</code></td><td>Position name (plain text)</td></tr>
+            <tr><td><code>getOfficerName()</code></td><td><code>string</code></td><td>Officer name (plain text)</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Repositories</h3>
+        <p>Three repositories serve this module:</p>
+        <ul>
+            <li><code>IntergroupMeetingRepository</code> — CRUD for intergroup meeting posts</li>
+            <li><code>IntergroupMeetingGroupAttendanceRepository</code> — group attendance records, with <code>findByIntergroupMeeting(int $id)</code> and <code>deleteByIntergroupMeetingAndMember(int $meetingId, int $memberId)</code></li>
+            <li><code>IntergroupMeetingOfficerAttendanceRepository</code> — officer attendance records, with <code>findByIntergroupMeeting(int $id)</code> and <code>deleteByIntergroupMeetingAndOfficer(int $meetingId, int $officerId)</code></li>
+        </ul>
+    </section>
+
+    <!-- Change Tracking -->
+    <section id="change-tracking">
+        <h2>Change Tracking</h2>
+        <p>Unity defines ChangeTracker interfaces for Groups, Members, and Positions. These track edits made through ACF and fire hooks when real changes are detected, enabling plugins like Trumpet to send notifications.</p>
+
+        <p>Each tracker follows the same two-step pattern:</p>
+        <ol>
+            <li><code>captureOriginalGroup/Member/Position(int $postId)</code> — snapshot the entity <strong>before</strong> ACF saves the fields</li>
+            <li><code>checkForChanges(int $postId)</code> — compare the saved entity to the snapshot and fire a hook if anything changed</li>
+        </ol>
+
+        <div class="callout info">
+            <span class="callout-icon">💡</span>
+            <div>Change trackers are registered by the implementation plugin, not Unity itself. They typically hook into ACF's <code>acf/save_post</code> action to capture before/after state.</div>
+        </div>
+    </section>
+
+    <!-- Accessing Services -->
+    <section id="accessing-services">
+        <h2>Accessing Services</h2>
+        <p>Unity provides a global <code>unity()</code> helper function that returns the dependency container. Use it anywhere after the <code>unity/loaded</code> hook has fired:</p>
+
+        <pre><code><span class="c">// Get the container</span>
+<span class="n">$container</span> = <span class="f">unity</span>();
+
+<span class="c">// Resolve services</span>
+<span class="n">$groupRepo</span>    = <span class="n">$container</span>-><span class="f">get</span>(<span class="t">GroupRepository</span>::class);
+<span class="n">$memberRepo</span>   = <span class="n">$container</span>-><span class="f">get</span>(<span class="t">MemberRepository</span>::class);
+<span class="n">$meetingRepo</span>  = <span class="n">$container</span>-><span class="f">get</span>(<span class="t">MeetingRepository</span>::class);
+<span class="n">$positionRepo</span> = <span class="n">$container</span>-><span class="f">get</span>(<span class="t">PositionRepository</span>::class);</code></pre>
+
+        <p>You can also access the container from the <code>unity/loaded</code> hook parameter:</p>
+
+        <pre><code><span class="f">add_action</span>(<span class="s">'unity/loaded'</span>, <span class="k">function</span> (<span class="t">DependencyContainer</span> <span class="n">$container</span>) {
+    <span class="n">$groups</span> = <span class="n">$container</span>-><span class="f">get</span>(<span class="t">GroupRepository</span>::class)-><span class="f">findAll</span>();
+});</code></pre>
+    </section>
+
+    <!-- Repository Usage -->
+    <section id="repository-usage">
+        <h2>Repository Queries</h2>
+
+        <div class="card">
+            <h3>Groups</h3>
+            <pre style="margin-bottom:0;"><code><span class="n">$groupRepo</span> = <span class="f">unity</span>()-><span class="f">get</span>(<span class="t">GroupRepository</span>::class);
+
+<span class="c">// All groups</span>
+<span class="n">$groups</span> = <span class="n">$groupRepo</span>-><span class="f">findAll</span>();
+
+<span class="c">// Single group</span>
+<span class="n">$group</span> = <span class="n">$groupRepo</span>-><span class="f">findById</span>(123);
+
+<span class="c">// With WP_Query args</span>
+<span class="n">$groups</span> = <span class="n">$groupRepo</span>-><span class="f">findAll</span>([<span class="s">'posts_per_page'</span> => 50, <span class="s">'paged'</span> => 2]);</code></pre>
+        </div>
+
+        <div class="card">
+            <h3>Meetings</h3>
+            <pre style="margin-bottom:0;"><code><span class="n">$meetingRepo</span> = <span class="f">unity</span>()-><span class="f">get</span>(<span class="t">MeetingRepository</span>::class);
+
+<span class="c">// Meetings on Monday (1)</span>
+<span class="n">$monday</span> = <span class="n">$meetingRepo</span>-><span class="f">findByDay</span>(1);
+
+<span class="c">// Online meetings only</span>
+<span class="n">$online</span> = <span class="n">$meetingRepo</span>-><span class="f">findOnline</span>();
+
+<span class="c">// Meetings for a specific group</span>
+<span class="n">$groupMeetings</span> = <span class="n">$meetingRepo</span>-><span class="f">findByGroupId</span>(123);
+
+<span class="c">// Keyword search</span>
+<span class="n">$results</span> = <span class="n">$meetingRepo</span>-><span class="f">search</span>(<span class="s">'step study'</span>);</code></pre>
+        </div>
+
+        <div class="card">
+            <h3>Members</h3>
+            <pre style="margin-bottom:0;"><code><span class="n">$memberRepo</span> = <span class="f">unity</span>()-><span class="f">get</span>(<span class="t">MemberRepository</span>::class);
+
+<span class="n">$member</span> = <span class="n">$memberRepo</span>-><span class="f">find</span>(42);
+<span class="n">$all</span>    = <span class="n">$memberRepo</span>-><span class="f">findAll</span>();
+<span class="n">$total</span>  = <span class="n">$memberRepo</span>-><span class="f">count</span>();</code></pre>
+        </div>
+    </section>
+
+    <!-- Factory Usage -->
+    <section id="factory-usage">
+        <h2>Creating Entities</h2>
+        <p>Factories create domain objects from raw data. The most common use case is hydrating from a WordPress post ID:</p>
+
+        <pre><code><span class="n">$groupFactory</span> = <span class="f">unity</span>()-><span class="f">get</span>(<span class="t">GroupFactory</span>::class);
+<span class="n">$group</span> = <span class="n">$groupFactory</span>-><span class="f">createFromSource</span>(123); <span class="c">// from WP post ID</span></code></pre>
+
+        <p>The <code>MemberFactory</code> also supports creating from raw values (used by the Reconcile importer):</p>
+
+        <pre><code><span class="n">$memberFactory</span> = <span class="f">unity</span>()-><span class="f">get</span>(<span class="t">MemberFactory</span>::class);
+<span class="n">$member</span> = <span class="n">$memberFactory</span>-><span class="f">createNew</span>(
+    <span class="n">id:</span> <span class="n">$postId</span>,
+    <span class="n">anonymousName:</span> <span class="s">'John D.'</span>,
+    <span class="n">homeGroup:</span> 15,
+    <span class="n">isGSR:</span> <span class="k">true</span>,
+    <span class="n">personalEmail:</span> <span class="s">'john@example.com'</span>
+);</code></pre>
+    </section>
+
+    <!-- Views -->
+    <section id="views">
+        <h2>View Objects</h2>
+        <p>View interfaces combine entity data with related objects for presentation. Unity defines three view types:</p>
+
+        <div class="card">
+            <h3>PositionView</h3>
+            <p>Combines a Position with its assigned Member. Provides rotation tracking, public/private display names, and vacancy detection.</p>
+            <table class="status-table" style="margin-bottom:0;">
+                <thead><tr><th>Method</th><th>Returns</th><th>Notes</th></tr></thead>
+                <tbody>
+                <tr><td><code>getPosition()</code></td><td><code>Position</code></td><td>The position object</td></tr>
+                <tr><td><code>getMember()</code></td><td><code>Member|null</code></td><td>Assigned member, or null if vacant</td></tr>
+                <tr><td><code>isVacant()</code></td><td><code>bool</code></td><td>True if no member is assigned</td></tr>
+                <tr><td><code>getDaysUntilRotation()</code></td><td><code>int|null</code></td><td>Days until rotation</td></tr>
+                <tr><td><code>getMonthsUntilRotation()</code></td><td><code>int|null</code></td><td>Months until rotation</td></tr>
+                <tr><td><code>getRotationDate()</code></td><td><code>DateTime|null</code></td><td>Rotation date</td></tr>
+                <tr><td><code>getPublicDisplayName()</code></td><td><code>string|null</code></td><td>Anonymous name for front end</td></tr>
+                <tr><td><code>getPrivateEmail()</code></td><td><code>string|null</code></td><td>Email for admin only</td></tr>
+                <tr><td><code>getPrivateContact()</code></td><td><code>string|null</code></td><td>Phone for admin only</td></tr>
+                <tr><td><code>getTitle()</code></td><td><code>string|null</code></td><td>Position title</td></tr>
+                <tr><td><code>getPositionEmail()</code></td><td><code>string|null</code></td><td>Position email</td></tr>
+                <tr><td><code>getDescription()</code></td><td><code>string|null</code></td><td>Position description</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>GroupView</h3>
+            <p style="margin-bottom:0;">Combines a Group with its Members and Contacts. Methods: <code>getId()</code>, <code>getTitle()</code>, <code>getEmail()</code>, <code>getMeetings()</code>, <code>getLink()</code>, <code>getContacts()</code>, <code>getMembers()</code>.</p>
+        </div>
+
+        <div class="card">
+            <h3>MeetingView</h3>
+            <p style="margin-bottom:0;">Combines a Meeting with its Members. Methods: <code>getMeeting()</code>, <code>getMembers()</code>, <code>getGsrNames()</code>.</p>
+        </div>
+    </section>
+
+    <!-- Caching -->
+    <section id="caching">
+        <h2>Caching</h2>
+        <p>Unity's <code>Cache</code> interface wraps WordPress's object cache (<code>wp_cache_*</code> functions). It supports keyed storage with optional groups and expiration:</p>
+
+        <pre><code><span class="n">$cache</span> = <span class="f">unity</span>()-><span class="f">get</span>(<span class="t">Cache</span>::class);
+
+<span class="n">$cache</span>-><span class="f">set</span>(<span class="s">'my_key'</span>, <span class="n">$data</span>, <span class="s">'my_group'</span>, 3600); <span class="c">// expires in 1 hour</span>
+<span class="n">$value</span> = <span class="n">$cache</span>-><span class="f">get</span>(<span class="s">'my_key'</span>, <span class="s">'my_group'</span>);
+<span class="n">$cache</span>-><span class="f">delete</span>(<span class="s">'my_key'</span>, <span class="s">'my_group'</span>);
+<span class="n">$cache</span>-><span class="f">flush</span>(); <span class="c">// clear everything</span></code></pre>
+
+        <p>Repository implementations typically use the cache to avoid redundant <code>WP_Query</code> calls. The default <code>WordPressCache</code> adapter delegates to WordPress's built-in cache system, so it benefits from persistent cache backends (Redis, Memcached) if configured.</p>
+    </section>
+
+    <!-- Configuration -->
+    <section id="configuration">
+        <h2>Configuration</h2>
+        <p>The <code>Configuration</code> interface provides a simple in-memory key/value store for sharing settings across plugins:</p>
+
+        <pre><code><span class="n">$config</span> = <span class="f">unity</span>()-><span class="f">get</span>(<span class="t">Configuration</span>::class);
+
+<span class="n">$config</span>-><span class="f">setConfig</span>(<span class="s">'meeting_types'</span>, [<span class="s">'Open'</span>, <span class="s">'Closed'</span>, <span class="s">'Speaker'</span>]);
+<span class="n">$types</span> = <span class="n">$config</span>-><span class="f">getConfig</span>(<span class="s">'meeting_types'</span>); <span class="c">// ['Open', 'Closed', 'Speaker']</span></code></pre>
+
+        <p>Values are stored in memory for the current request only. The Configuration service is available to all plugins in the suite and is useful for sharing lookup tables, field mappings, or feature flags without touching the database.</p>
+    </section>
+
+    <!-- ACF Field Groups -->
+    <section id="acf">
+        <h2>ACF Field Groups</h2>
+        <p>The <code>setup/</code> directory contains pre-configured ACF field group JSON files that define the custom fields for all Unity entities:</p>
+
+        <table class="status-table">
+            <thead><tr><th>File</th><th>Use</th></tr></thead>
+            <tbody>
+            <tr><td><code>Unity_ACF.json</code></td><td>Development — field groups with development-friendly settings</td></tr>
+            <tr><td><code>unity-prod-acf.json</code></td><td>Production — optimised field group configuration</td></tr>
+            <tr><td><code>Example.csv</code></td><td>Sample CSV for member import (used with Reconcile)</td></tr>
+            <tr><td><code>Import.xlsx</code></td><td>Sample XLSX for member import (used with Reconcile)</td></tr>
+            </tbody>
+        </table>
+
+        <ol class="steps">
+            <li>Go to <strong>ACF → Tools → Import</strong> in your WordPress admin.</li>
+            <li>Import <code>Unity_ACF.json</code> (development) or <code>unity-prod-acf.json</code> (production).</li>
+            <li>Verify that field groups appear for Groups, Meetings, Members, Positions, Locations, and Intergroup Meetings.</li>
+        </ol>
+    </section>
+
+    <!-- Registering Services -->
+    <section id="registering-services">
+        <h2>Registering Services</h2>
+        <p>Your implementation plugin must hook into <code>unity/register_services</code> and re-register every factory and repository with a real callable. Here's the typical pattern:</p>
+
+        <pre><code><span class="f">add_action</span>(<span class="s">'unity/register_services'</span>, <span class="k">function</span> (<span class="t">DependencyContainer</span> <span class="n">$container</span>) {
+
+    <span class="c">// Contact Factory</span>
+    <span class="n">$container</span>-><span class="f">register</span>(<span class="t">ContactFactory</span>::class, <span class="k">fn</span>() =>
+        <span class="k">new</span> <span class="t">MyContactFactory</span>()
+    );
+
+    <span class="c">// Location Factory + Repository</span>
+    <span class="n">$container</span>-><span class="f">register</span>(<span class="t">LocationFactory</span>::class, <span class="k">fn</span>() =>
+        <span class="k">new</span> <span class="t">MyLocationFactory</span>()
+    );
+    <span class="n">$container</span>-><span class="f">register</span>(<span class="t">LocationRepository</span>::class, <span class="k">fn</span>(<span class="n">$c</span>) =>
+        <span class="k">new</span> <span class="t">MyLocationRepository</span>(<span class="n">$c</span>-><span class="f">get</span>(<span class="t">LocationFactory</span>::class))
+    );
+
+    <span class="c">// Meeting Factory + Repository</span>
+    <span class="n">$container</span>-><span class="f">register</span>(<span class="t">MeetingFactory</span>::class, <span class="k">fn</span>(<span class="n">$c</span>) =>
+        <span class="k">new</span> <span class="t">MyMeetingFactory</span>(
+            <span class="n">$c</span>-><span class="f">get</span>(<span class="t">ContactFactory</span>::class),
+            <span class="n">$c</span>-><span class="f">get</span>(<span class="t">LocationRepository</span>::class)
+        )
+    );
+    <span class="n">$container</span>-><span class="f">register</span>(<span class="t">MeetingRepository</span>::class, <span class="k">fn</span>(<span class="n">$c</span>) =>
+        <span class="k">new</span> <span class="t">MyMeetingRepository</span>(
+            <span class="n">$c</span>-><span class="f">get</span>(<span class="t">MeetingFactory</span>::class),
+            <span class="n">$c</span>-><span class="f">get</span>(<span class="t">Cache</span>::class)
+        )
+    );
+
+    <span class="c">// ... Group, Member, Position, IntergroupMeeting,</span>
+    <span class="c">//     ChangeTrackers, ViewFactories</span>
+
+});</code></pre>
+
+        <div class="callout danger">
+            <span class="callout-icon">🚨</span>
+            <div><strong>Every factory and repository must be registered.</strong> If you skip one, any code that resolves it — including Unity's own <code>initServices()</code> — will throw a <code>DependencyNotRegisteredException</code> and the plugin suite won't load.</div>
+        </div>
+    </section>
+
+    <!-- Service Catalogue -->
+    <section id="service-catalogue">
+        <h2>Service Catalogue</h2>
+        <p>Complete list of services registered in the container. Services marked <span class="badge badge-core">Built-in</span> have a default implementation. All others marked <span class="badge badge-ext">External</span> must be provided by the implementation plugin.</p>
+
+        <table class="status-table">
+            <thead><tr><th>Service Interface</th><th>Provider</th></tr></thead>
+            <tbody>
+            <tr><td><code>Cache</code></td><td><span class="badge badge-core">Built-in</span> WordPressCache</td></tr>
+            <tr><td><code>Configuration</code></td><td><span class="badge badge-core">Built-in</span> UnityConfiguration</td></tr>
+            <tr><td><code>ContactFactory</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>GroupFactory</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>GroupRepository</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>GroupViewFactory</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>GroupChangeTracker</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>MeetingFactory</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>MeetingRepository</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>MemberFactory</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>MemberRepository</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>MemberChangeTracker</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>PositionFactory</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>PositionRepository</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>PositionViewFactory</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>PositionChangeTracker</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>LocationFactory</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>LocationRepository</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>IntergroupMeetingFactory</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>IntergroupMeetingRepository</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>IntergroupMeetingGroupAttendanceFactory</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>IntergroupMeetingGroupAttendanceRepository</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>IntergroupMeetingOfficerAttendanceFactory</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            <tr><td><code>IntergroupMeetingOfficerAttendanceRepository</code></td><td><span class="badge badge-ext">External</span></td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Directory Structure -->
+    <section id="directory-structure">
+        <h2>Directory Structure</h2>
+        <pre><code>unity/
+├── Unity.php                    <span class="c"># Main plugin file, autoloader, boot sequence</span>
+├── src/
+│   ├── Plugin.php               <span class="c"># Container singleton, initContainer, initServices</span>
+│   ├── Core/
+│   │   ├── DependencyContainer.php
+│   │   ├── DependencyNotRegisteredException.php
+│   │   ├── UnityServiceProvider.php
+│   │   ├── UnityConfiguration.php
+│   │   ├── WordPressCache.php
+│   │   └── Interfaces/         <span class="c"># Cache, Configuration, Container</span>
+│   ├── Groups/Interfaces/      <span class="c"># Group, GroupFactory, GroupRepository, GroupView, etc.</span>
+│   ├── Meetings/Interfaces/    <span class="c"># Meeting, MeetingFactory, MeetingRepository, MeetingView</span>
+│   ├── Members/Interfaces/     <span class="c"># Member, MemberFactory, MemberRepository, MemberChangeTracker</span>
+│   ├── Positions/Interfaces/   <span class="c"># Position, PositionFactory, PositionRepository, PositionView</span>
+│   ├── Locations/Interfaces/   <span class="c"># Location, LocationFactory, LocationRepository</span>
+│   ├── Contacts/Interfaces/    <span class="c"># Contact, ContactFactory</span>
+│   └── IntergroupMeetings/
+│       └── Interfaces/         <span class="c"># IntergroupMeeting, attendance repos + factories</span>
+├── setup/                       <span class="c"># ACF JSON, sample import files</span>
+└── tests/                       <span class="c"># PHPUnit tests</span></code></pre>
+    </section>
+
+    <!-- Error Handling -->
+    <section id="error-handling">
+        <h2>Error Handling</h2>
+
+        <div class="card">
+            <h3>DependencyNotRegisteredException</h3>
+            <p style="margin-bottom:0;">Thrown when a service is resolved but no implementation plugin has registered a real factory. The exception message includes the missing class name. This is the most common error and means the implementation plugin is either missing, deactivated, or didn't register that particular service.</p>
+        </div>
+
+        <div class="card">
+            <h3>RuntimeException — "Service not found"</h3>
+            <p style="margin-bottom:0;">Thrown by the container when you try to resolve a service that was never registered at all — not even with a placeholder. This shouldn't happen with the standard service provider.</p>
+        </div>
+
+        <div class="card">
+            <h3>RuntimeException — "Plugin not initialized"</h3>
+            <p style="margin-bottom:0;">Thrown when <code>Plugin::getContainer()</code> or <code>unity()</code> is called before the boot sequence has run. Make sure you only access the container after the <code>unity/loaded</code> hook.</p>
+        </div>
+
+        <p>All exceptions during initialisation are caught, logged to the WordPress error log with full stack traces, and displayed as admin notices. Enable <code>WP_DEBUG</code> and <code>WP_DEBUG_LOG</code> to see detailed information.</p>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section id="troubleshooting">
+        <h2>Troubleshooting</h2>
+
+        <div class="card">
+            <h3>"Services not registered" admin notice</h3>
+            <p style="margin-bottom:0;">No plugin is listening on the <code>unity/register_services</code> hook. The implementation plugin (the one that provides concrete factories and repositories) needs to be installed and activated.</p>
+        </div>
+
+        <div class="card">
+            <h3>"Dependency not registered: ClassName"</h3>
+            <p style="margin-bottom:0;">The implementation plugin didn't register a concrete factory for that service. Check that all required services are covered. See the <a href="#service-catalogue">Service Catalogue</a> for the full list.</p>
+        </div>
+
+        <div class="card">
+            <h3>"Plugin not initialized" when calling unity()</h3>
+            <p style="margin-bottom:0;">You're accessing the container too early. Move your code to run on or after the <code>unity/loaded</code> hook, or use <code>plugins_loaded</code> with a priority greater than 10.</p>
+        </div>
+
+        <div class="card">
+            <h3>ACF fields not appearing</h3>
+            <p style="margin-bottom:0;">Import the ACF field groups from <code>setup/Unity_ACF.json</code> or <code>setup/unity-prod-acf.json</code>. Make sure the Advanced Custom Fields plugin is installed and activated.</p>
+        </div>
+
+        <div class="card">
+            <h3>Dependent plugins (Integrity, Reconcile, etc.) fail to load</h3>
+            <p style="margin-bottom:0;">These plugins listen on <code>unity/loaded</code>. If Unity fails during initialisation, this hook never fires. Check the WordPress error log for Unity-specific errors first.</p>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+        <h2>FAQ</h2>
+
+        <div class="card">
+            <h3>Why doesn't Unity include concrete implementations?</h3>
+            <p style="margin-bottom:0;">By design. Unity defines the contracts; a separate plugin provides the implementation. This means you can swap the data source (ACF, custom tables, external API) without changing any of the dependent plugins. Every plugin in the suite works with the same interfaces.</p>
+        </div>
+
+        <div class="card">
+            <h3>Can I override a single service?</h3>
+            <p style="margin-bottom:0;">Yes. Hook into <code>unity/register_services</code> at a higher priority than the implementation plugin and re-register just the service you want to replace. The container uses the last-registered factory.</p>
+        </div>
+
+        <div class="card">
+            <h3>Are services singletons?</h3>
+            <p style="margin-bottom:0;">Yes. The container calls the factory callable only once. After that, the same instance is returned for every <code>get()</code> call.</p>
+        </div>
+
+        <div class="card">
+            <h3>What's the unity() helper function?</h3>
+            <p style="margin-bottom:0;">A global shorthand for <code>Plugin::getContainer()</code>. It returns the DependencyContainer singleton so you can resolve services from anywhere.</p>
+        </div>
+
+        <div class="card">
+            <h3>What are the 7th Tradition contribution fields on Groups?</h3>
+            <p style="margin-bottom:0;">Groups can store Venmo, PayPal, and Square handles for digital contributions (a common practice in AA intergroups). The <code>hasContributionOptions()</code> method returns true if any of these are set.</p>
+        </div>
+
+        <div class="card" style="margin-bottom:0;">
+            <h3>Do I need ACF?</h3>
+            <p style="margin-bottom:0;">ACF is recommended but not strictly required. The provided JSON setup files configure ACF field groups for all entity types. If you're building a custom implementation that doesn't use ACF, you can store data however you like — Unity only cares that your factories and repositories implement the correct interfaces.</p>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    function toggleNav() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.querySelector('.overlay').classList.toggle('visible');
+    }
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    function updateActiveLink() {
+        let current = '';
+        const scrollY = window.scrollY + 100;
+        sections.forEach(s => { if (s.offsetTop <= scrollY) current = s.getAttribute('id'); });
+        navLinks.forEach(l => {
+            l.classList.remove('active');
+            if (l.getAttribute('href') === '#' + current) l.classList.add('active');
+        });
+    }
+    window.addEventListener('scroll', updateActiveLink, { passive: true });
+    navLinks.forEach(l => l.addEventListener('click', () => { if (window.innerWidth <= 860) toggleNav(); }));
+</script>
+</body>
+</html>
