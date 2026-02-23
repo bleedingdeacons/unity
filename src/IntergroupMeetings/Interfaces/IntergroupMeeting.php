@@ -45,6 +45,20 @@ interface IntergroupMeeting
     public function getDate(): string;
 
     /**
+     * Get the array of group post IDs attending the meeting (ACF field: attending_groups)
+     *
+     * @return array<int>
+     */
+    public function getAttendingGroups(): array;
+
+    /**
+     * Get the array of officer post IDs attending the meeting (ACF field: attending_officers)
+     *
+     * @return array<int>
+     */
+    public function getAttendingOfficers(): array;
+
+    /**
      * Add a member ID to the group attendees list
      *
      * @param int $memberId
