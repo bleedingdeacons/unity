@@ -27,6 +27,13 @@ interface IntergroupMeetingGroupAttendance
     public function getIntergroupMeetingId(): int;
 
     /**
+     * Get the group ID (group CPT post ID) this attendance record belongs to.
+     *
+     * @return int
+     */
+    public function getGroupId(): int;
+
+    /**
      * Get the member ID this attendance record belongs to.
      *
      * @return int
@@ -34,7 +41,7 @@ interface IntergroupMeetingGroupAttendance
     public function getMemberId(): int;
 
     /**
-     * Get the meeting or group name (plain text, no relationship).
+     * Get the meeting or group name (looked up from the group CPT).
      *
      * @return string
      */

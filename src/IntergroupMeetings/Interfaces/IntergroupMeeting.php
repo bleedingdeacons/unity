@@ -24,7 +24,7 @@ interface IntergroupMeeting
     public function getTitle(): string;
 
     /**
-     * Get the array of member IDs attending the meeting
+     * Get the array of group IDs attending the meeting
      *
      * @return array<int>
      */
@@ -45,42 +45,28 @@ interface IntergroupMeeting
     public function getDate(): string;
 
     /**
-     * Get the array of group post IDs attending the meeting (ACF field: attending_groups)
+     * Add a group ID to the group attendees list
      *
-     * @return array<int>
+     * @param int $groupId
+     * @return bool True if the group was added, false if already present
      */
-    public function getAttendingGroups(): array;
+    public function addGroupAttendee(int $groupId): bool;
 
     /**
-     * Get the array of officer post IDs attending the meeting (ACF field: attending_officers)
+     * Remove a group ID from the group attendees list
      *
-     * @return array<int>
+     * @param int $groupId
+     * @return bool True if the group was removed, false if not present
      */
-    public function getAttendingOfficers(): array;
+    public function removeGroupAttendee(int $groupId): bool;
 
     /**
-     * Add a member ID to the group attendees list
+     * Check if a group ID is in the group attendees list
      *
-     * @param int $memberId
-     * @return bool True if the member was added, false if already present
-     */
-    public function addGroupAttendee(int $memberId): bool;
-
-    /**
-     * Remove a member ID from the group attendees list
-     *
-     * @param int $memberId
-     * @return bool True if the member was removed, false if not present
-     */
-    public function removeGroupAttendee(int $memberId): bool;
-
-    /**
-     * Check if a member ID is in the group attendees list
-     *
-     * @param int $memberId
+     * @param int $groupId
      * @return bool
      */
-    public function hasGroupAttendee(int $memberId): bool;
+    public function hasGroupAttendee(int $groupId): bool;
 
     /**
      * Add an officer ID to the officers attending list

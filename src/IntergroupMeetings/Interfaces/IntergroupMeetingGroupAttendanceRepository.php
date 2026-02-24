@@ -65,4 +65,13 @@ interface IntergroupMeetingGroupAttendanceRepository
      * @return bool Success status
      */
     public function deleteByIntergroupMeetingAndMember(int $intergroupMeetingId, int $memberId): bool;
+
+    /**
+     * Delete the attendance record for a specific group at a specific intergroup meeting.
+     *
+     * @param int $intergroupMeetingId
+     * @param int $groupId
+     * @return bool Success status
+     */
+    public function deleteByIntergroupMeetingAndGroup(int $intergroupMeetingId, int $groupId): bool;
 }
