@@ -6,6 +6,7 @@ namespace Unity;
 
 use RuntimeException;
 use Unity\Core\DependencyContainer;
+use Unity\Core\Interfaces\Container;
 use Unity\Core\Interfaces\Cache;
 use Unity\Core\UnityServiceProvider;
 use Unity\Groups\Interfaces\GroupChangeTracker;
@@ -27,7 +28,7 @@ use Unity\Positions\Interfaces\PositionViewFactory;
  */
 class Plugin
 {
-    private static ?DependencyContainer $container = null;
+    private static ?Container $container = null;
 
     /**
      * Initialize the plugin (legacy method for backwards compatibility)
@@ -65,29 +66,29 @@ class Plugin
         }
 
         // Initialize core services
-        self::$container->get(Cache::class);
-        self::$container->get(MeetingFactory::class);
-        self::$container->get(MeetingRepository::class);
-        self::$container->get(GroupFactory::class);
-        self::$container->get(GroupViewFactory::class);
-        self::$container->get(GroupRepository::class);
-        self::$container->get(GroupChangeTracker::class);
-        self::$container->get(MemberChangeTracker::class);
-        self::$container->get(PositionChangeTracker::class);
-        self::$container->get(PositionFactory::class);
-        self::$container->get(PositionRepository::class);
-        self::$container->get(MemberFactory::class);
-        self::$container->get(MemberRepository::class);
-        self::$container->get(PositionViewFactory::class);
+//        self::$container->get(Cache::class);
+//        self::$container->get(MeetingFactory::class);
+//        self::$container->get(MeetingRepository::class);
+//        self::$container->get(GroupFactory::class);
+//        self::$container->get(GroupViewFactory::class);
+//        self::$container->get(GroupRepository::class);
+//        self::$container->get(GroupChangeTracker::class);
+//        self::$container->get(MemberChangeTracker::class);
+//        self::$container->get(PositionChangeTracker::class);
+//        self::$container->get(PositionFactory::class);
+//        self::$container->get(PositionRepository::class);
+//        self::$container->get(MemberFactory::class);
+//        self::$container->get(MemberRepository::class);
+//        self::$container->get(PositionViewFactory::class);
     }
 
     /**
      * Get the dependency container
      *
-     * @return DependencyContainer
+     * @return Container
      * @throws RuntimeException If plugin is not initialized
      */
-    public static function getContainer(): DependencyContainer
+    public static function getContainer(): Container
     {
         if (self::$container === null) {
             throw new RuntimeException('Plugin not initialized');

@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Unity\Tests\Unit\Core;
 
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
+use Psr\Container\NotFoundExceptionInterface;
 use Unity\Core\DependencyContainer;
+use Unity\Core\DependencyNotRegisteredException;
 
 /**
  * Tests for DependencyContainer
@@ -63,8 +64,8 @@ class DependencyContainerTest extends TestCase
      */
     public function it_throws_exception_for_unregistered_service(): void
     {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Service not found: nonexistent.service');
+        $this->expectException(NotFoundExceptionInterface::class);
+        $this->expectExceptionMessage('Dependency not registered: nonexistent.service');
 
         $this->container->get('nonexistent.service');
     }

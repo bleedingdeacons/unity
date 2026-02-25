@@ -28,6 +28,12 @@ define('UNITY_VERSION', $unity_plugin_data['Version']);
 define('UNITY_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('UNITY_PLUGIN_URL', plugin_dir_url(__FILE__));
 
+// Load Composer autoloader (provides PSR-11 and other dependencies)
+$unity_autoloader = UNITY_PLUGIN_DIR . 'vendor/autoload.php';
+if (file_exists($unity_autoloader)) {
+    require_once $unity_autoloader;
+}
+
 // Autoloader for Unity namespace
 spl_autoload_register(function ($class) {
     try {
@@ -55,10 +61,10 @@ spl_autoload_register(function ($class) {
 /**
  * Get the Unity dependency container
  *
- * @return \Unity\Core\DependencyContainer
+ * @return \Unity\Core\Interfaces\Container
  * @throws \RuntimeException If Unity is not initialized
  */
-function unity(): \Unity\Core\DependencyContainer {
+function unity(): \Unity\Core\Interfaces\Container {
     return \Unity\Plugin::getContainer();
 }
 
@@ -75,7 +81,7 @@ add_action('plugins_loaded', function() {
          * Fires after Unity's container is created but before services are resolved.
          * Use this hook to register custom service implementations (e.g., MeetingFactory).
          *
-         * @param \Unity\Core\DependencyContainer $container The dependency container
+         * @param \Unity\Core\Interfaces\Container $container The dependency container
          */
         do_action('unity/register_services', \Unity\Plugin::getContainer());
 
@@ -94,7 +100,7 @@ add_action('plugins_loaded', function() {
          * Fires after Unity is fully loaded and all services are initialized.
          * Use this hook for code that depends on Unity services being available.
          *
-         * @param \Unity\Core\DependencyContainer $container The dependency container
+         * @param \Unity\Core\Interfaces\Container $container The dependency container
          */
         do_action('unity/loaded', \Unity\Plugin::getContainer());
 

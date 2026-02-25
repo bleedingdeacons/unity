@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Unity\Core;
 
 use Unity\Core\Interfaces\Container;
-use RuntimeException;
 
 /**
  * Class DependencyContainer
  *
- * Simple dependency injection container
+ * Simple dependency injection container implementing PSR-11.
  */
 class DependencyContainer implements Container
 {
@@ -39,7 +38,7 @@ class DependencyContainer implements Container
     {
         if (!isset($this->services[$id])) {
             if (!isset($this->factories[$id])) {
-                throw new RuntimeException("Service not found: $id");
+                throw new DependencyNotRegisteredException($id);
             }
             $this->services[$id] = $this->factories[$id]($this);
         }

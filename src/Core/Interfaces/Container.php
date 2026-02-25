@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Unity\Core\Interfaces;
 
-use RuntimeException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Interface Container
  *
  * Describes the interface of a dependency injection container.
+ * Extends PSR-11 ContainerInterface with service registration capability.
  */
-interface Container
+interface Container extends ContainerInterface
 {
     /**
      * Register a service factory
@@ -21,21 +22,4 @@ interface Container
      * @return void
      */
     public function register(string $id, callable $factory): void;
-
-    /**
-     * Get a service by identifier
-     *
-     * @param string $id Service identifier
-     * @return mixed The service instance
-     * @throws RuntimeException If service is not found
-     */
-    public function get(string $id): mixed;
-
-    /**
-     * Check if a service is registered
-     *
-     * @param string $id Service identifier
-     * @return bool
-     */
-    public function has(string $id): bool;
 }
