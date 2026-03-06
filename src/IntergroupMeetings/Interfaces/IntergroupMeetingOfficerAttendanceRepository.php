@@ -65,4 +65,19 @@ interface IntergroupMeetingOfficerAttendanceRepository
      * @return bool Success status
      */
     public function deleteByIntergroupMeetingAndOfficer(int $intergroupMeetingId, int $officerId): bool;
+
+    /**
+     * Update the position name and officer name on the attendance record
+     * for a given officer at a specific intergroup meeting.
+     *
+     * Used when a member's service position or name changes on the day
+     * of an intergroup meeting so that the attendance record stays in sync.
+     *
+     * @param int    $intergroupMeetingId The intergroup meeting ID
+     * @param int    $officerId           The officer (member) ID
+     * @param string $positionName        New position name (plain text)
+     * @param string $officerName         New officer name (plain text)
+     * @return int Number of rows updated
+     */
+    public function updateByMeetingAndOfficer(int $intergroupMeetingId, int $officerId, string $positionName, string $officerName): int;
 }
