@@ -71,4 +71,11 @@ interface Position
      * @return bool Whether the position is valid
      */
     public function isValid(): bool;
+
+    /**
+     * Get the last updated timestamp
+     * 
+     * @return string Last updated datetime string
+     */
+    public function getUpdated(): string;
 }

@@ -125,4 +125,11 @@ interface Meeting
      * @return string Online meeting notes.
      */
     public function getOnlineNotes(): string;
+
+    /**
+     * Get the last updated timestamp.
+     *
+     * @return string Last updated datetime string.
+     */
+    public function getUpdated(): string;
 }

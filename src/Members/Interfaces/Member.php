@@ -21,4 +21,11 @@ interface Member
     public function getMeetingPO(): mixed;
     public function getPersonalEmail(): string;
     public function getMobileNumber(): string;
+
+    /**
+     * Get the last updated timestamp
+     *
+     * @return string Last updated datetime string
+     */
+    public function getUpdated(): string;
 }

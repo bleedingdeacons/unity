@@ -124,4 +124,11 @@ interface Group
      * @return bool True if any contribution option is available
      */
     public function hasContributionOptions(): bool;
+
+    /**
+     * Get the last updated timestamp
+     *
+     * @return string Last updated datetime string
+     */
+    public function getUpdated(): string;
 }

@@ -31,4 +31,11 @@ interface Contact
      * @return string TsmlContact phone.
      */
     public function getPhone(): string;
+
+    /**
+     * Get the last updated timestamp.
+     *
+     * @return string Last updated datetime string.
+     */
+    public function getUpdated(): string;
 }

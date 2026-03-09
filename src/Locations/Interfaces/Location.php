@@ -127,4 +127,11 @@ interface Location
      * @return bool True if both latitude and longitude are set
      */
     public function hasCoordinates(): bool;
+
+    /**
+     * Get the last updated timestamp
+     *
+     * @return string Last updated datetime string
+     */
+    public function getUpdated(): string;
 }
