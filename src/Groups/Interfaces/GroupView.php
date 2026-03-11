@@ -48,6 +48,20 @@ interface GroupView
     public function getLink(): string;
 
     /**
+     * Get the group's dedicated email address
+     *
+     * @return string Group email address
+     */
+    public function getGroupEmail(): string;
+
+    /**
+     * Check if the group email is active
+     *
+     * @return bool Whether the group email is active
+     */
+    public function isGroupEmailActive(): bool;
+
+    /**
      * Get the contacts associated with this group
      *
      * @return Contact[] Array of Contact objects

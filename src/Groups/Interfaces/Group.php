@@ -98,6 +98,20 @@ interface Group
     public function getSquare(): string;
 
     /**
+     * Get the group's dedicated email address
+     *
+     * @return string Group email address
+     */
+    public function getGroupEmail(): string;
+
+    /**
+     * Check if the group email is active
+     *
+     * @return bool Whether the group email is active
+     */
+    public function isGroupEmailActive(): bool;
+
+    /**
      * Get the district ID
      *
      * @return int|null District ID or null if not set
