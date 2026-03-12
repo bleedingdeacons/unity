@@ -36,25 +36,19 @@ if (file_exists($unity_autoloader)) {
 
 // Autoloader for Unity namespace
 spl_autoload_register(function ($class) {
-    try {
-        $prefix = 'Unity\\';
-        $base_dir = UNITY_PLUGIN_DIR . 'src/';
+    $prefix = 'Unity\\';
+    $base_dir = UNITY_PLUGIN_DIR . 'src/';
 
-        $len = strlen($prefix);
-        if (strncmp($prefix, $class, $len) !== 0) {
-            return;
-        }
+    $len = strlen($prefix);
+    if (strncmp($prefix, $class, $len) !== 0) {
+        return;
+    }
 
-        $relative_class = substr($class, $len);
-        $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+    $relative_class = substr($class, $len);
+    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
 
-        if (file_exists($file)) {
-            require $file;
-        }
-    } catch (\Exception $e) {
-        error_log('Unity Autoloader Error: ' . $e->getMessage());
-    } catch (\Throwable $e) {
-        error_log('Unity Autoloader Fatal Error: ' . $e->getMessage());
+    if (file_exists($file)) {
+        require $file;
     }
 });
 
