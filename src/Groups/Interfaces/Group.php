@@ -74,7 +74,7 @@ interface Group
      * @return string Phone number
      */
     public function getPhone(): string;
-    // TODO: remove phone field redundant
+
     /**
      * Get the Venmo handle for 7th Tradition contributions
      *
