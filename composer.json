@@ -2,7 +2,6 @@
     "name": "bleeding-deacons/unity",
     "description": "An intergroup management plugin for WordPress",
     "type": "wordpress-plugin",
-    "version": "1.0.1",
     "license": "MIT (Modified)",
     "authors": [
         {
