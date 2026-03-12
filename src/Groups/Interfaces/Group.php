@@ -32,7 +32,6 @@ interface Group
      * @return string Email address
      */
     public function getEmail(): string;
-    // TODO: remove email field redundant
 
     /**
      * Get the meetings associated with this group
@@ -96,20 +95,6 @@ interface Group
      * @return string Square cashtag (e.g., $AAGroupName)
      */
     public function getSquare(): string;
-
-    /**
-     * Get the group's dedicated email address
-     *
-     * @return string Group email address
-     */
-    public function getGroupEmail(): string;
-
-    /**
-     * Check if the group email is active
-     *
-     * @return bool Whether the group email is active
-     */
-    public function isGroupEmailActive(): bool;
 
     /**
      * Get the district ID
