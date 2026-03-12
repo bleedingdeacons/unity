@@ -65,21 +65,10 @@ class Plugin
             throw new RuntimeException('Container not initialized. Call initContainer() first.');
         }
 
-        // Initialize core services
-//        self::$container->get(Cache::class);
-//        self::$container->get(MeetingFactory::class);
-//        self::$container->get(MeetingRepository::class);
-//        self::$container->get(GroupFactory::class);
-//        self::$container->get(GroupViewFactory::class);
-//        self::$container->get(GroupRepository::class);
-//        self::$container->get(GroupChangeTracker::class);
-//        self::$container->get(MemberChangeTracker::class);
-//        self::$container->get(PositionChangeTracker::class);
-//        self::$container->get(PositionFactory::class);
-//        self::$container->get(PositionRepository::class);
-//        self::$container->get(MemberFactory::class);
-//        self::$container->get(MemberRepository::class);
-//        self::$container->get(PositionViewFactory::class);
+        // Initialize tracker services (to ensure scrutiny)
+        self::$container->get(GroupChangeTracker::class);
+        self::$container->get(MemberChangeTracker::class);
+        self::$container->get(PositionChangeTracker::class);
     }
 
     /**

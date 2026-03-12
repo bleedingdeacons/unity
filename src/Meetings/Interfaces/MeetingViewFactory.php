@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Unity\Meetings\Interfaces;
 
 /**
- * Position View Factory Interface
+ * Meeting Position View Factory Interface
  */
 interface MeetingViewFactory
 {

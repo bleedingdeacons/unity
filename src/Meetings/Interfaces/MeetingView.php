@@ -10,7 +10,7 @@ use DateTime;
 /**
  * Position View Interface
  *
- * Combines position and member data for presentation
+ * Combines meeting and member data for presentation
  */
 interface MeetingView
 {

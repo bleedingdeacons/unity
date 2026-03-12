@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Unity\Meetings\Interfaces;
 
-use Unity\Contact\Interfaces\ContactInterface;
 use Unity\Locations\Interfaces\Location;
 
 /**
