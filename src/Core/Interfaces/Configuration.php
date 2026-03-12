@@ -1,28 +1,32 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Unity\Core\Interfaces;
 
 /**
-* Interface Configuration
-*
-* Allow's for cross-implementation configuration
-*/
+ * Interface Configuration
+ *
+ * Allows cross-implementation configuration storage.
+ * Used to share field mappings (e.g. ACF field names) between
+ * the adapter layer (TSML-for-Unity) and consuming plugins (Amber).
+ */
 interface Configuration
 {
     /**
-     * Store configuration field.
+     * Store a configuration array under the given key.
      *
-     * @param array $source The contact source data.
+     * @param string $key    Identifier for the configuration (typically an interface FQCN).
+     * @param array  $source The configuration data (e.g. field-name constants).
+     * @return void
      */
-    public function setConfig($key, array $source);
+    public function setConfig(string $key, array $source): void;
 
     /**
-     * Retrieve configuration field.
+     * Retrieve a configuration array by key.
      *
-     * @param string $key The contact source data.
-     * @return array|null $fields TsmlContact object.
+     * @param string $key Identifier for the configuration.
+     * @return array|null The stored configuration, or null if not set.
      */
     public function getConfig(string $key): ?array;
-
 }

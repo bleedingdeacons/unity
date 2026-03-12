@@ -13,7 +13,7 @@ final class UnityConfiguration implements Configuration
 {
     protected array $storage = [];
 
-    public function setConfig($key, array $source)
+    public function setConfig(string $key, array $source): void
     {
         $this->storage[$key] = $source;
     }
