@@ -80,4 +80,16 @@ interface IntergroupMeetingOfficerAttendanceRepository
      * @return int Number of rows updated
      */
     public function updateByMeetingAndOfficer(int $intergroupMeetingId, int $officerId, string $positionName, string $officerName): int;
+
+    /**
+     * Check whether an attendance record already exists for an officer at a meeting.
+     *
+     * Uses a lightweight COUNT query against the unique index so the check is
+     * performed at the database level rather than in application memory.
+     *
+     * @param int $intergroupMeetingId
+     * @param int $officerId
+     * @return bool True if a record already exists
+     */
+    public function existsForMeetingAndOfficer(int $intergroupMeetingId, int $officerId): bool;
 }

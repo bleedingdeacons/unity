@@ -74,4 +74,16 @@ interface IntergroupMeetingGroupAttendanceRepository
      * @return bool Success status
      */
     public function deleteByIntergroupMeetingAndGroup(int $intergroupMeetingId, int $groupId): bool;
+
+    /**
+     * Check whether an attendance record already exists for a group at a meeting.
+     *
+     * Uses a lightweight COUNT query against the unique index so the check is
+     * performed at the database level rather than in application memory.
+     *
+     * @param int $intergroupMeetingId
+     * @param int $groupId
+     * @return bool True if a record already exists
+     */
+    public function existsForMeetingAndGroup(int $intergroupMeetingId, int $groupId): bool;
 }
