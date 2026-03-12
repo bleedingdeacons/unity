@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Unity\Groups\Interfaces;
 
 use Unity\Contacts\Interfaces\Contact;
-use Unity\members\Interfaces\member;
+use Unity\Members\Interfaces\Member;
 
 /**
  * Interface for Group View
