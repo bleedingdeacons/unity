@@ -6,7 +6,7 @@ namespace Unity\Positions\Interfaces;
 /**
  * Class PositionChangeTracker
  *
- * Tracks changes to positions via ACF and fires the position_changed hook
+ * Tracks changes to positions via ACF and fires the unity/position_changing hook
  * when actual changes are detected.
  */
 interface PositionChangeTracker
