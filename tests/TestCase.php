@@ -7,12 +7,15 @@ namespace Unity\Tests;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
+use Unity\Plugin;
 use WP_Mock;
 
 /**
  * Base TestCase for Unity plugin tests
  *
  * Provides setup and teardown for WP_Mock and Mockery integration.
+ * Automatically resets the Plugin global instance between tests to
+ * prevent static state leaking across test cases.
  */
 abstract class TestCase extends PHPUnitTestCase
 {
@@ -32,9 +35,26 @@ abstract class TestCase extends PHPUnitTestCase
      */
     protected function tearDown(): void
     {
+        // Reset global Plugin singleton so no state leaks between tests
+        Plugin::setInstance(null);
+
         WP_Mock::tearDown();
         Mockery::close();
         parent::tearDown();
+    }
+
+    /**
+     * Create an isolated Plugin instance with a fresh container.
+     *
+     * Convenience helper for tests that need a real (non-mocked) container.
+     * The instance is NOT registered as the global default; call
+     * Plugin::setInstance() yourself if your test requires that.
+     *
+     * @return Plugin
+     */
+    protected function createPluginInstance(): Plugin
+    {
+        return Plugin::create();
     }
 
     /**

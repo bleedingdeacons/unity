@@ -7,31 +7,135 @@ namespace Unity;
 use RuntimeException;
 use Unity\Core\DependencyContainer;
 use Unity\Core\Interfaces\Container;
-use Unity\Core\Interfaces\Cache;
 use Unity\Core\UnityServiceProvider;
 use Unity\Groups\Interfaces\GroupChangeTracker;
-use Unity\Groups\Interfaces\GroupFactory;
-use Unity\Groups\Interfaces\GroupRepository;
-use Unity\Groups\Interfaces\GroupViewFactory;
-use Unity\Meetings\Interfaces\MeetingFactory;
-use Unity\Meetings\Interfaces\MeetingRepository;
 use Unity\Members\Interfaces\MemberChangeTracker;
-use Unity\Members\Interfaces\MemberFactory;
-use Unity\Members\Interfaces\MemberRepository;
 use Unity\Positions\Interfaces\PositionChangeTracker;
-use Unity\Positions\Interfaces\PositionFactory;
-use Unity\Positions\Interfaces\PositionRepository;
-use Unity\Positions\Interfaces\PositionViewFactory;
 
 /**
  * Main Plugin Class
+ *
+ * Uses an instance-based bootstrap pattern: the container is held by a Plugin
+ * instance rather than static state. A single static reference to the "default"
+ * instance preserves backward compatibility with existing static callers and
+ * the `unity()` helper while enabling isolated instances for testing and
+ * multi-site scenarios.
+ *
+ * Typical production boot (unchanged for callers):
+ *     Plugin::init();                    // creates default instance
+ *     Plugin::getContainer()->get(…);    // works as before
+ *
+ * Testing / advanced usage:
+ *     $plugin = Plugin::create();        // isolated instance, no global side-effects
+ *     $plugin->getContainerInstance();   // private container
  */
 class Plugin
 {
-    private static ?Container $container = null;
+    // ──────────────────────────────────────────────
+    //  Instance members
+    // ──────────────────────────────────────────────
+
+    private Container $container;
+    private bool $servicesInitialized = false;
 
     /**
-     * Initialize the plugin (legacy method for backwards compatibility)
+     * Private constructor – use Plugin::create() or the static boot methods.
+     */
+    private function __construct(Container $container)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * Create a fully isolated Plugin instance.
+     *
+     * The returned instance is *not* assigned as the global default unless
+     * you explicitly call Plugin::setInstance(). This is the recommended
+     * entry-point for unit tests and any context that needs a fresh container.
+     *
+     * @param Container|null $container  Supply a custom/mock container, or
+     *                                   null to get a standard DependencyContainer
+     *                                   pre-loaded with the default service provider.
+     */
+    public static function create(?Container $container = null): self
+    {
+        if ($container === null) {
+            $container = new DependencyContainer();
+            $provider  = new UnityServiceProvider();
+            $provider->register($container);
+        }
+
+        return new self($container);
+    }
+
+    /**
+     * Get this instance's container.
+     */
+    public function getContainerInstance(): Container
+    {
+        return $this->container;
+    }
+
+    /**
+     * Eagerly resolve the core tracker services for this instance.
+     *
+     * @throws RuntimeException If a required service is not registered.
+     */
+    public function initializeServices(): void
+    {
+        if ($this->servicesInitialized) {
+            return;
+        }
+
+        $this->container->get(GroupChangeTracker::class);
+        $this->container->get(MemberChangeTracker::class);
+        $this->container->get(PositionChangeTracker::class);
+
+        $this->servicesInitialized = true;
+    }
+
+    // ──────────────────────────────────────────────
+    //  Global default instance (backward-compatible)
+    // ──────────────────────────────────────────────
+
+    private static ?self $instance = null;
+
+    /**
+     * Replace (or clear) the global default instance.
+     *
+     * Primarily useful in tests to inject a mock-backed Plugin and then
+     * reset it in tearDown():
+     *
+     *     Plugin::setInstance($testPlugin);  // inject
+     *     Plugin::setInstance(null);          // reset
+     */
+    public static function setInstance(?self $instance): void
+    {
+        self::$instance = $instance;
+    }
+
+    /**
+     * Get the global default instance.
+     *
+     * @throws RuntimeException If no default has been booted yet.
+     */
+    public static function getInstance(): self
+    {
+        if (self::$instance === null) {
+            throw new RuntimeException('Plugin not initialized');
+        }
+        return self::$instance;
+    }
+
+    // ──────────────────────────────────────────────
+    //  Static façade (preserves existing call-sites)
+    // ──────────────────────────────────────────────
+
+    /**
+     * Initialize the plugin (legacy convenience method).
+     *
+     * Creates the default instance, registers the deactivation hook,
+     * and eagerly resolves tracker services.
      */
     public static function init(): void
     {
@@ -40,14 +144,14 @@ class Plugin
     }
 
     /**
-     * Initialize the dependency container and register default services
+     * Boot the default container (without resolving services yet).
+     *
+     * Existing callers in Unity.php can continue to call this unchanged.
      */
     public static function initContainer(): void
     {
-        if (self::$container === null) {
-            self::$container = new DependencyContainer();
-            $provider = new UnityServiceProvider();
-            $provider->register(self::$container);
+        if (self::$instance === null) {
+            self::$instance = self::create();
 
             register_deactivation_hook(
                 dirname(__DIR__, 2) . '/Unity.php',
@@ -57,39 +161,35 @@ class Plugin
     }
 
     /**
-     * Initialize and resolve all core services
+     * Eagerly resolve the core tracker services on the default instance.
+     *
+     * @throws RuntimeException If initContainer() has not been called.
      */
     public static function initServices(): void
     {
-        if (self::$container === null) {
+        if (self::$instance === null) {
             throw new RuntimeException('Container not initialized. Call initContainer() first.');
         }
 
-        // Initialize tracker services (to ensure scrutiny)
-        self::$container->get(GroupChangeTracker::class);
-        self::$container->get(MemberChangeTracker::class);
-        self::$container->get(PositionChangeTracker::class);
+        self::$instance->initializeServices();
     }
 
     /**
-     * Get the dependency container
+     * Get the default container.
      *
-     * @return Container
-     * @throws RuntimeException If plugin is not initialized
+     * @throws RuntimeException If plugin is not initialized.
      */
     public static function getContainer(): Container
     {
-        if (self::$container === null) {
-            throw new RuntimeException('Plugin not initialized');
-        }
-        return self::$container;
+        return self::getInstance()->getContainerInstance();
     }
 
     /**
-     * Deactivate the plugin
+     * Deactivate the plugin.
      */
     public static function deactivate(): void
     {
         // Cleanup code here if needed
+        self::$instance = null;
     }
 }
