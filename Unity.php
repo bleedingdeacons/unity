@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * Plugin Name: Unity
  * Description: An intergroup management plugin.
- * Version: 1.7.3
+ * Version: 1.7.4
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: The Bleeding Deacons
