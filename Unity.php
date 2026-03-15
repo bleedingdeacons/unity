@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * Plugin Name: Unity
  * Description: An intergroup management plugin.
- * Version: 1.7.4
+ * Version: 1.7.5
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: The Bleeding Deacons
@@ -19,12 +19,17 @@ if (!defined('ABSPATH')) {
 
 // Define plugin constants
 if (!function_exists('get_plugin_data')) {
-    require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+    if (file_exists(ABSPATH . 'wp-admin/includes/plugin.php')) {
+        require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+    }
 }
 
-$unity_plugin_data = get_plugin_data(__FILE__, false, false);
-
-define('UNITY_VERSION', $unity_plugin_data['Version']);
+if (function_exists('get_plugin_data')) {
+    $unity_plugin_data = get_plugin_data(__FILE__, false, false);
+    define('UNITY_VERSION', $unity_plugin_data['Version']);
+} else {
+    define('UNITY_VERSION', '1.7.4');
+}
 define('UNITY_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('UNITY_PLUGIN_URL', plugin_dir_url(__FILE__));
 
