@@ -328,5 +328,3 @@ You may use, modify, and distribute this software freely **except** that you may
 ## Support
 
 - **Email:** thebleedingdeacons@gmail.com
-- **Issues:** Use the repository issue tracker
-- **Docs:** See the `docs/` directory for the [Quick Start Guide](docs/QUICK_START.md), [Developer Guide](docs/DEVELOPER_GUIDE.md), and [API Reference](docs/API_REFERENCE.md)
