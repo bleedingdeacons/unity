@@ -1,543 +1,332 @@
-# Unity - WordPress Intergroup Management Plugin
+# Unity
 
-**Version:** 1.2.4  
-**Author:** The Bleeding Deacons  
-**License:** MIT (Modified - No Resale)  
-**Requires WordPress:** 6.0+  
-**Requires PHP:** 8.0+
+A WordPress plugin for managing intergroup — groups, meetings, members, positions, locations, and contacts — built with a clean, interface-driven architecture.
+
+ **PHP:** 8.0+ · **WordPress:** 6.0+ · **License:** MIT (Modified — No Resale)
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Architecture](#architecture)
+- [Service Registration](#service-registration)
+- [Usage Examples](#usage-examples)
+- [ACF Integration](#acf-integration)
+- [Development](#development)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
 
 ## Overview
 
-Unity is a comprehensive WordPress plugin designed for managing intergroups,  It provides a robust framework for managing groups, meetings, members, positions, locations, and contacts with a clean, object-oriented architecture.
+Unity provides a robust framework for intergroup coordination within WordPress. It manages the full lifecycle of groups, their meetings, members, officer positions, physical locations, and contact information — including support for intergroup-level meetings and attendance tracking.
+
+The plugin ships as a **headless service layer**: it defines all domain interfaces and provides the dependency injection container, caching, configuration, and change-tracking infrastructure. Concrete implementations of repositories and factories are registered by the consuming site or companion plugin via WordPress hooks.
+
+---
 
 ## Features
 
-### Core Functionality
+**Domain Management**
+- Groups with contact details, digital contribution options (Venmo, PayPal, Square), district assignments, and notes
+- Meetings with scheduling (day/time), online meeting support, location binding, and type categorisation
+- Members with anonymous name support, profile visibility controls, GSR status, and intergroup positions
+- Positions with change tracking and view rendering
+- Locations with full address details
+- Contacts shared across groups, meetings, and members
+- Intergroup meetings with separate group and officer attendance tracking
 
-- **Group Management**: Create and manage multiple groups with detailed information including contact details and organizational structure
-- **Meeting Management**: Track regular meetings with scheduling, location information, online meeting support, and meeting types
-- **Member Management**: Maintain member databases with contact information and role assignments
-- **Position Management**: Define and track organizational positions and responsibilities
-- **Location Management**: Store and manage physical meeting locations with full address details
-- **Contact Management**: Centralized contact information for groups, meetings, and members
-- **Intergroup Meetings**: Support for inter-group coordination and special meetings
-- **Change Tracking**: Built-in change tracking for groups, members, and positions
-- **Caching**: WordPress-integrated caching for optimal performance
+**Technical**
+- PSR-11 compatible dependency injection container
+- Interface-driven design — every domain entity, repository, and factory is defined by an interface
+- Repository and factory patterns for clean data access and object creation
+- Built-in change tracking for groups, members, and positions
+- WordPress-native caching layer
+- PSR-4 autoloading
+- Cross-platform build script for packaging production and development archives
 
-### Technical Features
+---
 
-- **Dependency Injection Container**: Modern IoC container for service management
-- **Interface-Driven Design**: Fully interface-based architecture for extensibility
-- **PSR-4 Autoloading**: Standards-compliant autoloading
-- **Repository Pattern**: Clean data access layer
-- **Factory Pattern**: Flexible object creation
-- **WordPress Integration**: Native WordPress hooks and actions
-- **Advanced Custom Fields (ACF) Support**: JSON configuration files included
+## Requirements
+
+- PHP 8.0 or higher (8.1+ recommended)
+- WordPress 6.0 or higher
+- [Advanced Custom Fields](https://www.advancedcustomfields.com/) (recommended — field configuration JSON files are included)
+
+---
 
 ## Installation
 
-### Requirements
+### Manual
 
-- WordPress 6.0 or higher
-- PHP 8.0 or higher
-- Advanced Custom Fields (ACF) plugin (recommended)
+1. Download the plugin archive.
+2. Extract it into `wp-content/plugins/unity/`.
+3. Run `composer install --no-dev` from the plugin directory.
+4. Activate **Unity** in the WordPress admin under **Plugins**.
 
-### Basic Installation
-
-1. Download the plugin zip file
-2. Upload to `/wp-content/plugins/` directory
-3. Extract the files
-4. Activate the plugin through the WordPress 'Plugins' menu
-5. Import ACF field configurations from `/setup/Unity_ACF.json` (if using ACF)
-
-### Composer Installation
+### Composer
 
 ```bash
 composer require bleeding-deacons/unity
 ```
+
+### ACF Fields
+
+If you are using Advanced Custom Fields, import the bundled field configuration:
+
+1. Navigate to **ACF → Tools → Import**.
+2. Select `setup/Unity_ACF.json` (development) or `setup/unity-prod-acf.json` (production).
+3. Click **Import**.
+
+---
+
+## Getting Started
+
+Unity's container is booted automatically on `plugins_loaded`. Before services can be resolved, you must register your concrete implementations via the `unity/register_services` hook.
+
+A minimal setup in your theme's `functions.php` or a companion plugin:
+
+```php
+add_action('unity/register_services', function (\Unity\Core\Interfaces\Container $container) {
+    // Register a meeting factory
+    $container->register(
+        \Unity\Meetings\Interfaces\MeetingFactory::class,
+        fn($c) => new MyMeetingFactory(
+            $c->get(\Unity\Contacts\Interfaces\ContactFactory::class),
+            $c->get(\Unity\Locations\Interfaces\LocationRepository::class)
+        )
+    );
+
+    // Register a meeting repository
+    $container->register(
+        \Unity\Meetings\Interfaces\MeetingRepository::class,
+        fn($c) => new MyMeetingRepository(
+            $c->get(\Unity\Meetings\Interfaces\MeetingFactory::class),
+            $c->get(\Unity\Core\Interfaces\Cache::class)
+        )
+    );
+
+    // ... register remaining factories and repositories
+});
+```
+
+Once services are registered, access them anywhere via the global helper:
+
+```php
+$groups = unity()->get(\Unity\Groups\Interfaces\GroupRepository::class)->findAll();
+```
+
+---
 
 ## Architecture
 
 ### Directory Structure
 
 ```
-Unity/
+unity/
+├── Unity.php                  # Main plugin bootstrap
 ├── src/
-│   ├── Configuration/      # Plugin configuration and field definitions
-│   ├── Contact/           # Contact management
-│   ├── Core/              # Core services (DI container, cache, service provider)
-│   ├── Groups/            # Group management and repositories
-│   ├── IntergroupMeetings/ # Inter-group meeting coordination
-│   ├── Locations/         # Location management
-│   ├── Meetings/          # Meeting management and scheduling
-│   ├── Members/           # Member management
-│   └── Positions/         # Position/role management
-├── setup/                 # ACF field configurations
-├── tests/                 # PHPUnit tests
-├── Unity.php             # Main plugin file
-├── build.php             # Build script
-└── composer.json         # Composer configuration
+│   ├── Plugin.php             # Plugin singleton & container lifecycle
+│   ├── Core/
+│   │   ├── DependencyContainer.php
+│   │   ├── DependencyNotRegisteredException.php
+│   │   ├── UnityConfiguration.php
+│   │   ├── UnityServiceProvider.php
+│   │   ├── WordPressCache.php
+│   │   └── Interfaces/       # Cache, Configuration, Container
+│   ├── Contacts/Interfaces/
+│   ├── Groups/Interfaces/
+│   ├── IntergroupMeetings/Interfaces/
+│   ├── Locations/Interfaces/
+│   ├── Meetings/Interfaces/
+│   ├── Members/Interfaces/
+│   └── Positions/Interfaces/
+├── setup/                     # ACF field configuration JSON
+├── tests/                     # PHPUnit test suite
+├── build.php                  # Cross-platform build script
+├── composer.json
+├── phpunit.xml
+└── phpstan.neon
 ```
 
-### Design Patterns
+### Hooks
 
-**Dependency Injection Container**
-```php
-// Access the container
-$container = unity();
+| Hook | Timing | Purpose |
+|---|---|---|
+| `unity/register_services` | After container creation, before service resolution | Register your factory and repository implementations |
+| `unity/loaded` | After all services are initialised | Safe to consume Unity services |
 
-// Resolve services
-$meetingRepo = $container->get(MeetingRepository::class);
-```
+### Plugin Lifecycle
 
-**Repository Pattern**
-```php
-// All data access goes through repositories
-$groups = $groupRepository->findAll();
-$meeting = $meetingRepository->findById($id);
-```
+1. `Unity.php` loads on `plugins_loaded` (priority 10).
+2. The `DependencyContainer` is created and `UnityServiceProvider` registers core services (cache, configuration).
+3. The `unity/register_services` action fires — your code registers domain services here.
+4. Core tracker services (`GroupChangeTracker`, `MemberChangeTracker`, `PositionChangeTracker`) are eagerly resolved.
+5. The `unity/loaded` action fires — Unity is fully operational.
 
-**Factory Pattern**
-```php
-// Object creation through factories
-$group = $groupFactory->create($data);
-$member = $memberFactory->create($memberData);
-```
+---
 
-## Configuration
+## Service Registration
 
-### WordPress Hooks
+The following interfaces **must** be registered by the consuming site via `unity/register_services`:
 
-Unity provides several hooks for extensibility:
+**Factories:** `ContactFactory`, `GroupFactory`, `LocationFactory`, `MeetingFactory`, `MemberFactory`, `PositionFactory`, `IntergroupMeetingFactory`, `IntergroupMeetingGroupAttendanceFactory`, `IntergroupMeetingOfficerAttendanceFactory`
 
-**`unity/register_services`**
-Fires after Unity's container is created but before services are resolved. Use this to register custom service implementations.
+**Repositories:** `GroupRepository`, `LocationRepository`, `MeetingRepository`, `MemberRepository`, `PositionRepository`, `IntergroupMeetingRepository`, `IntergroupMeetingGroupAttendanceRepository`, `IntergroupMeetingOfficerAttendanceRepository`
 
-```php
-add_action('unity/register_services', function($container) {
-    $container->register(MeetingFactory::class, function($c) {
-        return new CustomMeetingFactory(
-            $c->get(ContactFactoryInterface::class),
-            $c->get(LocationRepository::class)
-        );
-    });
-});
-```
+**Change Trackers:** `GroupChangeTracker`, `MemberChangeTracker`, `PositionChangeTracker`
 
-**`unity/loaded`**
-Fires after Unity is fully loaded and all services are initialized.
+**View Factories:** `GroupViewFactory`, `MeetingViewFactory`, `PositionViewFactory`
+
+The core services (`Cache`, `Configuration`) are pre-registered by Unity.
+
+---
+
+## Usage Examples
+
+### Groups
 
 ```php
-add_action('unity/loaded', function($container) {
-    // Your code here - all Unity services are available
-    $groups = $container->get(GroupRepository::class)->findAll();
-});
-```
+$repo  = unity()->get(\Unity\Groups\Interfaces\GroupRepository::class);
+$group = $repo->findById(123);
 
-### Custom Service Registration
-
-Unity uses a dependency injection container that requires certain services to be registered by the implementing site. The following services must be registered via the `unity/register_services` hook:
-
-- `MeetingFactory`
-- `MeetingRepository`
-- `GroupFactory`
-- `GroupRepository`
-- `LocationFactory`
-- `LocationRepository`
-- `MemberFactory`
-- `MemberRepository`
-- `PositionFactory`
-- `PositionRepository`
-- `IntergroupMeetingFactory`
-- `IntergroupMeetingRepository`
-
-Example implementation:
-
-```php
-add_action('unity/register_services', function($container) {
-    // Register Meeting Factory
-    $container->register(MeetingFactory::class, function($c) {
-        return new MeetingFactory(
-            $c->get(ContactFactoryInterface::class),
-            $c->get(LocationRepository::class)
-        );
-    });
-    
-    // Register Meeting Repository
-    $container->register(MeetingRepository::class, function($c) {
-        return new MeetingRepository(
-            $c->get(MeetingFactory::class),
-            $c->get(Cache::class)
-        );
-    });
-    
-    // ... register other required services
-});
-```
-
-## Usage
-
-### Basic Usage Examples
-
-#### Working with Groups
-
-```php
-// Get the container
-$container = unity();
-
-// Get the group repository
-$groupRepo = $container->get(GroupRepository::class);
-
-// Find all groups
-$groups = $groupRepo->findAll();
-
-// Get a specific group
-$group = $groupRepo->findById(123);
-
-// Access group data
 echo $group->getTitle();
 echo $group->getEmail();
 echo $group->getWebsite();
+
+if ($group->hasContributionOptions()) {
+    echo $group->getVenmo();   // e.g. @GroupName
+    echo $group->getPaypal();
+    echo $group->getSquare();  // e.g. $GroupName
+}
+
 $meetings = $group->getMeetings();
 $contacts = $group->getContacts();
-
-// Check for payment options
-if ($group->hasContributionOptions()) {
-    echo $group->getVenmo();
-    echo $group->getPaypal();
-    echo $group->getSquare();
-}
 ```
 
-#### Working with Meetings
+### Meetings
 
 ```php
-$meetingRepo = $container->get(MeetingRepository::class);
+$repo    = unity()->get(\Unity\Meetings\Interfaces\MeetingRepository::class);
+$meeting = $repo->findById(456);
 
-$meeting = $meetingRepo->findById(456);
-
-// Access meeting details
 echo $meeting->getName();
-echo $meeting->getDayOfWeek();
-echo $meeting->getTime();
-echo $meeting->getEndTime();
+echo $meeting->getDayOfWeek() . ' ' . $meeting->getTime();
 
-// Check if online
 if ($meeting->isOnline()) {
     echo $meeting->getOnlineLink();
-    echo $meeting->getOnlineNotes();
 }
 
-// Get location
 $location = $meeting->getLocation();
-if ($location) {
-    echo $location->getAddress();
-    echo $location->getCity();
-}
-
-// Get meeting types
-$types = $meeting->getTypes();
 ```
 
-#### Working with Members
+### Members
 
 ```php
-$memberRepo = $container->get(MemberRepository::class);
+$repo   = unity()->get(\Unity\Members\Interfaces\MemberRepository::class);
+$member = $repo->findById(789);
 
-$member = $memberRepo->findById(789);
-
-echo $member->getName();
-echo $member->getEmail();
-echo $member->getPhone();
-
-// Get member's groups
-$groups = $member->getGroups();
-
-// Get member's positions
-$positions = $member->getPositions();
+echo $member->getAnonymousName();
+echo $member->getPersonalEmail();
+echo $member->getMobileNumber();
 ```
 
-#### Change Tracking
+---
 
-```php
-// Track group changes
-$groupTracker = $container->get(GroupChangeTracker::class);
-// Implement change tracking logic
+## ACF Integration
 
-// Track member changes
-$memberTracker = $container->get(MemberChangeTracker::class);
-// Implement change tracking logic
+Unity ships with pre-built ACF field group configurations in the `setup/` directory:
 
-// Track position changes
-$positionTracker = $container->get(PositionChangeTracker::class);
-// Implement change tracking logic
-```
+- `Unity_ACF.json` — development fields
+- `unity-prod-acf.json` — production fields
+- `Example.csv` / `Import.xlsx` — sample import data
 
-### Advanced Custom Fields (ACF) Integration
+Import via **ACF → Tools → Import**.
 
-Unity includes pre-configured ACF field groups for managing all data types. Import the JSON files from the `/setup/` directory:
-
-1. Go to **ACF → Tools → Import**
-2. Import `Unity_ACF.json` for development
-3. Or import `unity-prod-acf.json` for production
+---
 
 ## Development
 
-### Setting Up Development Environment
+### Setup
 
 ```bash
-# Clone the repository
-git clone [repository-url]
-
-# Install dependencies
+git clone <repository-url>
+cd unity
 composer install
-
-# Run tests
-composer test
-
-# Run PHPStan static analysis
-composer stan
-
-# Check code style
-composer cs
-
-# Fix code style
-composer cs:fix
 ```
 
-### Build Process
+### Commands
+
+| Command | Description |
+|---|---|
+| `composer test` | Run the full PHPUnit test suite |
+| `composer test:unit` | Run unit tests only |
+| `composer test:integration` | Run integration tests only |
+| `composer test:coverage` | Generate an HTML coverage report |
+| `composer stan` | Run PHPStan static analysis (level 5) |
+| `composer cs` | Check WordPress coding standards |
+| `composer cs:fix` | Auto-fix coding standard violations |
+| `composer check` | Run CS + PHPStan + tests in sequence |
+
+### Build
 
 ```bash
-# Production build
-composer build:production
-
-# Development build
-composer build:dev
-
-# Clean build artifacts
-composer build:clean
+composer build:production   # Package for distribution (excludes tests/dev files)
+composer build:dev          # Package with dev files included
+composer build:clean        # Remove build artifacts
 ```
 
-### Testing
+### Testing Stack
 
-Unity uses PHPUnit for testing:
+- **PHPUnit** 9/10 for unit and integration tests
+- **WP_Mock** for WordPress function mocking
+- **Mockery** for general mocking
+- **PHPStan** (level 5) with the WordPress extension for static analysis
+- **PHP_CodeSniffer** with the WordPress standard
 
-```bash
-# Run all tests
-composer test
-
-# Run unit tests only
-composer test:unit
-
-# Run integration tests only
-composer test:integration
-
-# Generate coverage report
-composer test:coverage
-```
-
-### Code Quality
-
-```bash
-# Run all quality checks
-composer check
-
-# This runs:
-# - Code sniffer (cs)
-# - PHPStan static analysis (stan)
-# - PHPUnit tests (test)
-```
-
-## API Reference
-
-### Core Interfaces
-
-#### Group
-
-```php
-interface Group
-{
-    public function getId(): int;
-    public function getTitle(): string;
-    public function getEmail(): string;
-    public function getMeetings(): array;
-    public function getLink(): string;
-    public function isValid(): bool;
-    public function getGroupNotes(): string;
-    public function getWebsite(): string;
-    public function getPhone(): string;
-    public function getVenmo(): string;
-    public function getPaypal(): string;
-    public function getSquare(): string;
-    public function getDistrictId(): ?int;
-    public function getLastContact(): ?string;
-    public function getContacts(): array;
-    public function hasContributionOptions(): bool;
-}
-```
-
-#### Meeting
-
-```php
-interface Meeting
-{
-    public function getId(): int;
-    public function getName(): string;
-    public function getSlug(): string;
-    public function getLocation(): ?Location;
-    public function getUrl(): string;
-    public function getDay(): int;
-    public function getDayOfWeek(): string;
-    public function getTime(): string;
-    public function getEndTime(): string;
-    public function getTypes(): array;
-    public function getState(): string;
-    public function isOnline(): bool;
-    public function getContacts(): array;
-    public function getMeta(): array;
-    public function getOnlineLink(): string;
-    public function getOnlineNotes(): string;
-}
-```
-
-#### Member
-
-```php
-interface Member
-{
-    public function getId(): int;
-    public function getName(): string;
-    public function getEmail(): string;
-    public function getPhone(): string;
-    // Additional methods as implemented
-}
-```
-
-#### ContactInterface
-
-```php
-interface ContactInterface
-{
-    public function getId(): int;
-    public function getName(): string;
-    public function getEmail(): string;
-    public function getPhone(): string;
-    // Additional contact methods
-}
-```
-
-### Repository Interfaces
-
-All repositories extend the base repository pattern:
-
-```php
-interface RepositoryInterface
-{
-    public function findById(int $id): ?EntityInterface;
-    public function findAll(): array;
-    public function save(EntityInterface $entity): bool;
-    public function delete(int $id): bool;
-}
-```
-
-### Container Access
-
-```php
-// Global function to access container
-function unity(): DependencyContainer;
-
-// Usage
-$container = unity();
-$service = $container->get(ServiceInterface::class);
-```
-
-## Error Handling
-
-Unity includes comprehensive error handling:
-
-- **Initialization Errors**: Logged to WordPress error log and displayed in admin notices
-- **Service Registration Errors**: Throws `DependencyNotRegisteredException` if required services aren't registered
-- **Autoloader Errors**: Gracefully handled with error logging
-- **Fatal Errors**: Caught and logged with stack traces
-
-Check WordPress debug logs for detailed error information:
-```php
-define('WP_DEBUG', true);
-define('WP_DEBUG_LOG', true);
-```
+---
 
 ## Troubleshooting
 
-### Plugin Won't Activate
+**"Services not registered" admin notice**
+No code is listening on `unity/register_services`. Make sure your theme or companion plugin hooks into this action and registers all required factories, repositories, and trackers.
 
-1. Check PHP version (must be 8.0+)
-2. Check WordPress version (must be 6.0+)
-3. Review error logs for specific messages
+**`DependencyNotRegisteredException`**
+You are resolving a service that hasn't been registered. Check that the interface class name matches exactly when calling `$container->register(...)`.
 
-### Services Not Registered Error
+**Plugin fails to activate**
+Verify PHP ≥ 8.0 and WordPress ≥ 6.0. Enable `WP_DEBUG` and `WP_DEBUG_LOG` and check `wp-content/debug.log` for details.
 
-This means required services haven't been registered. Add the `unity/register_services` hook to register all required services (see Configuration section).
-
-### Missing Dependencies
-
-Ensure all required interfaces are implemented:
-```php
-add_action('unity/register_services', function($container) {
-    // Register all required factories and repositories
-});
-```
+---
 
 ## Contributing
 
-### Coding Standards
+1. Fork the repository and create a feature branch.
+2. Write tests for any new functionality.
+3. Ensure `composer check` passes (coding standards, static analysis, and tests).
+4. Submit a pull request with a clear description of the change.
 
-- Follow WordPress PHP Coding Standards
-- Use PSR-4 autoloading conventions
-- All code must pass PHPStan level 5 analysis
-- Maintain 100% interface coverage for public APIs
+All public APIs must be defined by interfaces. PHPStan level 5 compliance is required.
 
-### Pull Request Process
-
-1. Fork the repository
-2. Create a feature branch
-3. Write tests for new functionality
-4. Ensure all tests pass
-5. Run code quality checks
-6. Submit pull request with detailed description
+---
 
 ## License
 
-MIT License (Modified)
+MIT License (Modified) — Copyright © 2025 The Bleeding Deacons
 
-Copyright (c) 2025 The Bleeding Deacons
+You may use, modify, and distribute this software freely **except** that you may not sell it, alone or as part of an aggregate distribution. See [LICENSE](LICENSE) for full terms.
 
-Permission is granted to use, modify, and distribute this software, with the following modification:
-
-**The licensee may NOT sell this software, alone or as part of an aggregate software distribution.**
-
-See the [LICENSE](LICENSE) file for full terms.
+---
 
 ## Support
 
-For issues, questions, or contributions:
-- Email: thebleedingdeacons@gmail.com
-- Report bugs through issue tracker
-- Review documentation before requesting support
-
-## Changelog
-
-### Version 1.2.4
-- Current stable release
-- Enhanced dependency injection
-- Improved error handling
-- Added comprehensive hooks
-
-### Version 1.0.1
-- Initial composer package release
-- Basic intergroup management functionality
-
-## Credits
-
-Developed by **The Bleeding Deacons**
-
-Built with modern PHP practices and WordPress best practices in mind.
+- **Email:** thebleedingdeacons@gmail.com
+- **Issues:** Use the repository issue tracker
+- **Docs:** See the `docs/` directory for the [Quick Start Guide](docs/QUICK_START.md), [Developer Guide](docs/DEVELOPER_GUIDE.md), and [API Reference](docs/API_REFERENCE.md)
