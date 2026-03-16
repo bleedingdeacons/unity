@@ -31,11 +31,11 @@ use Unity\Positions\Interfaces\PositionRepository;
 use Unity\Positions\Interfaces\PositionViewFactory;
 
 /**
- * Class BasicServiceProvider
+ * Class UnityServiceProvider
  *
  * Registers all plugin services
  */
-class BasicServiceProvider
+class UnityServiceProvider
 {
     /**
      * Register all services in the container

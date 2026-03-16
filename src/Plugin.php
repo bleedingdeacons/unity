@@ -7,7 +7,7 @@ namespace Unity;
 use RuntimeException;
 use Unity\Core\DependencyContainer;
 use Unity\Core\Interfaces\Container;
-use Unity\Core\BasicServiceProvider;
+use Unity\Core\UnityServiceProvider;
 use Unity\Groups\Interfaces\GroupChangeTracker;
 use Unity\Members\Interfaces\MemberChangeTracker;
 use Unity\Positions\Interfaces\PositionChangeTracker;
@@ -61,7 +61,7 @@ class Plugin
     {
         if ($container === null) {
             $container = new DependencyContainer();
-            $provider  = new BasicServiceProvider();
+            $provider  = new UnityServiceProvider();
             $provider->register($container);
         }
 
