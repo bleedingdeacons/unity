@@ -248,7 +248,7 @@ Unity ships with pre-built ACF field group configurations in the `setup/` direct
 
 - `unity_v1.json` — Custom Types and Field Groups (Required for Tsml-for-Unity & Unity Builds)
 
--Manual Install required
+- `Manual Install required`
 
 Import via **ACF → Tools → Import**.
 
