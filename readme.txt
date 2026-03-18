@@ -198,11 +198,9 @@ The core services (`Cache`, `Configuration`) are pre-registered by Unity.
 
 Unity ships with pre-built ACF field group configurations in the `setup/` directory:
 
-* `Unity_ACF.json` — development fields
-* `unity-prod-acf.json` — production fields
-* `Example.csv` / `Import.xlsx` — sample import data
+- `unity_v1.json` — Custom Types and Field Groups (Required for Tsml-for-Unity & Unity Builds)
 
-Import via **ACF → Tools → Import**.
+** Manual Install required **
 
 == Overview ==
 
