@@ -246,7 +246,7 @@ echo $member->getMobileNumber();
 
 Unity ships with pre-built ACF field group configurations in the `setup/` directory:
 
-- `unity_v1.json` — Custom Types and Field Groups (Required for Tsml-for-Unity & Unity Builds)
+- `unity_v1.json` — Custom Types and Field Groups (Required for Tsml-for-Unity & Unity)
 
 - `Manual Install required`
 
