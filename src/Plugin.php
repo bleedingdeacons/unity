@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Unity;
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use RuntimeException;
 use Unity\Core\DependencyContainer;
 use Unity\Core\Interfaces\Container;

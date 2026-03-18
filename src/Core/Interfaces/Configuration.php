@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Unity\Core\Interfaces;
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Interface Configuration
  *

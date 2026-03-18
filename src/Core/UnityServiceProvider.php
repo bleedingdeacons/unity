@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Unity\Core;
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use Unity\Contacts\Interfaces\ContactFactory;
 use Unity\Core\Interfaces\Cache;
 use Unity\Core\Interfaces\Configuration;

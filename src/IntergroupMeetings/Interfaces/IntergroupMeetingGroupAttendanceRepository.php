@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Unity\IntergroupMeetings\Interfaces;
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Intergroup Meeting Attendance Repository Interface
  */

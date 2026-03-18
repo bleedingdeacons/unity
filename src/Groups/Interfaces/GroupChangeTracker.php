@@ -2,6 +2,11 @@
 
 namespace Unity\Groups\Interfaces;
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 
 /**
  * Class GroupChangeTracker

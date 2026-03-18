@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Unity\Groups\Interfaces;
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use Unity\Contact\Interfaces\ContactInterface;
 use Unity\Meetings\Interfaces\Meeting;
 

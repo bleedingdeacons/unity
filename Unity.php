@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * Plugin Name: Unity
  * Description: An intergroup management plugin.
- * Version: 1.7.6
+ * Version: 1.7.7
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: The Bleeding Deacons
@@ -104,7 +104,9 @@ add_action('plugins_loaded', function() {
         do_action('unity/loaded', \Unity\Plugin::getContainer());
 
     } catch (\Exception $e) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         error_log('Unity Plugin Initialization Error: ' . $e->getMessage());
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         error_log('Unity Plugin Stack Trace: ' . $e->getTraceAsString());
 
         if (is_admin()) {
@@ -120,7 +122,9 @@ add_action('plugins_loaded', function() {
         return;
 
     } catch (\Throwable $e) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         error_log('Unity Plugin Fatal Error: ' . $e->getMessage());
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         error_log('Unity Plugin Stack Trace: ' . $e->getTraceAsString());
 
         if (is_admin()) {

@@ -2,6 +2,11 @@
 
 namespace Unity\Members\Interfaces;
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 
 /**
  * Class MemberChangeTracker

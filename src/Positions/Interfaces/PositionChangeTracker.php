@@ -2,6 +2,11 @@
 
 namespace Unity\Positions\Interfaces;
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 
 /**
  * Class PositionChangeTracker
