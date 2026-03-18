@@ -5,11 +5,12 @@ declare(strict_types=1);
 /**
  * Plugin Name: Unity
  * Description: An intergroup management plugin.
- * Version: 1.7.7
+ * Version: 1.7.8
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: The Bleeding Deacons
- * Author URI: thebleedingdeacons@gmail.com
+ * Author URI: https://github.com/bleedingdeacons/unity
+ * Contact: thebleedingdeacons@gmail.com
  * License: MIT (Modified)
  */
 
@@ -90,6 +91,7 @@ add_action('plugins_loaded', function() {
                     echo '<div class="notice notice-error is-dismissible"><p><strong>Unity Plugin Error:</strong> Services not registered.</p></div>';
                 });
             }
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             error_log('Unity Plugin Error: Services not registered - no hooks listening to unity/register_services.');
         }
 
@@ -115,7 +117,7 @@ add_action('plugins_loaded', function() {
                     '<strong>Unity Plugin Error:</strong> %s',
                     esc_html($e->getMessage())
                 );
-                echo '<div class="notice notice-error is-dismissible"><p>' . $message . '</p></div>';
+                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($message) . '</p></div>';
             });
         }
 
