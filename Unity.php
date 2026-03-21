@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * Plugin Name: Unity
  * Description: An intergroup management plugin.
- * Version: 1.9.0
+ * Version: 1.9.1
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: The Bleeding Deacons
@@ -95,7 +95,28 @@ add_action('plugins_loaded', function() {
             error_log('Unity Plugin Error: Services not registered - no hooks listening to unity/register_services.');
         }
 
-        \Unity\Plugin::initServices();
+        // Resolve tracker services — if this fails the plugin stack is
+        // inconsistent so we stop here and do NOT fire unity/loaded, which
+        // prevents downstream plugins (Scrutiny, Amber, etc.) from loading.
+        try {
+            \Unity\Plugin::initServices();
+        } catch (\Throwable $e) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+            error_log('Unity Plugin Service Error: ' . $e->getMessage());
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+            error_log('Unity Plugin Stack Trace: ' . $e->getTraceAsString());
+
+            if (is_admin()) {
+                add_action('admin_notices', function() use ($e) {
+                    echo '<div class="notice notice-error is-dismissible"><p>'
+                        . '<strong>Unity:</strong> Services failed to initialise — all dependent plugins have been prevented from loading. '
+                        . esc_html($e->getMessage())
+                        . '</p></div>';
+                });
+            }
+
+            return;
+        }
 
         /**
          * Fires after Unity is fully loaded and all services are initialized.
