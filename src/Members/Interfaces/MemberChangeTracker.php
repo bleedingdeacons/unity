@@ -31,4 +31,15 @@ interface MemberChangeTracker
      * @return void
      */
     public function checkForChanges(int $postId): void;
+
+    /**
+     * Handle member deletion (trash or permanent delete)
+     *
+     * Captures the member before it is removed and fires the
+     * unity/member_deleted hook so that listeners can react.
+     *
+     * @param int $postId The post ID being deleted or trashed
+     * @return void
+     */
+    public function onMemberDeleted(int $postId): void;
 }
