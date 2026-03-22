@@ -5,9 +5,10 @@ declare(strict_types=1);
 /**
  * Plugin Name: Unity
  * Description: An intergroup management plugin.
- * Version: 1.9.1
+ * Version: 1.10.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
+ * Requires Plugins: sentinel
  * Author: The Bleeding Deacons
  * Author URI: https://github.com/bleedingdeacons/unity
  * Contact: thebleedingdeacons@gmail.com
@@ -91,8 +92,9 @@ add_action('plugins_loaded', function() {
                     echo '<div class="notice notice-error is-dismissible"><p><strong>Unity Plugin Error:</strong> Services not registered.</p></div>';
                 });
             }
-            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-            error_log('Unity Plugin Error: Services not registered - no hooks listening to unity/register_services.');
+            function_exists('wp_log')
+                ? wp_log('unity')->error('Unity Plugin Error: Services not registered - no hooks listening to unity/register_services.')
+                : error_log('Unity Plugin Error: Services not registered - no hooks listening to unity/register_services.');
         }
 
         // Resolve tracker services — if this fails the plugin stack is
@@ -101,10 +103,9 @@ add_action('plugins_loaded', function() {
         try {
             \Unity\Plugin::initServices();
         } catch (\Throwable $e) {
-            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-            error_log('Unity Plugin Service Error: ' . $e->getMessage());
-            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-            error_log('Unity Plugin Stack Trace: ' . $e->getTraceAsString());
+            function_exists('wp_log')
+                ? wp_log('unity')->error('Unity Plugin Service Error: ' . $e->getMessage(), ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()])
+                : error_log('Unity Plugin Service Error: ' . $e->getMessage());
 
             if (is_admin()) {
                 add_action('admin_notices', function() use ($e) {
@@ -127,10 +128,9 @@ add_action('plugins_loaded', function() {
         do_action('unity/loaded', \Unity\Plugin::getContainer());
 
     } catch (\Exception $e) {
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-        error_log('Unity Plugin Initialization Error: ' . $e->getMessage());
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-        error_log('Unity Plugin Stack Trace: ' . $e->getTraceAsString());
+        function_exists('wp_log')
+            ? wp_log('unity')->error('Unity Plugin Initialization Error: ' . $e->getMessage(), ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()])
+            : error_log('Unity Plugin Initialization Error: ' . $e->getMessage());
 
         if (is_admin()) {
             add_action('admin_notices', function() use ($e) {
@@ -145,10 +145,9 @@ add_action('plugins_loaded', function() {
         return;
 
     } catch (\Throwable $e) {
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-        error_log('Unity Plugin Fatal Error: ' . $e->getMessage());
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-        error_log('Unity Plugin Stack Trace: ' . $e->getTraceAsString());
+        function_exists('wp_log')
+            ? wp_log('unity')->critical('Unity Plugin Fatal Error: ' . $e->getMessage(), ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()])
+            : error_log('Unity Plugin Fatal Error: ' . $e->getMessage());
 
         if (is_admin()) {
             add_action('admin_notices', function() {

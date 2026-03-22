@@ -36,6 +36,13 @@ use Unity\Positions\Interfaces\PositionChangeTracker;
  */
 class Plugin
 {
+    use \Unity\Logger\HasLogger;
+
+    protected static function logChannel(): string
+    {
+        return 'unity';
+    }
+
     // ──────────────────────────────────────────────
     //  Instance members
     // ──────────────────────────────────────────────
