@@ -104,6 +104,8 @@ class Plugin
         $this->container->get(PositionChangeTracker::class);
 
         $this->servicesInitialized = true;
+
+        self::logInfo('Unity initialised', ['version' => defined('UNITY_VERSION') ? UNITY_VERSION : 'unknown']);
     }
 
     // ──────────────────────────────────────────────
