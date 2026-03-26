@@ -14,6 +14,7 @@ use Unity\Core\DependencyContainer;
 use Unity\Core\Interfaces\Container;
 use Unity\Core\UnityServiceProvider;
 use Unity\Groups\Interfaces\GroupChangeTracker;
+use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingChangeTracker;
 use Unity\Members\Interfaces\MemberChangeTracker;
 use Unity\Positions\Interfaces\PositionChangeTracker;
 
@@ -102,6 +103,7 @@ class Plugin
         $this->container->get(GroupChangeTracker::class);
         $this->container->get(MemberChangeTracker::class);
         $this->container->get(PositionChangeTracker::class);
+        $this->container->get(IntergroupMeetingChangeTracker::class);
 
         $this->servicesInitialized = true;
 
