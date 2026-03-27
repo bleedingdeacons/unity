@@ -34,6 +34,16 @@ interface PositionView
     public function getMember(): ?Member;
 
     /**
+     * Get all members assigned to this position
+     * 
+     * When multiple members share the same position and rotation date,
+     * all of them are returned.
+     * 
+     * @return array Array of Member objects
+     */
+    public function getMembers(): array;
+
+    /**
      * Check if the position has a member assigned
      * 
      * @return bool
