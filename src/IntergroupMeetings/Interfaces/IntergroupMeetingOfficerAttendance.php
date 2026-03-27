@@ -32,6 +32,17 @@ interface IntergroupMeetingOfficerAttendance
     public function getIntergroupMeetingId(): int;
 
     /**
+     * Get a display label identifying the intergroup meeting.
+     *
+     * Stored as a denormalised value so attendance records can be
+     * filtered and displayed without joining to the meetings table.
+     * Typically formatted as "Meeting Title — F j, Y".
+     *
+     * @return string
+     */
+    public function getMeetingLabel(): string;
+
+    /**
      * Get the member ID this attendance record belongs to.
      *
      * @return int

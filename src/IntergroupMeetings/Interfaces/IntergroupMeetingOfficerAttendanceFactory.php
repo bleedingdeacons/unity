@@ -26,6 +26,7 @@ interface IntergroupMeetingOfficerAttendanceFactory
      * Create a new IntergroupMeetingOfficerAttendance instance.
      *
      * @param int    $intergroupMeetingId Parent intergroup meeting ID
+     * @param string $meetingLabel        Display label for the intergroup meeting (denormalised)
      * @param int    $officerId           Officer member ID
      * @param string $positionName        Position name (plain text)
      * @param string $officerName         Officer name (plain text)
@@ -33,6 +34,7 @@ interface IntergroupMeetingOfficerAttendanceFactory
      */
     public function createNew(
         int $intergroupMeetingId,
+        string $meetingLabel,
         int $officerId,
         string $positionName,
         string $officerName
