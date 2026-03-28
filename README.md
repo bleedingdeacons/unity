@@ -2,7 +2,7 @@
 
 A WordPress plugin for managing intergroup — groups, meetings, members, positions, locations, and contacts — built with a clean, interface-driven architecture.
 
-**Version:** 1.10.5
+**Version:** 1.10.6
 **Requires:** WordPress 6.0+ · PHP 8.0+
 **License:** MIT (Modified — No Resale)
 
