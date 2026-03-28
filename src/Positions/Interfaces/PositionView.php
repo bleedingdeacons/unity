@@ -29,19 +29,36 @@ interface PositionView
     /**
      * Get the member assigned to this position
      * 
+     * When multiple members hold the same position, returns the member
+     * with the latest rotation date. Use {@see getMembers()} to retrieve
+     * all members sharing the latest rotation date.
+     * 
      * @return Member|null
      */
     public function getMember(): ?Member;
 
     /**
-     * Get all members assigned to this position
-     * 
-     * When multiple members share the same position and rotation date,
-     * all of them are returned.
-     * 
-     * @return array Array of Member objects
+     * Get all members sharing the latest rotation date for this position.
+     *
+     * When a single member holds the position the array contains that one
+     * member. When multiple members share the same latest rotation date
+     * they are all included. Returns an empty array when the position is
+     * vacant.
+     *
+     * @return array<Member>
      */
     public function getMembers(): array;
+
+    /**
+     * Get a display-ready officer name for this position.
+     *
+     * Returns the anonymous name of the member with the latest rotation
+     * date. If multiple members share the same latest rotation date all
+     * their names are returned comma-separated.
+     *
+     * @return string Comma-separated anonymous name(s), or empty string if vacant
+     */
+    public function getOfficerDisplayName(): string;
 
     /**
      * Check if the position has a member assigned
