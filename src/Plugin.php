@@ -107,7 +107,7 @@ class Plugin
 
         $this->servicesInitialized = true;
 
-        self::logInfo('Unity initialised', ['version' => defined('UNITY_VERSION') ? UNITY_VERSION : 'unknown']);
+        self::logDebug('Initialised', ['version' => defined('UNITY_VERSION') ? UNITY_VERSION : 'unknown']);
     }
 
     // ──────────────────────────────────────────────
