@@ -1,0 +1,169 @@
+# ============================================================
+# WordPress Plugin CI/CD — Build, Release & Deploy
+# ============================================================
+# Place this file in each plugin repo at:
+#   .github/workflows/build-and-release.yml
+#
+# TRIGGERS:
+#   - Push to main   → builds + deploys to test site via SFTP
+#   - Push a tag      → builds + creates a GitHub Release with ZIP
+#
+# REQUIRED REPO SECRETS (Settings → Secrets → Actions):
+#   SFTP_HOST        – SiteGround SFTP hostname
+#   SFTP_USERNAME    – SiteGround SFTP username
+#   SFTP_PASSWORD    – SiteGround SFTP password (or use SSH key)
+#   SFTP_PORT        – usually 18765 for SiteGround
+#   DEPLOY_PATH      – e.g. /home/customer/www/yoursite.com/public_html/wp-content/plugins
+# ============================================================
+
+name: Build, Release & Deploy
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+# Cancel any in-progress runs for the same branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── 1. BUILD ──────────────────────────────────────────────
+  build:
+    name: Build Plugin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── PHP setup (for Composer) ──
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Install Composer dependencies
+        run: |
+          if [ -f composer.json ]; then
+            composer install --no-dev --optimize-autoloader --prefer-dist
+          fi
+
+      # ── Node setup (for asset compilation) ──
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+        if: hashFiles('package.json') != ''
+
+      - name: Install npm dependencies & build
+        run: |
+          if [ -f package.json ]; then
+            npm ci
+            npm run build --if-present
+          fi
+
+      # ── Create distributable ZIP ──
+      - name: Generate plugin slug
+        id: slug
+        run: |
+          # Use the repo name as the plugin slug
+          SLUG="${GITHUB_REPOSITORY##*/}"
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+
+      - name: Create release ZIP
+        run: |
+          SLUG="${{ steps.slug.outputs.slug }}"
+          mkdir -p /tmp/build/"$SLUG"
+
+          # Copy everything except dev / CI files
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='.gitignore' \
+            --exclude='.editorconfig' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='composer.lock' \
+            --exclude='phpunit.xml*' \
+            --exclude='tests' \
+            --exclude='*.config.js' \
+            --exclude='*.config.ts' \
+            --exclude='webpack.config.*' \
+            --exclude='vite.config.*' \
+            --exclude='tailwind.config.*' \
+            --exclude='postcss.config.*' \
+            --exclude='tsconfig.*' \
+            --exclude='src/' \
+            --exclude='.env*' \
+            --exclude='Makefile' \
+            --exclude='docker*' \
+            --exclude='Docker*' \
+            ./ /tmp/build/"$SLUG"/
+
+          cd /tmp/build
+          zip -r /tmp/"$SLUG".zip "$SLUG"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.slug.outputs.slug }}
+          path: /tmp/${{ steps.slug.outputs.slug }}.zip
+          retention-days: 14
+
+  # ── 2. DEPLOY TO TEST SITE (on push to main) ─────────────
+  deploy:
+    name: Deploy to SiteGround
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.slug || github.event.repository.name }}
+
+      - name: Extract ZIP
+        run: |
+          SLUG="${GITHUB_REPOSITORY##*/}"
+          mkdir -p /tmp/deploy
+          unzip "$SLUG".zip -d /tmp/deploy
+
+      - name: Deploy via SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
+          protocol: ftps
+          local-dir: /tmp/deploy/
+          server-dir: ${{ secrets.DEPLOY_PATH }}/
+          dangerous-clean-slate: false
+
+  # ── 3. GITHUB RELEASE (on tag push) ──────────────────────
+  release:
+    name: Create GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.slug || github.event.repository.name }}
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: '*.zip'
+          generate_release_notes: true
+          draft: false
+          prerelease: false
