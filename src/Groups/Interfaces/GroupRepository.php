@@ -16,7 +16,7 @@ interface GroupRepository
 {
     /**
      * Find a group by ID
-     * 
+     *
      * @param int $id The group ID
      * @return Group|null The group or null if not found
      */
@@ -24,15 +24,23 @@ interface GroupRepository
 
     /**
      * Find all groups
-     * 
+     *
      * @param array $args Optional arguments for querying groups
      * @return array Array of Group objects
      */
     public function findAll(array $args = []): array;
 
     /**
+     * Count groups matching the given arguments
+     *
+     * @param array $args Optional arguments for filtering groups
+     * @return int The number of matching groups
+     */
+    public function count(array $args = []): int;
+
+    /**
      * Save a group
-     * 
+     *
      * @param Group $group The group to save
      * @return bool Whether the save was successful
      */
@@ -40,7 +48,7 @@ interface GroupRepository
 
     /**
      * Update a group
-     * 
+     *
      * @param Group $group The group to update
      * @return bool Whether the update was successful
      */
@@ -48,7 +56,7 @@ interface GroupRepository
 
     /**
      * Delete a group
-     * 
+     *
      * @param int $id The ID of the group to delete
      * @return bool Whether the deletion was successful
      */
