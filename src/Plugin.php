@@ -162,7 +162,7 @@ class Plugin
     /**
      * Boot the default container (without resolving services yet).
      *
-     * Existing callers in Unity.php can continue to call this unchanged.
+     * Existing callers in unity.php can continue to call this unchanged.
      */
     public static function initContainer(): void
     {
@@ -170,7 +170,7 @@ class Plugin
             self::$instance = self::create();
 
             register_deactivation_hook(
-                dirname(__DIR__, 2) . '/Unity.php',
+                dirname(__DIR__, 2) . '/unity.php',
                 [self::class, 'deactivate']
             );
         }
