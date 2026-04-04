@@ -9,6 +9,8 @@ declare(strict_types=1);
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Requires Plugins: sentinel
+ * GitHub Plugin URI: https://github.com/thebleedingdeacons/unity
+ * GitHub Branch: main
  * Author: The Bleeding Deacons
  * Author URI: https://github.com/bleedingdeacons/unity
  * Contact: thebleedingdeacons@gmail.com
