@@ -48,7 +48,8 @@
             "@cs",
             "@stan",
             "@test"
-        ]
+        ],
+        "phpstan": "phpstan analyse"
     },
     "config": {
         "optimize-autoloader": true,
