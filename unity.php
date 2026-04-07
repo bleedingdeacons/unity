@@ -27,12 +27,8 @@ if (!function_exists('get_plugin_data')) {
     }
 }
 
-if (function_exists('get_plugin_data')) {
-    $unity_plugin_data = get_plugin_data(__FILE__, false, false);
-    define('UNITY_VERSION', $unity_plugin_data['Version']);
-} else {
-    define('UNITY_VERSION', '1.7.4');
-}
+$unity_plugin_data = get_plugin_data(__FILE__, false, false);
+define('UNITY_VERSION', $unity_plugin_data['Version']);
 define('UNITY_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('UNITY_PLUGIN_URL', plugin_dir_url(__FILE__));
 
