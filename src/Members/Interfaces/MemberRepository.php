@@ -20,7 +20,7 @@ interface MemberRepository
      * @param int $id Member ID
      * @return Member|null
      */
-    public function find(int $id): ?Member;
+    public function findById(int $id): ?Member;
 
     /**
      * Find all members matching the given arguments
