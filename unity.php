@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * Plugin Name: Unity
  * Description: An intergroup management plugin.
- * Version: 1.10.13
+ * Version: 1.10.14
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Requires Plugins: sentinel
