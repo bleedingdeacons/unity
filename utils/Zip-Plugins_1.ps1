@@ -2,7 +2,7 @@ param(
     [Parameter(Position=0)]
     [string]$QuickSelect = "",
     [string]$PluginsPath = "C:\Users\David\Local Sites\unity-dev\app\public\wp-content\plugins",
-    [string[]]$PluginNames = @("unity", "integrity", "tsml-for-unity", "amber", "trumpet", "reconcile", "scrutiny", "concordance", "sentinel"),
+    [string[]]$PluginNames = @("confur","unity", "integrity", "tsml-for-unity", "amber", "trumpet", "reconcile", "scrutiny", "concordance", "sentinel", "confur"),
     [string]$OutputPath = (Get-Location).Path,
     [string[]]$ExcludeFolders = @("obj", "bin", ".git", ".idea", "vendor", "node_modules", "build", "utils")
 )
@@ -21,7 +21,7 @@ if (-not [string]::IsNullOrWhiteSpace($QuickSelect)) {
         "rc" { $PluginNames = @("reconcile") }
         "uta" { $PluginNames = @("unity", "tsml-for-unity", "amber") }
         "uit" { $PluginNames = @("unity", "integrity", "tsml-for-unity") }
-        "all" { $PluginNames = @("unity", "integrity", "tsml-for-unity", "amber", "trumpet", "reconcile", "scrutiny", "concordance", "sentinel") }
+        "all" { $PluginNames = @("unity", "integrity", "tsml-for-unity", "amber", "trumpet", "reconcile", "scrutiny", "concordance", "sentinel", "confur") }
         default {
             Write-Host "Unknown quick select: $QuickSelect" -ForegroundColor Red
             Write-Host "Valid options: ui, u, i, t, a, tr, se, sc, uit, all" -ForegroundColor Yellow
