@@ -20,7 +20,7 @@ interface IntergroupMeetingOfficerAttendanceRepository
      * @param int $id Attendance record ID
      * @return IntergroupMeetingOfficerAttendance|null
      */
-    public function find(int $id): ?IntergroupMeetingOfficerAttendance;
+    public function findById(int $id): ?IntergroupMeetingOfficerAttendance;
 
     /**
      * Find all officer attendance records matching the given arguments.

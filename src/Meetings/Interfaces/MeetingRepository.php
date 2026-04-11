@@ -22,7 +22,7 @@ interface MeetingRepository
      * @param int $id Meeting ID
      * @return Meeting|null Meeting object or null if not found
      */
-    public function find(int $id): ?Meeting;
+    public function findById(int $id): ?Meeting;
 
     /**
      * Find all meetings with optional query arguments.

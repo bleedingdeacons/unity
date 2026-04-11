@@ -21,7 +21,7 @@ interface IntergroupMeetingRepository
      * @param int $id Intergroup Meeting ID
      * @return IntergroupMeeting|null
      */
-    public function find(int $id): ?IntergroupMeeting;
+    public function findById(int $id): ?IntergroupMeeting;
 
     /**
      * Find all intergroup meetings matching the given arguments
