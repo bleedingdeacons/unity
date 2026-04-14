@@ -4,7 +4,7 @@ param(
     [string]$PluginsPath = "C:\Users\David\Local Sites\unity-dev\app\public\wp-content\plugins",
     [string[]]$PluginNames = @("confur","unity", "integrity", "tsml-for-unity", "amber", "trumpet", "reconcile", "scrutiny", "concordance", "sentinel", "confur"),
     [string]$OutputPath = (Get-Location).Path,
-    [string[]]$ExcludeFolders = @("obj", "bin", ".git", ".idea", "vendor", "node_modules", "build", "utils")
+    [string[]]$ExcludeFolders = @("obj", "bin", ".git", ".idea", "vendor", "node_modules", "build")
 )
 
 # Handle quick select shortcuts
