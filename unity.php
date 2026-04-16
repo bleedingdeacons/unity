@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * Plugin Name: Unity
  * Description: An intergroup management plugin.
- * Version: 1.10.15
+ * Version: 1.11.0
  * Requires at least: 6.1
  * Requires PHP: 8.1
  * GitHub Plugin URI: https://github.com/thebleedingdeacons/unity
