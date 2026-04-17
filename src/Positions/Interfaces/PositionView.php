@@ -110,18 +110,18 @@ interface PositionView
     public function getPublicDisplayName(): ?string;
 
     /**
-     * Get the private email address of the member only display in admin
+     * Get the email address of the member only display in admin
      * 
      * @return string|null Email to display on admin.
      */
-    public function getPrivateEmail(): ?string;
+    public function getPersonalEmail(): ?string;
 
     /**
-     * Get the private mobile number of the member only display in admin
+     * Get the mobile number of the member only display in admin
      * 
      * @return string|null TsmlContact to display on admin.
      */
-    public function getPrivateContact(): ?string;
+    public function getMobileNumber(): ?string;
 
     /**
      * Get the description for this position
