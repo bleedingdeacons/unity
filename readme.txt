@@ -3,7 +3,7 @@ Contributors: thebleedingdeacons
 Tags: intergroup, management, meetings, groups, members
 Requires at least: 6.0
 Tested up to: 6.9
-Stable tag: 1.12.0
+Stable tag: 1.12.1
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -59,11 +59,34 @@ If you are using Advanced Custom Fields, import the bundled field configuration:
 2. Select `setup/Unity_ACF.json` (development) or `setup/unity-prod-acf.json` (production).
 3. Click **Import**.
 
+== Configuration ==
+
+= Kill switch (UNITY_KILL) =
+
+Unity honours a `UNITY_KILL` constant in `wp-config.php` as a kill switch. When set to `true`, the plugin short-circuits during boot — before any constants are defined, the autoloader is registered, or hooks are attached — and stays dormant until the flag is cleared.
+
+`define('UNITY_KILL', true);`
+
+When enabled:
+
+* Unity does not load. No services, no hooks, no admin screens.
+* The `unity/loaded` action never fires, so dependent plugins that wait on it (Scrutiny, Amber, etc.) also stand down.
+* Unity remains in WordPress's active plugins list — this is not a standard deactivation.
+* An admin notice is displayed indicating the plugin is disabled via the kill switch.
+
+To re-enable, set the constant to `false` or remove the `define()` line. Unity resumes normally on the next request — no reactivation required.
+
+The check uses strict comparison (`=== true`), so only a boolean `true` triggers the kill switch.
+
 == Frequently Asked Questions ==
 
 = Where can I get support? =
 
 Contact The Bleeding Deacons at thebleedingdeacons@gmail.com.
+
+= Unity appears active but nothing works — why? =
+
+Check for `define('UNITY_KILL', true);` in `wp-config.php`. When the kill switch is enabled, Unity stays in the active plugins list but does not boot — no hooks, no services, no admin screens. An admin notice flags this. See the Configuration section.
 
 == Screenshots ==
 
@@ -71,13 +94,19 @@ Contact The Bleeding Deacons at thebleedingdeacons@gmail.com.
 
 == Changelog ==
 
+= 1.12.1 =
+* Added `UNITY_KILL` kill switch. Setting `define('UNITY_KILL', true);` in `wp-config.php` disables Unity at boot without removing it from the active plugins list. See the Configuration section.
+
 = 1.8.6 =
-* Current stable release.
+* Previous stable release.
 
 == Upgrade Notice ==
 
+= 1.12.1 =
+Adds the `UNITY_KILL` kill switch for disabling Unity via `wp-config.php` without deactivating the plugin.
+
 = 1.8.6 =
-Latest stable release of Unity.
+Previous stable release of Unity.
 
 == Architecture ==
 
@@ -119,6 +148,7 @@ unity/
 
 = Plugin Lifecycle =
 
+0. `UNITY_KILL` is checked first. If `true`, boot halts immediately — none of the steps below run.
 1. `Unity.php` loads on `plugins_loaded` (priority 10).
 2. The `DependencyContainer` is created and `UnityServiceProvider` registers core services (cache, configuration).
 3. The `unity/register_services` action fires — your code registers domain services here.

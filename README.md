@@ -2,7 +2,7 @@
 
 A WordPress plugin for managing intergroup — groups, meetings, members, positions, locations, and contacts — built with a clean, interface-driven architecture.
 
-**Version:** 1.12.0
+**Version:** 1.12.1
 **Requires:** WordPress 6.0+ · PHP 8.0+
 **License:** MIT (Modified — No Resale)
 
@@ -14,6 +14,7 @@ A WordPress plugin for managing intergroup — groups, meetings, members, positi
 - [Features](#features)
 - [Requirements](#requirements)
 - [Installation](#installation)
+- [Configuration](#configuration)
 - [Getting Started](#getting-started)
 - [Architecture](#architecture)
 - [Service Registration](#service-registration)
@@ -86,6 +87,37 @@ If you are using Advanced Custom Fields, import the bundled field configuration:
 1. Navigate to **ACF → Tools → Import**.
 2. Select `setup/Unity_ACF.json` (development) or `setup/unity-prod-acf.json` (production).
 3. Click **Import**.
+
+---
+
+## Configuration
+
+### Kill switch (`UNITY_KILL`)
+
+Unity honours a `UNITY_KILL` constant in `wp-config.php` as a kill switch. When set to `true`, the plugin short-circuits during boot — before any constants are defined, the autoloader is registered, or hooks are attached — and stays dormant until the flag is cleared.
+
+```php
+// wp-config.php
+define('UNITY_KILL', true);
+```
+
+**Behaviour when enabled:**
+
+- Unity does not load. No services, no hooks, no admin screens.
+- The `unity/loaded` action never fires, so dependent plugins that wait on it (Scrutiny, Amber, etc.) also stand down.
+- Unity remains in WordPress's active plugins list — you are *not* deactivating it in the usual sense.
+- An admin notice is displayed indicating the plugin is disabled via the kill switch.
+
+**Re-enabling:**
+Set the constant to `false` or remove the `define()` line. Unity resumes normally on the next request — no reactivation required.
+
+**When to use it:**
+
+- Rapid incident response — disable Unity site-wide without touching the admin UI.
+- Debugging — isolate whether a fault originates in Unity or elsewhere in the stack.
+- Staging/maintenance windows where Unity's hooks should not fire.
+
+The check uses strict comparison (`=== true`), so only a boolean `true` triggers the kill switch; other truthy values are ignored.
 
 ---
 
@@ -167,6 +199,7 @@ unity/
 
 ### Plugin Lifecycle
 
+0. `UNITY_KILL` is checked first. If `true`, boot halts immediately — none of the steps below run.
 1. `Unity.php` loads on `plugins_loaded` (priority 10).
 2. The `DependencyContainer` is created and `UnityServiceProvider` registers core services (cache, configuration).
 3. The `unity/register_services` action fires — your code registers domain services here.
@@ -305,6 +338,9 @@ You are resolving a service that hasn't been registered. Check that the interfac
 
 **Plugin fails to activate**
 Verify PHP ≥ 8.0 and WordPress ≥ 6.0. Enable `WP_DEBUG` and `WP_DEBUG_LOG` and check `wp-content/debug.log` for details.
+
+**Unity appears active but nothing works**
+Check for `define('UNITY_KILL', true);` in `wp-config.php`. When the kill switch is enabled, Unity stays in the active plugins list but does not boot — no hooks, no services, no admin screens. An admin notice flags this. See [Configuration](#configuration).
 
 ---
 
