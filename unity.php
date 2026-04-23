@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * Plugin Name: Unity
  * Description: An intergroup management plugin.
- * Version: 1.12.0
+ * Version: 1.12.1
  * Requires at least: 6.1
  * Requires PHP: 8.1
  * GitHub Plugin URI: https://github.com/thebleedingdeacons/unity
@@ -18,6 +18,30 @@ declare(strict_types=1);
 
 if (!defined('ABSPATH')) {
     exit;
+}
+
+/**
+ * Kill switch.
+ *
+ * Set `define('UNITY_KILL', true);` in wp-config.php to deactivate Unity
+ * without removing it from the active plugins list. When enabled, the
+ * plugin short-circuits here: no constants, no autoloader, no hooks —
+ * and `unity/loaded` never fires, so dependent plugins (Scrutiny, Amber,
+ * etc.) will also stand down.
+ *
+ * Flip the constant back to false (or remove the define) to restore
+ * normal operation. No reactivation required.
+ */
+if (defined('UNITY_KILL') && UNITY_KILL === true) {
+    if (is_admin()) {
+        add_action('admin_notices', function () {
+            echo '<div class="notice notice-warning"><p>'
+                . '<strong>Unity:</strong> Plugin is disabled via the '
+                . '<code>UNITY_KILL</code> kill switch in <code>wp-config.php</code>.'
+                . '</p></div>';
+        });
+    }
+    return;
 }
 
 // Define plugin constants
