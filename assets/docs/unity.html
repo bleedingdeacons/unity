@@ -203,7 +203,7 @@
     <a href="#" class="logo">
         <span>🧩</span> Unity <span>Docs</span>
     </a>
-    <span class="version">v1.6.0 · February 2026</span>
+    <span class="version">v1.12.1 · April 2026</span>
 </header>
 
 <div class="overlay" onclick="toggleNav()"></div>
@@ -1013,6 +1013,11 @@
         <div class="card">
             <h3>ACF fields not appearing</h3>
             <p style="margin-bottom:0;">Import the ACF field groups from <code>setup/Unity_ACF.json</code> or <code>setup/unity-prod-acf.json</code>. Make sure the Advanced Custom Fields plugin is installed and activated.</p>
+        </div>
+
+        <div class="card">
+            <h3>Unity appears active but nothing works</h3>
+            <p style="margin-bottom:0;">Check for <code>define('UNITY_KILL', true);</code> in <code>wp-config.php</code>. When the kill switch is enabled, Unity stays in the active plugins list but does not boot — no hooks, no services, no admin screens. An admin notice flags this. Set the constant to <code>false</code> or remove the <code>define()</code> line to re-enable; no reactivation required.</p>
         </div>
 
         <div class="card">

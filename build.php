@@ -86,6 +86,12 @@ class PluginBuilder
         // Build script
             'build.php',
 
+        // Dev-only utility scripts at the project root
+        // Intentionally scoped to the ROOT utils/ directory via the
+        // $rootOnlyExcludes list below — not added here so it doesn't
+        // also match nested utils/ directories elsewhere in the tree
+        // (e.g., src/Some/utils/).
+
         // ==== ALL VENDOR PACKAGES (no production dependencies) ====
             'vendor/bin',
             'vendor/myclabs',
@@ -95,6 +101,20 @@ class PluginBuilder
             'vendor/phpunit',
             'vendor/sebastian',
             'vendor/theseer',
+    ];
+
+    /**
+     * Root-only excludes that must only match at the project root,
+     * NOT as nested directories anywhere in the tree. Applied to BOTH
+     * production and dev builds.
+     *
+     * Entries here are compared against the path's first segment only.
+     * Example: 'utils' will exclude /utils/... but will NOT exclude
+     * /src/Foo/utils/... — unlike entries in $productionExcludes, which
+     * match anywhere a directory segment named that way appears.
+     */
+    private array $rootOnlyExcludes = [
+            'utils',
     ];
 
     // Files and directories to exclude in dev builds
@@ -236,6 +256,9 @@ class PluginBuilder
             $excludes = $this->productionExcludes;
         }
 
+        // Root-only excludes apply to both build types
+        $rootOnlyExcludes = $this->rootOnlyExcludes;
+
         // Sanitize version for filename
         $safeVersion = preg_replace('/[^a-zA-Z0-9._-]/', '-', $this->version);
         $archiveName .= '-' . $safeVersion . '.zip';
@@ -247,7 +270,7 @@ class PluginBuilder
         $this->syncReadmeMarkdownVersion();
 
         // Create ZIP archive
-        $this->createZip($archiveName, $excludes);
+        $this->createZip($archiveName, $excludes, $rootOnlyExcludes);
 
         // Display file size
         $size = $this->formatBytes(filesize($archiveName));
@@ -288,7 +311,7 @@ class PluginBuilder
     /**
      * Create a ZIP archive
      */
-    private function createZip(string $archivePath, array $excludes): void
+    private function createZip(string $archivePath, array $excludes, array $rootOnlyExcludes = []): void
     {
         $zip = new ZipArchive();
 
@@ -297,7 +320,7 @@ class PluginBuilder
             exit(1);
         }
 
-        $files = $this->getFiles($this->pluginDir, $excludes);
+        $files = $this->getFiles($this->pluginDir, $excludes, $rootOnlyExcludes);
         $fileCount = 0;
 
         foreach ($files as $file) {
@@ -321,7 +344,7 @@ class PluginBuilder
     /**
      * Get all files in directory, excluding specified patterns
      */
-    private function getFiles(string $dir, array $excludes): array
+    private function getFiles(string $dir, array $excludes, array $rootOnlyExcludes = []): array
     {
         $files = [];
         $iterator = new RecursiveIteratorIterator(
@@ -338,10 +361,39 @@ class PluginBuilder
                 continue;
             }
 
+            // Check root-only excludes — match ONLY if the first path segment
+            // is one of the listed names. Prevents accidental matches against
+            // nested directories (e.g., src/Foo/utils/).
+            if ($this->shouldExcludeRootOnly($relativePath, $rootOnlyExcludes)) {
+                continue;
+            }
+
             $files[] = $path;
         }
 
         return $files;
+    }
+
+    /**
+     * Check if a file path should be excluded based on its root segment.
+     *
+     * Unlike shouldExclude() which matches anywhere in the path, this only
+     * returns true when the FIRST segment of the relative path exactly
+     * matches one of the provided names. Use this for excludes that must
+     * be anchored to the plugin root.
+     */
+    private function shouldExcludeRootOnly(string $path, array $rootOnlyExcludes): bool
+    {
+        if (empty($rootOnlyExcludes)) {
+            return false;
+        }
+
+        $normalizedPath = str_replace('\\', '/', $path);
+        $firstSegment = strpos($normalizedPath, '/') === false
+                ? $normalizedPath
+                : substr($normalizedPath, 0, strpos($normalizedPath, '/'));
+
+        return in_array($firstSegment, $rootOnlyExcludes, true);
     }
 
     /**
@@ -412,11 +464,11 @@ class PluginBuilder
         }
 
         $updated = preg_replace(
-            '/^Stable tag:\s*.+$/mi',
-            'Stable tag: ' . $this->version,
-            $content,
-            -1,
-            $count
+                '/^Stable tag:\s*.+$/mi',
+                'Stable tag: ' . $this->version,
+                $content,
+                -1,
+                $count
         );
 
         if ($count > 0 && $updated !== null) {
@@ -446,11 +498,11 @@ class PluginBuilder
         }
 
         $updated = preg_replace(
-            '/^\*\*Version:\*\*\s*.+$/m',
-            '**Version:** ' . $this->version,
-            $content,
-            -1,
-            $count
+                '/^\*\*Version:\*\*\s*.+$/m',
+                '**Version:** ' . $this->version,
+                $content,
+                -1,
+                $count
         );
 
         if ($count > 0 && $updated !== null) {
@@ -573,9 +625,11 @@ Files Excluded (Production):
   - Build configuration (composer.json, package.json, etc.)
   - Documentation (*.md files)
   - PHP tooling configs (phpunit.xml, phpstan.neon, etc.)
+  - Root-level utils/ directory (nested utils/ dirs are preserved)
 
 Files Excluded (Dev):
-  - Only: .git, .idea, .vscode, build, node_modules, .DS_Store
+  - .git, .idea, .vscode, build, node_modules, .DS_Store
+  - Root-level utils/ directory (nested utils/ dirs are preserved)
 
 Platform-Specific Notes:
 
