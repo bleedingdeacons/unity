@@ -42,6 +42,11 @@ interface MemberFactory
      * @param mixed  $meetingPO                    Meeting PO reference
      * @param string $personalEmail                Personal email address
      * @param string $mobileNumber                 Mobile phone number
+     * @param bool   $gdprAccepted                 Whether the member has accepted the privacy policy
+     * @param string $gdprAcceptedAt               GDPR acceptance timestamp (Y-m-d H:i:s) or '' if never accepted
+     * @param string $gdprAcceptanceVersion        Version of the policy that was accepted
+     * @param string $gdprAcceptanceMethod         How acceptance was captured (e.g. "web-form", "import", "manual")
+     * @param string $gdprAcceptanceStatement      The exact statement the member accepted
      * @return Member
      */
     public function createNew(
@@ -56,7 +61,12 @@ interface MemberFactory
         bool $isGSR = false,
         mixed $meetingPO = null,
         string $personalEmail = '',
-        string $mobileNumber = ''
+        string $mobileNumber = '',
+        bool $gdprAccepted = false,
+        string $gdprAcceptedAt = '',
+        string $gdprAcceptanceVersion = '',
+        string $gdprAcceptanceMethod = '',
+        string $gdprAcceptanceStatement = ''
     ): Member;
 
 }
