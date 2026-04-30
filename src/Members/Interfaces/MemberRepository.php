@@ -39,6 +39,19 @@ interface MemberRepository
     public function count(array $args = []): int;
 
     /**
+     * Create a new member with just an anonymous name
+     *
+     * Inserts a fresh member record and returns the new ID. Other fields
+     * are left at defaults and can be written in a follow-up save() call —
+     * this mirrors the two-phase admin form flow, where a post is created
+     * first and ACF fields are filled in on subsequent saves.
+     *
+     * @param string $anonymousName The anonymous name for the new member
+     * @return int The new member ID, or 0 if creation failed
+     */
+    public function create(string $anonymousName): int;
+
+    /**
      * Save a member
      *
      * @param Member $member
