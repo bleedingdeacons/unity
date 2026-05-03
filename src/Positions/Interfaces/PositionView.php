@@ -129,4 +129,12 @@ interface PositionView
      * @return string|null The description or null if not available
      */
     public function getDescription(): ?string;
+
+    /**
+     * Check if a position is the Archivist role (permanent tenure, no rotation)
+     *
+     * @return bool
+     */
+    function isArchivist(): bool;
+
 }
