@@ -28,6 +28,30 @@ interface Member
     public function getMobileNumber(): string;
 
     /**
+     * Whether the member is available for 12th-step calls
+     *
+     * @return bool
+     */
+    public function isTwelfthStepper(): bool;
+
+    /**
+     * Geographic area the member covers for 12th-step calls
+     *
+     * @return string
+     */
+    public function getArea(): string;
+
+    /**
+     * Forms of contact the member accepts for 12th-step calls.
+     *
+     * Backed by an ACF checkbox field; returned as a list of the
+     * selected option values (empty array when nothing is selected).
+     *
+     * @return array<int, string>
+     */
+    public function getAccepts(): array;
+
+    /**
      * GDPR: whether the member has accepted the privacy policy
      *
      * @return bool

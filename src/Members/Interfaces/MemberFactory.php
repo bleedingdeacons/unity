@@ -42,6 +42,9 @@ interface MemberFactory
      * @param mixed  $meetingPO                    Meeting PO reference
      * @param string $personalEmail                Personal email address
      * @param string $mobileNumber                 Mobile phone number
+     * @param bool   $twelfthStepper               Whether the member is available for 12th-step calls
+     * @param string             $area           Geographic area covered for 12th-step calls
+     * @param array<int, string> $accepts        Forms of contact accepted (checkbox-backed list of option values)
      * @param bool   $gdprAccepted                 Whether the member has accepted the privacy policy
      * @param string $gdprAcceptedAt               GDPR acceptance timestamp (Y-m-d H:i:s) or '' if never accepted
      * @param string $gdprAcceptanceVersion        Version of the policy that was accepted
@@ -62,6 +65,9 @@ interface MemberFactory
         mixed $meetingPO = null,
         string $personalEmail = '',
         string $mobileNumber = '',
+        bool $twelfthStepper = false,
+        string $area = '',
+        array $accepts = [],
         bool $gdprAccepted = false,
         string $gdprAcceptedAt = '',
         string $gdprAcceptanceVersion = '',
