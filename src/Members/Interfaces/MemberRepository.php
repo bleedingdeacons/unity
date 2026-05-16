@@ -23,6 +23,18 @@ interface MemberRepository
     public function findById(int $id): ?Member;
 
     /**
+     * Find a member by personal email address
+     *
+     * Looks up a member by their personal email ACF field. Email
+     * addresses are expected to be unique across members; if more than
+     * one match exists, the first is returned.
+     *
+     * @param string $email Email address to search for
+     * @return Member|null The matching member, or null if none found
+     */
+    public function findByEmail(string $email): ?Member;
+
+    /**
      * Find all members matching the given arguments
      *
      * @param array $args Query arguments
