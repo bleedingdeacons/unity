@@ -9,16 +9,14 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use Unity\Groups\Interfaces\GroupView;
-
 /**
  * Interface for Member View
  *
- * Read-only, public-facing projection of a Member. Exposes only the
- * always-displayable fields (anonymous name is always shown) and excludes
- * sensitive or admin-only data (personal email, mobile number, profile text,
- * GDPR metadata, meeting PO) so it is safe to render in directories,
- * rosters, and 12th-step listings.
+ * Read-only projection of a Member with flat accessors for the fields
+ * most often needed when rendering rosters, directories, and 12th-step
+ * listings. Home group and intergroup position are exposed as
+ * (id, name) pairs rather than nested objects to keep the view easy
+ * to serialise and template against.
  */
 interface MemberView
 {
@@ -37,32 +35,74 @@ interface MemberView
     public function getAnonymousName(): string;
 
     /**
-     * Get the intergroup position post ID
+     * Get the member's personal email address
      *
-     * @return int The intergroup position ID, 0 if none
+     * @return string The personal email, empty string if none
      */
-    public function getIntergroupPosition(): int;
+    public function getPersonalEmail(): string;
 
     /**
-     * Get the intergroup position rotation date (Y-m-d)
+     * Get the member's mobile phone number
      *
-     * @return string The rotation date, empty string if none
+     * @return string The mobile number, empty string if none
      */
-    public function getIntergroupPositionRotation(): string;
+    public function getMobileNumber(): string;
 
     /**
-     * Get the member's home group as a view
+     * Get the home group ID
      *
-     * @return GroupView|null The home group view, or null if none set
+     * @return int The home group post ID, 0 if none
      */
-    public function getHomeGroup(): ?GroupView;
+    public function getHomeGroupId(): int;
 
     /**
-     * Whether the member is a General Service Representative
+     * Get the home group name
+     *
+     * @return string The home group name, empty string if none
+     */
+    public function getHomeGroupName(): string;
+
+    /**
+     * Whether the member has a home group set
+     *
+     * @return bool
+     */
+    public function hasHomeGroup(): bool;
+
+    /**
+     * Whether the member is a General Service Representative for their home group
      *
      * @return bool
      */
     public function isGSR(): bool;
+
+    /**
+     * Get the intergroup position ID
+     *
+     * @return int The position post ID, 0 if none held
+     */
+    public function getPositionId(): int;
+
+    /**
+     * Get the intergroup position name
+     *
+     * @return string The position name, empty string if none held
+     */
+    public function getPositionName(): string;
+
+    /**
+     * Whether the member currently holds an intergroup position
+     *
+     * @return bool
+     */
+    public function hasPosition(): bool;
+
+    /**
+     * Get the rotation date for the held intergroup position
+     *
+     * @return string The rotation date in Y-m-d format, empty string if none
+     */
+    public function getRotationDate(): string;
 
     /**
      * Whether the member is available for 12th-step calls
