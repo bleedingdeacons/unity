@@ -112,6 +112,13 @@ interface MemberView
     public function isTwelfthStepper(): bool;
 
     /**
+     * Whether the member is available as a telephone responder
+     *
+     * @return bool
+     */
+    public function isTelephoneResponder(): bool;
+
+    /**
      * Geographic area the member covers for 12th-step calls
      *
      * @return string

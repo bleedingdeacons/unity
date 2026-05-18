@@ -35,6 +35,17 @@ interface Member
     public function isTwelfthStepper(): bool;
 
     /**
+     * Whether the member is available as a telephone responder
+     *
+     * Distinct from {@see isTwelfthStepper()}: a telephone responder
+     * handles inbound helpline calls rather than (or in addition to)
+     * direct 12th-step visits.
+     *
+     * @return bool
+     */
+    public function isTelephoneResponder(): bool;
+
+    /**
      * Geographic area the member covers for 12th-step calls
      *
      * @return string

@@ -43,6 +43,7 @@ interface MemberFactory
      * @param string $personalEmail                Personal email address
      * @param string $mobileNumber                 Mobile phone number
      * @param bool   $twelfthStepper               Whether the member is available for 12th-step calls
+     * @param bool   $telephoneResponder           Whether the member is available as a telephone responder
      * @param string             $area           Geographic area covered for 12th-step calls
      * @param array<int, string> $accepts        Forms of contact accepted (checkbox-backed list of option values)
      * @param bool   $gdprAccepted                 Whether the member has accepted the privacy policy
@@ -66,6 +67,7 @@ interface MemberFactory
         string $personalEmail = '',
         string $mobileNumber = '',
         bool $twelfthStepper = false,
+        bool $telephoneResponder = false,
         string $area = '',
         array $accepts = [],
         bool $gdprAccepted = false,
