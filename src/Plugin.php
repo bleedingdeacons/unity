@@ -14,9 +14,17 @@ use Unity\Core\DependencyContainer;
 use Unity\Core\Interfaces\Container;
 use Unity\Core\UnityServiceProvider;
 use Unity\Groups\Interfaces\GroupChangeTracker;
+use Unity\Groups\Interfaces\GroupFactory;
+use Unity\Groups\Interfaces\GroupRepository;
 use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingChangeTracker;
+use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingRepository;
+use Unity\Locations\Interfaces\LocationRepository;
+use Unity\Meetings\Interfaces\MeetingRepository;
 use Unity\Members\Interfaces\MemberChangeTracker;
+use Unity\Members\Interfaces\MemberFactory;
+use Unity\Members\Interfaces\MemberRepository;
 use Unity\Positions\Interfaces\PositionChangeTracker;
+use Unity\Positions\Interfaces\PositionRepository;
 
 /**
  * Main Plugin Class
@@ -108,6 +116,55 @@ class Plugin
         $this->servicesInitialized = true;
 
         self::logDebug('Initialised', ['version' => defined('UNITY_VERSION') ? UNITY_VERSION : 'unknown']);
+    }
+
+    /**
+     * Verify that all consumer-supplied repository and factory services have
+     * been registered, and throw a descriptive RuntimeException at boot time
+     * if any are missing.
+     *
+     * Unity ships as a headless service layer: the Cache and Configuration
+     * bindings are registered by UnityServiceProvider, but every repository
+     * and factory must be provided by the consuming site or companion plugin
+     * via the `unity/loaded` hook. A misconfigured install would otherwise
+     * surface as a confusing DependencyNotRegisteredException deep inside a
+     * controller at the first point of use. Calling this method at the end of
+     * the boot sequence (after `unity/loaded` has fired) turns that into a
+     * single clear error at startup.
+     *
+     * @throws RuntimeException Listing every service id that is missing.
+     */
+    public function validateRegistrations(): void
+    {
+        $required = [
+            MemberRepository::class,
+            MemberFactory::class,
+            MemberChangeTracker::class,
+            GroupRepository::class,
+            GroupFactory::class,
+            GroupChangeTracker::class,
+            MeetingRepository::class,
+            LocationRepository::class,
+            PositionRepository::class,
+            PositionChangeTracker::class,
+            IntergroupMeetingRepository::class,
+            IntergroupMeetingChangeTracker::class,
+        ];
+
+        $missing = [];
+        foreach ($required as $id) {
+            if (!$this->container->has($id)) {
+                $missing[] = $id;
+            }
+        }
+
+        if ($missing !== []) {
+            throw new RuntimeException(
+                'Unity: the following services have not been registered. '
+                . 'Register them via the unity/loaded hook before calling validateRegistrations().' . "\n"
+                . implode("\n", $missing)
+            );
+        }
     }
 
     // ──────────────────────────────────────────────

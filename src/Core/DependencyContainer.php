@@ -37,7 +37,11 @@ class DependencyContainer implements Container
     }
 
     /**
-     * @inheritDoc
+     * Finds an entry of the container by its identifier and returns it.
+     *
+     * @param string $id Identifier of the entry to look for.
+     * @return mixed
+     * @throws DependencyNotRegisteredException No entry was found for $id.
      */
     public function get(string $id): mixed
     {

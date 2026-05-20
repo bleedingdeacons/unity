@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 }
 
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * Interface Container
@@ -27,4 +28,13 @@ interface Container extends ContainerInterface
      * @return void
      */
     public function register(string $id, callable $factory): void;
+
+    /**
+     * Finds an entry of the container by its identifier and returns it.
+     *
+     * @param string $id Identifier of the entry to look for.
+     * @return mixed
+     * @throws NotFoundExceptionInterface No entry was found for the identifier.
+     */
+    public function get(string $id): mixed;
 }
