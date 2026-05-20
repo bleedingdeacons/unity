@@ -51,6 +51,7 @@ interface MemberFactory
      * @param string $gdprAcceptanceVersion        Version of the policy that was accepted
      * @param string $gdprAcceptanceMethod         How acceptance was captured (e.g. "web-form", "import", "manual")
      * @param string $gdprAcceptanceStatement      The exact statement the member accepted
+     * @param string $updated                      Last updated datetime (Y-m-d H:i:s or '')
      * @return Member
      */
     public function createNew(
@@ -74,7 +75,8 @@ interface MemberFactory
         string $gdprAcceptedAt = '',
         string $gdprAcceptanceVersion = '',
         string $gdprAcceptanceMethod = '',
-        string $gdprAcceptanceStatement = ''
+        string $gdprAcceptanceStatement = '',
+        string $updated = ''
     ): Member;
 
 }
