@@ -43,6 +43,17 @@ interface MemberRepository
     public function findAll(array $args = []): array;
 
     /**
+     * Find all members flagged as telephone responders
+     *
+     * Returns every member whose telephone-responder flag is set. The
+     * order is unspecified; callers that need a particular ordering
+     * should sort the result themselves.
+     *
+     * @return array Array of Member objects
+     */
+    public function findTelephoneResponders(): array;
+
+    /**
      * Get total count of members matching criteria
      *
      * @param array $args Query arguments
