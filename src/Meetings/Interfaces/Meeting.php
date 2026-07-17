@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use Unity\Contacts\Interfaces\Contact;
 use Unity\Locations\Interfaces\Location;
 
 /**
@@ -105,7 +106,7 @@ interface Meeting
     /**
      * Get meeting contacts.
      *
-     * @return ContactInterface[] Array of TsmlContact objects.
+     * @return Contact[] Array of Contact objects.
      */
     public function getContacts(): array;
 
