@@ -272,14 +272,84 @@ class PluginBuilder
         // Stamp the build date into the main plugin header
         $this->syncBuildDate();
 
-        // Create ZIP archive
-        $this->createZip($archiveName, $excludes, $rootOnlyExcludes);
+        // For production, the archive strips the dev vendor packages (phpunit,
+        // mockery, deep-copy, ...). If the local autoloader was generated with
+        // dev dependencies present — e.g. after `composer install` to run the
+        // tests — its autoload_files.php still `require`s files from those
+        // stripped packages, so the shipped plugin fatals on load with
+        // "Failed opening required '.../myclabs/deep-copy/.../deep_copy.php'".
+        // Regenerate a --no-dev autoloader so it matches what actually ships.
+        if ($type !== 'dev') {
+            $this->regenerateProductionAutoloader();
+        }
+
+        try {
+            // Create ZIP archive
+            $this->createZip($archiveName, $excludes, $rootOnlyExcludes);
+        } finally {
+            // Restore the dev autoloader so the local checkout can still run
+            // its tests after a production build.
+            if ($type !== 'dev') {
+                $this->restoreDevAutoloader();
+            }
+        }
 
         // Display file size
         $size = $this->formatBytes(filesize($archiveName));
         $this->log("Archive created successfully: " . basename($archiveName));
         $this->log("File size: {$size}");
         $this->log("Locations: {$archiveName}");
+    }
+
+    /**
+     * Regenerate the composer autoloader without dev dependencies, so the
+     * autoload_files.php shipped in the archive does not reference dev-only
+     * packages that the production build strips out.
+     *
+     * Best-effort: if composer is unavailable, warn rather than fail the build
+     * — a vendor that was itself produced with --no-dev is already correct.
+     */
+    private function regenerateProductionAutoloader(): void
+    {
+        if (!is_dir($this->pluginDir . DIRECTORY_SEPARATOR . 'vendor')) {
+            return;
+        }
+
+        $command = 'composer dump-autoload --no-dev --optimize --working-dir='
+            . escapeshellarg($this->pluginDir);
+        $this->log("Regenerating production autoloader (no-dev)...");
+
+        $output = [];
+        $returnCode = 0;
+        exec($command . ' 2>&1', $output, $returnCode);
+
+        if ($returnCode !== 0) {
+            $this->log("Warning: could not regenerate no-dev autoloader (composer exit {$returnCode}).");
+            $this->log("Ensure vendor/ was installed with --no-dev before shipping.");
+        }
+    }
+
+    /**
+     * Restore the full (dev) autoloader after a production build, so the local
+     * checkout can still autoload its test dependencies.
+     */
+    private function restoreDevAutoloader(): void
+    {
+        if (!is_dir($this->pluginDir . DIRECTORY_SEPARATOR . 'vendor')) {
+            return;
+        }
+
+        $command = 'composer dump-autoload --optimize --working-dir='
+            . escapeshellarg($this->pluginDir);
+
+        $output = [];
+        $returnCode = 0;
+        exec($command . ' 2>&1', $output, $returnCode);
+
+        if ($returnCode !== 0) {
+            $this->log("Warning: could not restore dev autoloader (composer exit {$returnCode}).");
+            $this->log("Run 'composer install' to restore test dependencies.");
+        }
     }
 
     /**
