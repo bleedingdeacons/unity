@@ -23,6 +23,7 @@ use Unity\Meetings\Interfaces\MeetingRepository;
 use Unity\Members\Interfaces\MemberChangeTracker;
 use Unity\Members\Interfaces\MemberFactory;
 use Unity\Members\Interfaces\MemberRepository;
+use Unity\Members\Interfaces\MemberRevisor;
 use Unity\Positions\Interfaces\PositionChangeTracker;
 use Unity\Positions\Interfaces\PositionRepository;
 
@@ -139,6 +140,7 @@ class Plugin
         $required = [
             MemberRepository::class,
             MemberFactory::class,
+            MemberRevisor::class,
             MemberChangeTracker::class,
             GroupRepository::class,
             GroupFactory::class,
