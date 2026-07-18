@@ -1,0 +1,6 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^PHPDoc tag @return with type array\\<Unity\\\\Members\\\\Interfaces\\\\Member\\>\\|null is not subtype of native type array\\.$#"
+			count: 1
+			path: src/Meetings/Interfaces/MeetingView.php
