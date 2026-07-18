@@ -23,7 +23,6 @@ use Unity\Meetings\Interfaces\MeetingRepository;
 use Unity\Members\Interfaces\MemberChangeTracker;
 use Unity\Members\Interfaces\MemberFactory;
 use Unity\Members\Interfaces\MemberRepository;
-use Unity\Members\Interfaces\MemberRevisor;
 use Unity\Positions\Interfaces\PositionChangeTracker;
 use Unity\Positions\Interfaces\PositionRepository;
 
@@ -129,9 +128,16 @@ class Plugin
      * and factory must be provided by the consuming site or companion plugin
      * via the `unity/loaded` hook. A misconfigured install would otherwise
      * surface as a confusing DependencyNotRegisteredException deep inside a
-     * controller at the first point of use. Calling this method at the end of
-     * the boot sequence (after `unity/loaded` has fired) turns that into a
-     * single clear error at startup.
+     * controller at the first point of use. unity.php calls this at the end of
+     * the boot sequence, after `unity/loaded` has fired, which turns that into
+     * a single clear report at startup.
+     *
+     * It is called *after* `unity/loaded` on purpose, and the caller catches
+     * the exception rather than letting it escape. By that point the dependent
+     * plugins have already loaded, so this reports a misconfiguration without
+     * preventing anything — a diagnostic, not a gate. Throwing during
+     * `plugins_loaded` would white-screen the site, which is a worse outcome
+     * than the late failure it is meant to replace.
      *
      * @throws RuntimeException Listing every service id that is missing.
      */
@@ -140,7 +146,6 @@ class Plugin
         $required = [
             MemberRepository::class,
             MemberFactory::class,
-            MemberRevisor::class,
             MemberChangeTracker::class,
             GroupRepository::class,
             GroupFactory::class,
@@ -152,6 +157,18 @@ class Plugin
             IntergroupMeetingRepository::class,
             IntergroupMeetingChangeTracker::class,
         ];
+
+        // MemberRevisor is deliberately NOT in the list above. It was added to
+        // Unity after tsml-for-unity had already shipped, and only newer
+        // versions bind it — so requiring it here would report every site
+        // running an older tsml-for-unity as misconfigured when it is not.
+        // Consumers must feature-detect instead:
+        //
+        //     if ($container->has(MemberRevisor::class)) { … }
+        //
+        // Anything Unity gains in future belongs here on the same terms: a
+        // binding can only be required once every released implementation
+        // provides it.
 
         $missing = [];
         foreach ($required as $id) {

@@ -148,6 +148,34 @@ add_action('plugins_loaded', function() {
          */
         do_action('unity/loaded', \Unity\Plugin::getContainer());
 
+        // Report any repository or factory that no one registered. Unity is a
+        // headless service layer: these bindings come from companion plugins
+        // via the hook above, and a gap otherwise stays invisible until some
+        // controller resolves the missing id and dies far from the cause.
+        //
+        // Deliberately after unity/loaded, and deliberately caught: the
+        // dependent plugins are already up by now, so this reports the problem
+        // without preventing anything. It is a diagnostic, not a gate —
+        // letting it escape here would white-screen the site during
+        // plugins_loaded, which is worse than the late failure it replaces.
+        try {
+            \Unity\Plugin::getInstance()->validateRegistrations();
+        } catch (\Throwable $e) {
+            function_exists('wp_log')
+                ? wp_log('unity')->error('Unity Registration Error: ' . $e->getMessage(), ['exception' => $e->getMessage()])
+                : error_log('Unity Registration Error: ' . $e->getMessage());
+
+            if (is_admin()) {
+                add_action('admin_notices', function() use ($e) {
+                    echo '<div class="notice notice-error is-dismissible"><p>'
+                        . '<strong>Unity:</strong> some services were never registered. '
+                        . 'Features depending on them will fail when used.</p><pre>'
+                        . esc_html($e->getMessage())
+                        . '</pre></div>';
+                });
+            }
+        }
+
     } catch (\Exception $e) {
         function_exists('wp_log')
             ? wp_log('unity')->error('Unity Plugin Initialization Error: ' . $e->getMessage(), ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()])
