@@ -9,6 +9,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use Unity\Members\ResponderCertification;
+
 /**
  * Member Interface
  */
@@ -44,6 +46,18 @@ interface Member
      * @return bool
      */
     public function isTelephoneResponder(): bool;
+
+    /**
+     * How far the member has got through responder certification
+     *
+     * Only meaningful alongside {@see isTelephoneResponder()}: the backing
+     * ACF field is hidden — and therefore stores nothing — for members who
+     * are not responders, so they read as
+     * {@see ResponderCertification::None}.
+     *
+     * @return ResponderCertification
+     */
+    public function getResponderCertification(): ResponderCertification;
 
     /**
      * Geographic area the member covers for 12th-step calls

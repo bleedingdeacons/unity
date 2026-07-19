@@ -9,6 +9,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use Unity\Members\ResponderCertification;
+
 /**
  * Member Revisor Interface
  *
@@ -22,8 +24,8 @@ if (!defined('ABSPATH')) {
  *   createNew()  omitted parameter => RESET to the type default
  *   revise()     omitted parameter => KEEP the base member's value
  *
- * createNew() takes 22 parameters, 21 of them optional. Every caller that
- * wanted "change one field, keep the rest" had to restate all 22, and a
+ * createNew() takes 23 parameters, 22 of them optional. Every caller that
+ * wanted "change one field, keep the rest" had to restate all 23, and a
  * repository that writes every field unconditionally turned any omission into
  * a deletion. That erased members' GDPR consent records on an unrelated REST
  * update and on spreadsheet re-import, and two positional call sites bound
@@ -67,6 +69,7 @@ interface MemberRevisor
      * @param string|null             $mobileNumber               Mobile phone number
      * @param bool|null               $twelfthStepper             Available for 12th-step calls
      * @param bool|null               $telephoneResponder         Available as a telephone responder
+     * @param ResponderCertification|null $responderCertification Certification stage
      * @param string|null             $area                       Geographic area covered
      * @param array<int, string>|null $accepts                    Forms of contact accepted
      * @param bool|null               $gdprAccepted               Privacy policy accepted
@@ -89,6 +92,7 @@ interface MemberRevisor
         ?string $mobileNumber = null,
         ?bool $twelfthStepper = null,
         ?bool $telephoneResponder = null,
+        ?ResponderCertification $responderCertification = null,
         ?string $area = null,
         ?array $accepts = null,
         ?bool $gdprAccepted = null,

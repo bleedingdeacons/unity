@@ -9,6 +9,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use Unity\Members\ResponderCertification;
+
 /**
  * Interface for Member View
  *
@@ -117,6 +119,16 @@ interface MemberView
      * @return bool
      */
     public function isTelephoneResponder(): bool;
+
+    /**
+     * How far the member has got through responder certification
+     *
+     * {@see ResponderCertification::None} for anyone who is not a
+     * telephone responder.
+     *
+     * @return ResponderCertification
+     */
+    public function getResponderCertification(): ResponderCertification;
 
     /**
      * Geographic area the member covers for 12th-step calls

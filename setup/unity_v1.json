@@ -1056,6 +1056,45 @@
                         "ui": 1
                     },
                     {
+                        "key": "field_6a5a5d9e7dcec",
+                        "label": "Responder Certification",
+                        "name": "responder-certification",
+                        "aria-label": "",
+                        "type": "radio",
+                        "instructions": "",
+                        "required": 1,
+                        "conditional_logic": [
+                            [
+                                {
+                                    "field": "field_6a0b8f2fa3e88",
+                                    "operator": "==",
+                                    "value": "1"
+                                }
+                            ]
+                        ],
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "choices": {
+                            "None": "None",
+                            "Applied": "Applied",
+                            "In Training": "In Training",
+                            "Certification Pending": "Certification Pending",
+                            "Certified": "Certified",
+                            "Recertification Required": "Recertification Required",
+                            "Denied": "Denied"
+                        },
+                        "default_value": "None",
+                        "return_format": "value",
+                        "allow_null": 0,
+                        "other_choice": 0,
+                        "allow_in_bindings": 0,
+                        "layout": "vertical",
+                        "save_other_choice": 0
+                    },
+                    {
                         "key": "field_664617e5ab272",
                         "label": "Intergroup Position",
                         "name": "intergroup-position",
