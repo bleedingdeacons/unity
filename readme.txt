@@ -3,8 +3,8 @@ Contributors: thebleedingdeacons
 Tags: intergroup, management, meetings, groups, members
 Requires at least: 6.0
 Tested up to: 6.9
-Stable tag: 1.18.7
-Build date: 2026/07/22 02:15:37
+Stable tag: 1.18.9
+Build date: 2026/07/23 18:35:44
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
