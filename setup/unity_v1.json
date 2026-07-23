@@ -1081,10 +1081,8 @@
                             "None": "None",
                             "Applied": "Applied",
                             "In Training": "In Training",
-                            "Certification Pending": "Certification Pending",
-                            "Certified": "Certified",
-                            "Recertification Required": "Recertification Required",
-                            "Denied": "Denied"
+                            "Pending": "Pending",
+                            "Certified": "Certified"
                         },
                         "default_value": "None",
                         "return_format": "value",
