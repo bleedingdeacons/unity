@@ -27,10 +27,8 @@ enum ResponderCertification: string
     case None = 'None';
     case Applied = 'Applied';
     case InTraining = 'In Training';
-    case CertificationPending = 'Certification Pending';
+    case Pending = 'Pending';
     case Certified = 'Certified';
-    case RecertificationRequired = 'Recertification Required';
-    case Denied = 'Denied';
 
     /**
      * Resolve a raw ACF value to a case, falling back to {@see self::None}.
@@ -52,8 +50,9 @@ enum ResponderCertification: string
     /**
      * Whether the member holds a current certification.
      *
-     * Deliberately narrow: only {@see self::Certified} qualifies.
-     * Recertification Required means the certification has lapsed.
+     * Deliberately narrow: only {@see self::Certified} qualifies. Every
+     * earlier stage ({@see self::Applied}, {@see self::InTraining},
+     * {@see self::Pending}) is still in progress, not yet certified.
      */
     public function isCertified(): bool
     {
