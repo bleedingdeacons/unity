@@ -20,7 +20,23 @@
             <directory suffix=".php">src</directory>
         </include>
         <exclude>
-            <directory>src/Configuration</directory>
+            <!--
+                Interface directories carry no executable behaviour — only the
+                `if (!defined('ABSPATH')) exit;` boilerplate guard — so they
+                have nothing to unit-test and only distort the coverage
+                denominator. They are excluded here so the figure reflects the
+                concrete classes that actually contain logic, the same reason
+                Reach and Integrity exclude their src/Admin render glue.
+            -->
+            <directory>src/Contacts/Interfaces</directory>
+            <directory>src/Core/Interfaces</directory>
+            <directory>src/Groups/Interfaces</directory>
+            <directory>src/IntergroupMeetings/Interfaces</directory>
+            <directory>src/Locations/Interfaces</directory>
+            <directory>src/Meetings/Interfaces</directory>
+            <directory>src/Members/Interfaces</directory>
+            <directory>src/Positions/Interfaces</directory>
+            <directory>src/PrivacyPolicies/Interfaces</directory>
         </exclude>
         <report>
             <html outputDirectory="tests/coverage"/>
