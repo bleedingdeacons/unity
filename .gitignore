@@ -79,6 +79,7 @@ Thumbs.db
 # PHPUnit Testing
 /.phpunit.cache/
 /coverage/
+/tests/coverage/
 phpunit.xml.local
 .phpunit.result.cache
 
