@@ -25,8 +25,8 @@ interface LocationRepository
     /**
      * Find all locations
      *
-     * @param array $args Optional arguments for querying locations
-     * @return array Array of Location objects
+     * @param array<string, mixed> $args Optional arguments for querying locations
+     * @return array<int, Location> Array of Location objects
      */
     public function findAll(array $args = []): array;
 
@@ -34,7 +34,7 @@ interface LocationRepository
      * Find locations by city
      *
      * @param string $city The city name to filter by
-     * @return array Array of Location objects
+     * @return array<int, Location> Array of Location objects
      */
     public function findByCity(string $city): array;
 
@@ -42,7 +42,7 @@ interface LocationRepository
      * Find locations by region
      *
      * @param string $region The region name to filter by
-     * @return array Array of Location objects
+     * @return array<int, Location> Array of Location objects
      */
     public function findByRegion(string $region): array;
 

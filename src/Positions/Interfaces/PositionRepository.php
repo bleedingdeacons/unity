@@ -25,15 +25,15 @@ interface PositionRepository
     /**
      * Find all positions
      *
-     * @param array $args Optional arguments for querying positions
-     * @return array Array of Position objects
+     * @param array<string, mixed> $args Optional arguments for querying positions
+     * @return array<int, Position> Array of Position objects
      */
     public function findAll(array $args = []): array;
 
     /**
      * Get total count of positions matching criteria
      *
-     * @param array $args Query arguments
+     * @param array<string, mixed> $args Query arguments
      * @return int Total count
      */
     public function count(array $args = []): int;

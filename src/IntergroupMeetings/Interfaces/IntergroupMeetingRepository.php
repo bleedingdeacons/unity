@@ -26,7 +26,7 @@ interface IntergroupMeetingRepository
     /**
      * Find all intergroup meetings matching the given arguments
      *
-     * @param array $args Query arguments
+     * @param array<string, mixed> $args Query arguments
      * @return array<IntergroupMeeting>
      */
     public function findAll(array $args = []): array;
@@ -34,7 +34,7 @@ interface IntergroupMeetingRepository
     /**
      * Get total count of intergroup meetings matching criteria
      *
-     * @param array $args Query arguments
+     * @param array<string, mixed> $args Query arguments
      * @return int Total count
      */
     public function count(array $args = []): int;

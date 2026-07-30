@@ -19,7 +19,7 @@ interface MeetingFactory
     /**
      * Create a Meeting object from source data.
      *
-     * @param array $source The meeting source data.
+     * @param array<string, mixed> $source The meeting source data.
      * @return Meeting|null Meeting object or null if creation fails.
      */
     public function createFromSource(array $source): ?Meeting;

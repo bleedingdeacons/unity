@@ -25,7 +25,7 @@ interface IntergroupMeetingGroupAttendanceRepository
     /**
      * Find all attendance records matching the given arguments.
      *
-     * @param array $args Query arguments
+     * @param array<string, mixed> $args Query arguments
      * @return array<IntergroupMeetingGroupAttendance>
      */
     public function findAll(array $args = []): array;
@@ -41,7 +41,7 @@ interface IntergroupMeetingGroupAttendanceRepository
     /**
      * Get total count of attendance records matching criteria.
      *
-     * @param array $args Query arguments
+     * @param array<string, mixed> $args Query arguments
      * @return int Total count
      */
     public function count(array $args = []): int;

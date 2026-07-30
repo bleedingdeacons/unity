@@ -85,7 +85,7 @@ interface Meeting
     /**
      * Get meeting types.
      *
-     * @return array Meeting types.
+     * @return array<int, string> Meeting types.
      */
     public function getTypes(): array;
 
@@ -113,7 +113,7 @@ interface Meeting
     /**
      * Get all post meta data.
      *
-     * @return array Post meta data.
+     * @return array<string, mixed> Post meta data.
      */
     public function getMeta(): array;
 
