@@ -108,7 +108,7 @@ interface Location
     /**
      * Get the meeting IDs associated with this location
      *
-     * @return array Array of meeting IDs
+     * @return array<int, int> Array of meeting IDs
      */
     public function getMeetingIds(): array;
 

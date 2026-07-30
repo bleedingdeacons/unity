@@ -25,8 +25,8 @@ interface PositionViewFactory
     /**
      * Create position views for all positions
      * 
-     * @param array $args Optional arguments for position query
-     * @return array Array of PositionView objects
+     * @param array<string, mixed> $args Optional arguments for position query
+     * @return array<int, PositionView> Array of PositionView objects
      */
     public function createAll(array $args = []): array;
 }

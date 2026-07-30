@@ -46,16 +46,16 @@ interface PrivacyPolicyRepository
     /**
      * Find all privacy policies matching the given arguments
      *
-     * @param array $args Query arguments (passed through to the underlying
+     * @param array<string, mixed> $args Query arguments (passed through to the underlying
      *                    storage; defaults to all published policies)
-     * @return array Array of PrivacyPolicy objects
+     * @return array<int, PrivacyPolicy> Array of PrivacyPolicy objects
      */
     public function findAll(array $args = []): array;
 
     /**
      * Get total count of privacy policies matching criteria
      *
-     * @param array $args Query arguments
+     * @param array<string, mixed> $args Query arguments
      * @return int Total count
      */
     public function count(array $args = []): int;

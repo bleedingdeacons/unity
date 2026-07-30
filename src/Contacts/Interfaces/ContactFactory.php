@@ -19,7 +19,7 @@ interface ContactFactory
     /**
      * Create a Contact object from source data.
      *
-     * @param array $source The contact source data.
+     * @param array<string, mixed> $source The contact source data.
      * @return Contact Contact object.
      */
     public function createFromSource(array $source): Contact;

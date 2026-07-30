@@ -16,6 +16,7 @@ use Unity\Core\Interfaces\Configuration;
  */
 final class UnityConfiguration implements Configuration
 {
+    /** @var array<string, array<string, mixed>> */
     protected array $storage = [];
 
     public function setConfig(string $key, array $source): void

@@ -25,15 +25,15 @@ interface GroupRepository
     /**
      * Find all groups
      *
-     * @param array $args Optional arguments for querying groups
-     * @return array Array of Group objects
+     * @param array<string, mixed> $args Optional arguments for querying groups
+     * @return array<int, Group> Array of Group objects
      */
     public function findAll(array $args = []): array;
 
     /**
      * Count groups matching the given arguments
      *
-     * @param array $args Optional arguments for filtering groups
+     * @param array<string, mixed> $args Optional arguments for filtering groups
      * @return int The number of matching groups
      */
     public function count(array $args = []): int;

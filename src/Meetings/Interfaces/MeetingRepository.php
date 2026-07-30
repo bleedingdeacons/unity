@@ -27,7 +27,7 @@ interface MeetingRepository
     /**
      * Find all meetings with optional query arguments.
      *
-     * @param array $args Query arguments (posts_per_page, paged, etc.)
+     * @param array<string, mixed> $args Query arguments (posts_per_page, paged, etc.)
      * @return Meeting[] Array of Meeting objects
      */
     public function findAll(array $args = []): array;
@@ -36,7 +36,7 @@ interface MeetingRepository
      * Find meetings by day of week.
      *
      * @param int $day Day of week (0-6, Sunday=0)
-     * @param array $args Additional query arguments
+     * @param array<string, mixed> $args Additional query arguments
      * @return Meeting[] Array of Meeting objects
      */
     public function findByDay(int $day, array $args = []): array;
@@ -44,7 +44,7 @@ interface MeetingRepository
     /**
      * Find online meetings.
      *
-     * @param array $args Additional query arguments
+     * @param array<string, mixed> $args Additional query arguments
      * @return Meeting[] Array of Meeting objects
      */
     public function findOnline(array $args = []): array;
@@ -52,7 +52,7 @@ interface MeetingRepository
     /**
      * Find in-person meetings.
      *
-     * @param array $args Additional query arguments
+     * @param array<string, mixed> $args Additional query arguments
      * @return Meeting[] Array of Meeting objects
      */
     public function findInPerson(array $args = []): array;
@@ -61,7 +61,7 @@ interface MeetingRepository
      * Find meetings by group ID.
      *
      * @param int $groupId Group ID
-     * @param array $args Additional query arguments
+     * @param array<string, mixed> $args Additional query arguments
      * @return Meeting[] Array of Meeting objects
      */
     public function findByGroupId(int $groupId, array $args = []): array;
@@ -70,7 +70,7 @@ interface MeetingRepository
      * Find meetings by location ID.
      *
      * @param int $locationId Location ID
-     * @param array $args Additional query arguments
+     * @param array<string, mixed> $args Additional query arguments
      * @return Meeting[] Array of Meeting objects
      */
     public function findByLocationId(int $locationId, array $args = []): array;
@@ -79,7 +79,7 @@ interface MeetingRepository
      * Search meetings by keyword.
      *
      * @param string $keyword Search keyword
-     * @param array $args Additional query arguments
+     * @param array<string, mixed> $args Additional query arguments
      * @return Meeting[] Array of Meeting objects
      */
     public function search(string $keyword, array $args = []): array;
@@ -87,7 +87,7 @@ interface MeetingRepository
     /**
      * Get total count of meetings matching criteria.
      *
-     * @param array $args Query arguments
+     * @param array<string, mixed> $args Query arguments
      * @return int Total count
      */
     public function count(array $args = []): int;

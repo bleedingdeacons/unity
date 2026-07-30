@@ -41,7 +41,7 @@ interface GroupView
     /**
      * Get the meetings associated with this group
      * 
-     * @return array Array of Meeting objects
+     * @return array<int, \Unity\Meetings\Interfaces\Meeting> Array of Meeting objects
      */
     public function getMeetings(): array;
 
