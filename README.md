@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/bleedingdeacons/unity/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/bleedingdeacons/unity/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/bleedingdeacons/unity/badge.svg?branch=main)](https://coveralls.io/github/bleedingdeacons/unity?branch=main)
-![PHPStan](https://img.shields.io/badge/PHPStan-level%205-brightgreen)
+![PHPStan](https://img.shields.io/badge/PHPStan-level%206-brightgreen)
 ![Version](https://img.shields.io/badge/version-1.18.11-blue)
 ![PHP](https://img.shields.io/badge/php-8.1%2B-777bb4)
 ![Licence](https://img.shields.io/badge/licence-MIT%20(Modified)-green)
@@ -310,7 +310,7 @@ composer install
 | `composer test:unit` | Run unit tests only |
 | `composer test:integration` | Run integration tests only |
 | `composer test:coverage` | Generate an HTML coverage report |
-| `composer phpstan` | Run PHPStan static analysis (level 5) |
+| `composer phpstan` | Run PHPStan static analysis (level 6) |
 | `composer cs` | Check WordPress coding standards |
 | `composer cs:fix` | Auto-fix coding standard violations |
 | `composer check` | Run CS + PHPStan + tests in sequence |
@@ -328,7 +328,7 @@ composer build:clean        # Remove build artifacts
 - **PHPUnit** 9/10 for unit and integration tests
 - **WP_Mock** for WordPress function mocking
 - **Mockery** for general mocking
-- **PHPStan** (level 5) with the WordPress extension for static analysis
+- **PHPStan** (level 6) with the WordPress extension for static analysis
 - **PHP_CodeSniffer** with the WordPress standard
 
 Line coverage is reported to [Coveralls](https://coveralls.io/github/bleedingdeacons/unity?branch=main)
@@ -359,7 +359,7 @@ Check for `define('UNITY_KILL', true);` in `wp-config.php`. When the kill switch
 3. Ensure `composer check` passes (coding standards, static analysis, and tests).
 4. Submit a pull request with a clear description of the change.
 
-All public APIs must be defined by interfaces. PHPStan level 5 compliance is required.
+All public APIs must be defined by interfaces. PHPStan level 6 compliance is required.
 
 ---
 
