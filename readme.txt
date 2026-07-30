@@ -293,7 +293,7 @@ composer install
 | `composer test:unit` | Run unit tests only |
 | `composer test:integration` | Run integration tests only |
 | `composer test:coverage` | Generate an HTML coverage report |
-| `composer stan` | Run PHPStan static analysis (level 6) |
+| `composer stan` | Run PHPStan static analysis |
 | `composer cs` | Check WordPress coding standards |
 | `composer cs:fix` | Auto-fix coding standard violations |
 | `composer check` | Run CS + PHPStan + tests in sequence |
@@ -311,5 +311,5 @@ composer build:clean        # Remove build artifacts
 * **PHPUnit** 9/10 for unit and integration tests
 * **WP_Mock** for WordPress function mocking
 * **Mockery** for general mocking
-* **PHPStan** (level 6) with the WordPress extension for static analysis
+* **PHPStan** with the WordPress extension for static analysis
 * **PHP_CodeSniffer** with the WordPress standard
