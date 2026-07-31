@@ -4,42 +4,30 @@ declare(strict_types=1);
 
 namespace Unity\Tests;
 
-use Mockery;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use PHPUnit\Framework\TestCase as PHPUnitTestCase;
+use BleedingDeacons\WpMocks\TestCase as WpMocksTestCase;
 use Unity\Plugin;
-use WP_Mock;
 
 /**
- * Base TestCase for Unity plugin tests
+ * Base TestCase for Unity plugin tests.
  *
- * Provides setup and teardown for WP_Mock and Mockery integration.
- * Automatically resets the Plugin global instance between tests to
- * prevent static state leaking across test cases.
+ * The Brain Monkey and Mockery lifecycle, the WpState reset and the hook
+ * assertions all come from the shared wp-mocks base class. assertActionAdded()
+ * and assertFilterAdded() used to be defined here — and in four other plugins —
+ * over WP_Mock::onActionAdded(); they now come from the shared HookAssertions
+ * trait. What remains below is only what is specific to Unity.
  */
-abstract class TestCase extends PHPUnitTestCase
+abstract class TestCase extends WpMocksTestCase
 {
-    use MockeryPHPUnitIntegration;
-
     /**
-     * Set up test environment
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-        WP_Mock::setUp();
-    }
-
-    /**
-     * Tear down test environment
+     * Reset the global Plugin singleton so no static state leaks between
+     * tests. Ordering matters: this runs before the parent closes Mockery, so
+     * a mock container held by the instance is still valid while it is
+     * released.
      */
     protected function tearDown(): void
     {
-        // Reset global Plugin singleton so no state leaks between tests
         Plugin::setInstance(null);
 
-        WP_Mock::tearDown();
-        Mockery::close();
         parent::tearDown();
     }
 
@@ -49,8 +37,6 @@ abstract class TestCase extends PHPUnitTestCase
      * Convenience helper for tests that need a real (non-mocked) container.
      * The instance is NOT registered as the global default; call
      * Plugin::setInstance() yourself if your test requires that.
-     *
-     * @return Plugin
      */
     protected function createPluginInstance(): Plugin
     {
@@ -58,42 +44,9 @@ abstract class TestCase extends PHPUnitTestCase
     }
 
     /**
-     * Assert that WordPress hooks were added correctly
+     * Create a mock WordPress post object.
      *
-     * @param string $action The action hook name
-     * @param callable|array $callback The callback
-     * @param int $priority The priority
-     * @param int $acceptedArgs Number of accepted arguments
-     */
-    protected function assertActionAdded(string $action, $callback, int $priority = 10, int $acceptedArgs = 1): void
-    {
-        $this->assertTrue(
-            WP_Mock::onActionAdded($action)->react($callback, $priority, $acceptedArgs),
-            "Failed asserting that action '{$action}' was added."
-        );
-    }
-
-    /**
-     * Assert that WordPress filters were added correctly
-     *
-     * @param string $filter The filter hook name
-     * @param callable|array $callback The callback
-     * @param int $priority The priority
-     * @param int $acceptedArgs Number of accepted arguments
-     */
-    protected function assertFilterAdded(string $filter, $callback, int $priority = 10, int $acceptedArgs = 1): void
-    {
-        $this->assertTrue(
-            WP_Mock::onFilterAdded($filter)->react($callback, $priority, $acceptedArgs),
-            "Failed asserting that filter '{$filter}' was added."
-        );
-    }
-
-    /**
-     * Create a mock WordPress post object
-     *
-     * @param array $properties Properties to set on the post
-     * @return object
+     * @param array<string, mixed> $properties Properties to set on the post
      */
     protected function createMockPost(array $properties = []): object
     {

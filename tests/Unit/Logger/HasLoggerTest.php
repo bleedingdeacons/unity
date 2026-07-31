@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Logger;
 
+use Brain\Monkey\Functions;
 use ReflectionClass;
 use Unity\Logger\HasLogger;
 use Unity\Tests\TestCase;
-use WP_Mock;
 
 /** A class that uses the trait without overriding logChannel(). */
 class TraitLoggerHost
@@ -44,10 +44,7 @@ class HasLoggerTest extends TestCase
 
         // logChannel() derives the name from the class basename via
         // sanitize_key(); wp_log() is called exactly once and the result cached.
-        WP_Mock::userFunction('sanitize_key')->andReturnUsing(
-            static fn (string $v): string => strtolower($v)
-        );
-        WP_Mock::userFunction('wp_log')->once()->with('traitloggerhost')->andReturn($channel);
+        Functions\expect('wp_log')->once()->with('traitloggerhost')->andReturn($channel);
 
         $first  = TraitLoggerHost::log();
         $second = TraitLoggerHost::log();
@@ -62,10 +59,7 @@ class HasLoggerTest extends TestCase
     public function every_level_forwards_to_the_channel(): void
     {
         $channel = new \Sentinel_Log_Channel();
-        WP_Mock::userFunction('sanitize_key')->andReturnUsing(
-            static fn (string $v): string => strtolower($v)
-        );
-        WP_Mock::userFunction('wp_log')->andReturn($channel);
+        Functions\expect('wp_log')->andReturn($channel);
 
         TraitLoggerHost::logEmergency('m', ['k' => 'v']);
         TraitLoggerHost::logAlert('m');
@@ -78,7 +72,7 @@ class HasLoggerTest extends TestCase
 
         $this->assertSame(
             ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'],
-            $channel->calls,
+            $channel->levels(),
         );
     }
 
@@ -90,9 +84,9 @@ class HasLoggerTest extends TestCase
     {
         $ref = new ReflectionClass(TraitLoggerHost::class);
         if ($ref->hasProperty('loggerChannel')) {
-            $prop = $ref->getProperty('loggerChannel');
-            $prop->setAccessible(true);
-            $prop->setValue(null, null);
+            // No setAccessible() call: it has been a no-op since PHP 8.1 —
+            // which this plugin requires — and is deprecated from 8.5.
+            $ref->getProperty('loggerChannel')->setValue(null, null);
         }
     }
 }
