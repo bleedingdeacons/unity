@@ -3,18 +3,28 @@
 declare(strict_types=1);
 
 /**
- * PHPUnit Bootstrap File
+ * PHPUnit bootstrap.
  *
- * Sets up the testing environment with WP_Mock for WordPress function mocking.
+ * WordPress stand-ins, the Brain Monkey lifecycle and the Sentinel logger stub
+ * all come from bleedingdeacons/wp-mocks, shared across the plugin suite. The
+ * package's bootstrap loads Patchwork before anything patchable — Brain Monkey
+ * only requires it inside Monkey\setUp(), by which time the stubs are defined,
+ * so leaving it to Brain Monkey means any attempt to override a stub dies with
+ * Patchwork\Exceptions\DefinedTooEarly.
+ *
+ * Anything defining WordPress functions of its own must therefore come after
+ * the require below, not before it.
  */
 
-// Composer autoloader
+use BleedingDeacons\WpMocks\WpState;
+
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/bleedingdeacons/wp-mocks/bootstrap.php';
 
-// Initialize WP_Mock
-WP_Mock::bootstrap();
+// Makes plugins_url()/plugin_dir_url() answer with Unity's own path.
+WpState::$pluginSlug = 'unity';
 
-// Define WordPress constants if not already defined
+// WordPress constants Unity's own code reads.
 if (!defined('ABSPATH')) {
     define('ABSPATH', '/var/www/html/');
 }
@@ -29,50 +39,4 @@ if (!defined('UNITY_PLUGIN_URL')) {
 
 if (!defined('UNITY_VERSION')) {
     define('UNITY_VERSION', '1.0.1');
-}
-
-// Minimal stand-in for the Sentinel_Log_Channel class the shared logger
-// mu-plugin provides in production. HasLogger caches a channel typed against
-// this class, so tests that exercise the logging path need it on the
-// classpath. The stub records the level of each call so a test can assert the
-// trait forwarded correctly; it is a no-op otherwise.
-if (!class_exists('Sentinel_Log_Channel')) {
-    class Sentinel_Log_Channel
-    {
-        /** @var array<int, string> */
-        public array $calls = [];
-
-        public function emergency(string $message, array $context = []): void
-        {
-            $this->calls[] = 'emergency';
-        }
-        public function alert(string $message, array $context = []): void
-        {
-            $this->calls[] = 'alert';
-        }
-        public function critical(string $message, array $context = []): void
-        {
-            $this->calls[] = 'critical';
-        }
-        public function error(string $message, array $context = []): void
-        {
-            $this->calls[] = 'error';
-        }
-        public function warning(string $message, array $context = []): void
-        {
-            $this->calls[] = 'warning';
-        }
-        public function notice(string $message, array $context = []): void
-        {
-            $this->calls[] = 'notice';
-        }
-        public function info(string $message, array $context = []): void
-        {
-            $this->calls[] = 'info';
-        }
-        public function debug(string $message, array $context = []): void
-        {
-            $this->calls[] = 'debug';
-        }
-    }
 }

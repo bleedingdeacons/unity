@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit;
 
+use Brain\Monkey\Functions;
 use Mockery;
 use RuntimeException;
 use stdClass;
@@ -15,7 +16,6 @@ use Unity\Members\Interfaces\MemberChangeTracker;
 use Unity\Plugin;
 use Unity\Positions\Interfaces\PositionChangeTracker;
 use Unity\Tests\TestCase;
-use WP_Mock;
 
 /**
  * Tests for {@see Plugin} — the instance-based bootstrap with a
@@ -58,7 +58,7 @@ class PluginTest extends TestCase
      */
     public function initialize_services_resolves_the_four_trackers_exactly_once(): void
     {
-        WP_Mock::userFunction('wp_log')->andReturn(null); // logDebug no-ops
+        Functions\when('wp_log')->justReturn(null); // logDebug no-ops
 
         $container = Mockery::mock(Container::class);
         foreach ([
@@ -82,7 +82,7 @@ class PluginTest extends TestCase
      */
     public function init_container_creates_the_default_and_registers_the_deactivation_hook(): void
     {
-        WP_Mock::userFunction('register_deactivation_hook')->once();
+        Functions\expect('register_deactivation_hook')->once();
 
         Plugin::initContainer();
         $this->assertInstanceOf(Container::class, Plugin::getContainer());
@@ -97,7 +97,7 @@ class PluginTest extends TestCase
      */
     public function init_resolves_services_on_the_seeded_default_instance(): void
     {
-        WP_Mock::userFunction('wp_log')->andReturn(null);
+        Functions\when('wp_log')->justReturn(null);
 
         $container = Mockery::mock(Container::class);
         $container->shouldReceive('get')->times(4)->andReturn(new stdClass());

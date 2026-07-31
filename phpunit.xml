@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Schema is 10.5. Coverage include/exclude therefore lives in <source>,
+    not the 9.x <coverage> element, which now carries only report options.
+    `verbose` and `beStrictAboutTodoAnnotatedTests` were removed in PHPUnit 10.
+
+    This suite ran on PHPUnit 9.6 until wp_mock was dropped, not by choice:
+    10up/wp_mock 1.1.1 declares "phpunit/phpunit": "^9.6" in its own require
+    block and has no PHPUnit 10 branch, so asking for "^9.6|^10.0" alongside
+    it always resolved to 9.6. Brain Monkey declares no PHPUnit constraint at
+    all, which is what freed this.
+-->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
          bootstrap="tests/bootstrap.php"
          colors="true"
-         verbose="true"
          failOnRisky="true"
          failOnWarning="true"
-         beStrictAboutOutputDuringTests="true"
-         beStrictAboutTodoAnnotatedTests="true">
+         beStrictAboutOutputDuringTests="true">
 
     <testsuites>
         <testsuite name="Unit">
@@ -15,7 +24,7 @@
         </testsuite>
     </testsuites>
 
-    <coverage processUncoveredFiles="true">
+    <source>
         <include>
             <directory suffix=".php">src</directory>
         </include>
@@ -27,6 +36,9 @@
                 denominator. They are excluded here so the figure reflects the
                 concrete classes that actually contain logic, the same reason
                 Reach and Integrity exclude their src/Admin render glue.
+
+                Load-bearing: dropping this block on the move from <coverage>
+                to <source> would silently shift the Coveralls number.
             -->
             <directory>src/Contacts/Interfaces</directory>
             <directory>src/Core/Interfaces</directory>
@@ -38,6 +50,9 @@
             <directory>src/Positions/Interfaces</directory>
             <directory>src/PrivacyPolicies/Interfaces</directory>
         </exclude>
+    </source>
+
+    <coverage>
         <report>
             <html outputDirectory="tests/coverage"/>
             <text outputFile="php://stdout"/>
