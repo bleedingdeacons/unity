@@ -83,10 +83,19 @@ final class InMemoryMemberRepository implements MemberRepository
         return null;
     }
 
+    /**
+     * Case-insensitively, as the real repository is.
+     *
+     * TsmlMemberRepository::findByEmail() runs a meta_query with
+     * compare => '=', and WordPress's meta tables carry a _ci collation, so
+     * MySQL matches without regard to case. Reach's fakes modelled that with
+     * strcasecmp() and were right to; an exact comparison here would be
+     * stricter than production and could fail a test that would pass live.
+     */
     public function findByEmail(string $email): ?Member
     {
         foreach ($this->members as $member) {
-            if ($member->getPersonalEmail() === $email) {
+            if (strcasecmp($member->getPersonalEmail(), $email) === 0) {
                 return $member;
             }
         }

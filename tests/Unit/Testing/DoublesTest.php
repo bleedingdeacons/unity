@@ -75,6 +75,18 @@ final class DoublesTest extends TestCase
         self::assertNull($repository->findByEmail('nobody@example.test'));
     }
 
+    public function testRepositoryMatchesEmailWithoutRegardToCase(): void
+    {
+        // The real repository queries MySQL with '=' against a _ci collation,
+        // so case does not matter there and must not matter here.
+        $repository = new InMemoryMemberRepository([
+            new MemberStub(id: 7, personalEmail: 'alice@example.test'),
+        ]);
+
+        self::assertSame(7, $repository->findByEmail('ALICE@EXAMPLE.TEST')?->getId());
+        self::assertSame(7, $repository->findByEmail('Alice@Example.Test')?->getId());
+    }
+
     public function testRepositoryFiltersTelephoneResponders(): void
     {
         $repository = new InMemoryMemberRepository([
