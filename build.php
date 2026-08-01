@@ -49,6 +49,19 @@ class PluginBuilder
         // Tests
             'tests',
 
+        // Test doubles shipped for the *other* plugins' suites (MemberStub,
+        // InMemoryMemberRepository, FakeContainer). They live under src/ so
+        // they autoload through the Unity\ PSR-4 prefix in a consumer's test
+        // run — which is the whole point, since implementing the real
+        // interfaces from inside Unity is what stops them drifting from the
+        // contracts. Nothing in production resolves them, so they are excluded
+        // here rather than shipped as dead weight.
+        //
+        // Written with the src/ prefix deliberately: shouldExclude() matches a
+        // bare name anywhere in the path, and a plain 'Testing' would also
+        // drop any future src/Foo/Testing/ directory.
+            'src/Testing',
+
         // Setup/config files not needed in production
             'setup',
             'node_modules',
