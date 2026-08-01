@@ -49,6 +49,18 @@
             <directory>src/Members/Interfaces</directory>
             <directory>src/Positions/Interfaces</directory>
             <directory>src/PrivacyPolicies/Interfaces</directory>
+
+            <!--
+                Test doubles Unity ships for the other plugins' suites. They
+                are test infrastructure that happens to live under src/ so it
+                autoloads through the Unity\ prefix in a consumer's test run —
+                not production behaviour, so counting them would distort the
+                denominator exactly as the interface directories above do.
+
+                Their own behaviour is covered by tests/Unit/Testing, which
+                still runs; it is only the coverage figure they stay out of.
+            -->
+            <directory>src/Testing</directory>
         </exclude>
     </source>
 
