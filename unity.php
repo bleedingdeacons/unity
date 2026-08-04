@@ -8,7 +8,7 @@ declare(strict_types=1);
  * Version: 1.20.0
  * Requires at least: 6.1
  * Requires PHP: 8.1
- * GitHub Plugin URI: https://github.com/thebleedingdeacons/unity
+ * GitHub Plugin URI: https://github.com/bleedingdeacons/unity
  * GitHub Branch: main
  * Author: The Bleeding Deacons
  * Author URI: https://github.com/bleedingdeacons/unity
