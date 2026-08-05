@@ -54,12 +54,14 @@ class ResponderCertificationTest extends TestCase
     {
         $this->assertTrue(ResponderCertification::Certified->isCertified());
 
-        foreach ([
+        foreach (
+            [
             ResponderCertification::None,
             ResponderCertification::Applied,
             ResponderCertification::InTraining,
             ResponderCertification::Pending,
-        ] as $stage) {
+            ] as $stage
+        ) {
             $this->assertFalse($stage->isCertified(), $stage->name . ' must not count as certified');
         }
     }

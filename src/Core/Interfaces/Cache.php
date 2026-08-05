@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 
 /**
  * Interface Cache
- * 
+ *
  * Defines the contract for cache implementations
  */
 interface Cache

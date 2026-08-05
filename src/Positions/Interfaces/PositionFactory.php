@@ -16,7 +16,7 @@ interface PositionFactory
 {
     /**
      * Create a position from a source ID
-     * 
+     *
      * @param int $sourceId The WordPress post ID as source
      * @return Position|null The created position or null if not found/invalid
      */

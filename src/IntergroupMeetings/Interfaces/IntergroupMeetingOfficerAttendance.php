@@ -62,5 +62,4 @@ interface IntergroupMeetingOfficerAttendance
      * @return string
      */
     public function getOfficerName(): string;
-
 }

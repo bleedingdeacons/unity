@@ -61,12 +61,14 @@ class PluginTest extends TestCase
         Functions\when('wp_log')->justReturn(null); // logDebug no-ops
 
         $container = Mockery::mock(Container::class);
-        foreach ([
+        foreach (
+            [
             GroupChangeTracker::class,
             MemberChangeTracker::class,
             PositionChangeTracker::class,
             IntergroupMeetingChangeTracker::class,
-        ] as $tracker) {
+            ] as $tracker
+        ) {
             $container->shouldReceive('get')->with($tracker)->once()->andReturn(new stdClass());
         }
 

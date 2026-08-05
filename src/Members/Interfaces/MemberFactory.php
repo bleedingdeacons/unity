@@ -82,5 +82,4 @@ interface MemberFactory
         string $gdprAcceptanceStatement = '',
         string $updated = ''
     ): Member;
-
 }
