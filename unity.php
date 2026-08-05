@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Plugin Name: Unity
  * Description: An intergroup management plugin.
@@ -15,6 +13,8 @@ declare(strict_types=1);
  * Contact: thebleedingdeacons@gmail.com
  * License: MIT (Modified)
  */
+
+declare(strict_types=1);
 
 if (!defined('ABSPATH')) {
     exit;
@@ -86,12 +86,13 @@ spl_autoload_register(function ($class) {
  * @return \Unity\Core\Interfaces\Container
  * @throws \RuntimeException If Unity is not initialized
  */
-function unity(): \Unity\Core\Interfaces\Container {
+function unity(): \Unity\Core\Interfaces\Container
+{
     return \Unity\Plugin::getContainer();
 }
 
 // Initialize the plugin
-add_action('plugins_loaded', function() {
+add_action('plugins_loaded', function () {
     try {
         if (!class_exists('Unity\Plugin')) {
             throw new \Exception('Unity\Plugin class not found. Check that Plugin.php exists in the src/ directory.');
@@ -109,7 +110,7 @@ add_action('plugins_loaded', function() {
 
         if (!has_action('unity/register_services')) {
             if (is_admin()) {
-                add_action('admin_notices', function() {
+                add_action('admin_notices', function () {
                     echo '<div class="notice notice-error is-dismissible"><p><strong>Unity Plugin Error:</strong> Services not registered.</p></div>';
                 });
             }
@@ -129,7 +130,7 @@ add_action('plugins_loaded', function() {
                 : error_log('Unity Plugin Service Error: ' . $e->getMessage());
 
             if (is_admin()) {
-                add_action('admin_notices', function() use ($e) {
+                add_action('admin_notices', function () use ($e) {
                     echo '<div class="notice notice-error is-dismissible"><p>'
                         . '<strong>Unity:</strong> Services failed to initialise — all dependent plugins have been prevented from loading. '
                         . esc_html($e->getMessage())
@@ -166,7 +167,7 @@ add_action('plugins_loaded', function() {
                 : error_log('Unity Registration Error: ' . $e->getMessage());
 
             if (is_admin()) {
-                add_action('admin_notices', function() use ($e) {
+                add_action('admin_notices', function () use ($e) {
                     echo '<div class="notice notice-error is-dismissible"><p>'
                         . '<strong>Unity:</strong> some services were never registered. '
                         . 'Features depending on them will fail when used.</p><pre>'
@@ -175,14 +176,13 @@ add_action('plugins_loaded', function() {
                 });
             }
         }
-
     } catch (\Exception $e) {
         function_exists('wp_log')
             ? wp_log('unity')->error('Unity Plugin Initialization Error: ' . $e->getMessage(), ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()])
             : error_log('Unity Plugin Initialization Error: ' . $e->getMessage());
 
         if (is_admin()) {
-            add_action('admin_notices', function() use ($e) {
+            add_action('admin_notices', function () use ($e) {
                 $message = sprintf(
                     '<strong>Unity Plugin Error:</strong> %s',
                     esc_html($e->getMessage())
@@ -192,14 +192,13 @@ add_action('plugins_loaded', function() {
         }
 
         return;
-
     } catch (\Throwable $e) {
         function_exists('wp_log')
             ? wp_log('unity')->critical('Unity Plugin Fatal Error: ' . $e->getMessage(), ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()])
             : error_log('Unity Plugin Fatal Error: ' . $e->getMessage());
 
         if (is_admin()) {
-            add_action('admin_notices', function() {
+            add_action('admin_notices', function () {
                 echo '<div class="notice notice-error is-dismissible"><p><strong>Unity Plugin Fatal Error:</strong> Plugin failed to load. Check error logs.</p></div>';
             });
         }

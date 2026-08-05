@@ -1,8 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-declare(strict_types=1);
-
 /**
  * Build Script for Unity WordPress Plugin
  *
@@ -23,6 +21,8 @@ declare(strict_types=1);
  *   --clean            Clean build directory before building
  *   --help             Show this help message
  */
+
+declare(strict_types=1);
 
 class PluginBuilder
 {
@@ -456,8 +456,8 @@ class PluginBuilder
     {
         $files = [];
         $iterator = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
-                RecursiveIteratorIterator::SELF_FIRST
+            new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
         );
 
         foreach ($iterator as $file) {
@@ -572,11 +572,11 @@ class PluginBuilder
         }
 
         $updated = preg_replace(
-                '/^Stable tag:\s*.+$/mi',
-                'Stable tag: ' . $this->version,
-                $content,
-                -1,
-                $count
+            '/^Stable tag:\s*.+$/mi',
+            'Stable tag: ' . $this->version,
+            $content,
+            -1,
+            $count
         );
 
         if ($count > 0 && $updated !== null) {
