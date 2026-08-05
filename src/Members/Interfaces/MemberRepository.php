@@ -97,5 +97,4 @@ interface MemberRepository
      * @return bool Whether the update was successful
      */
     public function update(Member $member): bool;
-
 }

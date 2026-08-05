@@ -16,7 +16,7 @@ interface PositionViewFactory
 {
     /**
      * Create a position view from a position ID
-     * 
+     *
      * @param int $positionId
      * @return PositionView|null
      */
@@ -24,7 +24,7 @@ interface PositionViewFactory
 
     /**
      * Create position views for all positions
-     * 
+     *
      * @param array<string, mixed> $args Optional arguments for position query
      * @return array<int, PositionView> Array of PositionView objects
      */

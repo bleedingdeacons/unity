@@ -21,5 +21,4 @@ interface MeetingViewFactory
      * @return MeetingView|null
      */
     public function createFrom(int $meetingId): ?MeetingView;
-
 }

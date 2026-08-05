@@ -54,14 +54,11 @@ class UnityServiceProvider
         $container->register(Cache::class, function () {
 
             return new WordPressCache();
-
         });
 
         $container->register(Configuration::class, function () {
 
             return new UnityConfiguration();
-
         });
-
     }
 }
