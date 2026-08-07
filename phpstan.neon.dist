@@ -40,5 +40,5 @@ parameters:
         - tests
     scanDirectories:
         - ../sentinel/src
-    ignoreErrors:
-        - '#Function get_plugin_data not found#'
+    # No ignoreErrors. The only entry silenced "Function get_plugin_data not
+    # found", which wordpress-stubs resolves; it had stopped matching.
