@@ -102,6 +102,36 @@ final class DoublesTest extends TestCase
         self::assertSame(7, $responders[0]->getId());
     }
 
+    /**
+     * Consumers hydrate a set of ids in one call rather than one at a time —
+     * Reach's committee messaging does — and a double that ignored the filter
+     * would let that look right in tests while handing back everybody.
+     */
+    public function testRepositoryNarrowsToPostIn(): void
+    {
+        $repository = new InMemoryMemberRepository([
+            new MemberStub(id: 7),
+            new MemberStub(id: 8),
+            new MemberStub(id: 9),
+        ]);
+
+        $found = $repository->findAll(['post__in' => [9, 7]]);
+
+        // Ordered by the ids given, not by insertion.
+        self::assertSame([9, 7], array_map(
+            static fn ($member): int => $member->getId(),
+            $found
+        ));
+
+        // An id nobody holds is simply absent, not an error.
+        self::assertCount(1, $repository->findAll(['post__in' => [7, 404]]));
+
+        // Anything else in $args is still ignored: this is a double, not a
+        // query engine.
+        self::assertCount(3, $repository->findAll(['orderby' => 'title']));
+        self::assertCount(3, $repository->findAll());
+    }
+
     public function testRepositoryRecordsWritesAndAppliesThem(): void
     {
         $repository = new InMemoryMemberRepository([new MemberStub(id: 7, anonymousName: 'Alice B')]);

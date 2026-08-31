@@ -104,12 +104,44 @@ final class InMemoryMemberRepository implements MemberRepository
     }
 
     /**
+     * Every member, or just the ids asked for.
+     *
+     * `post__in` is honoured because consumers genuinely narrow with it — it is
+     * how you hydrate a set of ids in one query rather than one at a time, and
+     * Reach's committee messaging does exactly that. Ignoring it, as this did
+     * until now, meant a consumer's filter looked like it worked in tests while
+     * the double quietly handed back everybody: the bug would only appear in
+     * production, which is the one thing a shared double must not arrange.
+     *
+     * Order follows the ids given, not insertion order, since that is what a
+     * caller passing an ordered set is entitled to expect. Everything else in
+     * `$args` is still ignored — this is a double, not a query engine, and the
+     * rest has no consumer asking for it.
+     *
      * @param array<string, mixed> $args
      * @return array<int, Member>
      */
     public function findAll(array $args = []): array
     {
-        return $this->members;
+        if (!isset($args['post__in']) || !is_array($args['post__in'])) {
+            return $this->members;
+        }
+
+        $wanted = array_map('intval', $args['post__in']);
+        $byId   = [];
+
+        foreach ($this->members as $member) {
+            $byId[$member->getId()] = $member;
+        }
+
+        $found = [];
+        foreach ($wanted as $id) {
+            if (isset($byId[$id])) {
+                $found[] = $byId[$id];
+            }
+        }
+
+        return $found;
     }
 
     /** @return array<int, Member> */
