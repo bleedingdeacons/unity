@@ -63,6 +63,19 @@ class WpdbStub
         return $out;
     }
 
+    /** @var array<int, array<string, mixed>> */
+    public array $nextResults = [];
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function get_results(string $sql, string $mode = 'ARRAY_A'): array
+    {
+        $this->queries[] = $sql;
+
+        return $this->nextResults;
+    }
+
     /**
      * @return array<string, mixed>|null
      */
@@ -322,6 +335,53 @@ final class WpdbPasswordCredentialRepositoryTest extends TestCase
     }
 
     /**
+     * Newest change first, and bounded. An alphabetical list would bury
+     * the thing the admin screen is opened for: who has just been locked
+     * out, whose reset is still outstanding.
+     *
+     * @test
+     */
+    public function it_lists_the_store_newest_first_and_bounded(): void
+    {
+        $this->wpdb->nextResults = [self::row('a@example.test'), self::row('b@example.test')];
+
+        $credentials = $this->repository->all(25);
+
+        $this->assertCount(2, $credentials);
+        $this->assertSame('a@example.test', $credentials[0]->email);
+
+        $sql = $this->wpdb->lastQuery();
+
+        $this->assertStringContainsString('ORDER BY updated_at DESC', $sql);
+        $this->assertStringContainsString('LIMIT 25', $sql);
+    }
+
+    /**
+     * A limit of zero or less is a caller error, not a request for
+     * nothing: LIMIT 0 answers an empty list, which reads on the screen
+     * exactly as "no member has a password" — a different and alarming
+     * statement.
+     *
+     * @test
+     */
+    public function a_nonsense_bound_never_becomes_limit_zero(): void
+    {
+        $this->repository->all(0);
+
+        $this->assertStringContainsString('LIMIT 1', $this->wpdb->lastQuery());
+    }
+
+    /**
+     * @test
+     */
+    public function an_empty_store_lists_nothing(): void
+    {
+        $this->wpdb->nextResults = [];
+
+        $this->assertSame([], $this->repository->all());
+    }
+
+    /**
      * <p>prepare() answers null only when the statement carries no
      * placeholders or the arguments do not match them — a coding error
      * rather than a runtime condition. These statements are the source of
@@ -355,6 +415,7 @@ final class WpdbPasswordCredentialRepositoryTest extends TestCase
             'clearResetToken'     => [static fn(WpdbPasswordCredentialRepository $r): mixed => $r->clearResetToken('e', 1)],
             'recordFailedAttempt' => [static fn(WpdbPasswordCredentialRepository $r): mixed => $r->recordFailedAttempt('e', 1, 2, 3)],
             'resetFailedAttempts' => [static fn(WpdbPasswordCredentialRepository $r): mixed => $r->resetFailedAttempts('e', 1)],
+            'all'                 => [static fn(WpdbPasswordCredentialRepository $r): mixed => $r->all()],
         ];
     }
 }
