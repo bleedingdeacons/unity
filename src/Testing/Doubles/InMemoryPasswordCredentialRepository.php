@@ -31,8 +31,17 @@ use Unity\Auth\PasswordCredential;
  */
 final class InMemoryPasswordCredentialRepository implements PasswordCredentialRepository
 {
-    /** @var array<string, PasswordCredential> */
-    private array $rows = [];
+    /**
+     * The stored rows, keyed by email.
+     *
+     * Public because it is the inspection surface: what these tests
+     * actually assert is that a lockout accumulated, a token was spent, a
+     * hash was rehashed. Reading the row back is how that is said, and an
+     * accessor per field would be ceremony over a test double.
+     *
+     * @var array<string, PasswordCredential>
+     */
+    public array $rows = [];
 
     /**
      * @param array<int, PasswordCredential> $credentials
