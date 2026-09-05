@@ -36,6 +36,22 @@ interface PasswordCredentialRepository
     public function find(string $email): ?PasswordCredential;
 
     /**
+     * Every credential in the store, newest change first.
+     *
+     * <p>For the admin screen that answers "who has a password, and who
+     * is locked out". It is a whole-table read, which is why it is
+     * bounded: the alternative an admin screen would otherwise reach for
+     * is a find() per member, and that is a query per row of a list.</p>
+     *
+     * <p>Most members never have a row — OAuth is the default sign-in
+     * path in both consumers — so this is a short list on any real site,
+     * and the limit is a guard rather than pagination.</p>
+     *
+     * @return list<PasswordCredential>
+     */
+    public function all(int $limit = 500): array;
+
+    /**
      * Load the credential holding the given reset-token hash, or null.
      * The hash is the SHA-256 hex of the raw token from the reset link.
      */

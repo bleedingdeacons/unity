@@ -179,6 +179,44 @@ final class WpdbPasswordCredentialRepository implements PasswordCredentialReposi
         return is_array($row) ? $this->hydrate($row) : null;
     }
 
+    public function all(int $limit = 500): array
+    {
+        $table = self::tableName($this->wpdb);
+
+        // Ordered by updated_at rather than by email: what an admin is
+        // looking at this screen for is recent activity - who has just
+        // been locked out, whose reset is outstanding - and an
+        // alphabetical list buries that.
+        $sql = $this->wpdb->prepare(
+            "SELECT email, password_hash, reset_token_hash, reset_expires_at,
+                    failed_attempts, locked_until, updated_at
+               FROM {$table}
+              ORDER BY updated_at DESC
+              LIMIT %d",
+            max(1, $limit),
+        );
+
+        if ($sql === null) {
+            throw new LogicException('Failed to prepare the credential listing query.');
+        }
+
+        $rows = $this->wpdb->get_results($sql, ARRAY_A);
+
+        if (!is_array($rows)) {
+            return [];
+        }
+
+        $credentials = [];
+
+        foreach ($rows as $row) {
+            if (is_array($row)) {
+                $credentials[] = $this->hydrate($row);
+            }
+        }
+
+        return $credentials;
+    }
+
     public function findByResetTokenHash(string $tokenHash): ?PasswordCredential
     {
         // An empty hash would otherwise match every reset-free row; refuse

@@ -61,6 +61,15 @@ final class InMemoryPasswordCredentialRepository implements PasswordCredentialRe
         return $this->rows[$email] ?? null;
     }
 
+    public function all(int $limit = 500): array
+    {
+        $rows = array_values($this->rows);
+
+        usort($rows, static fn(PasswordCredential $a, PasswordCredential $b): int => $b->updatedAt <=> $a->updatedAt);
+
+        return array_slice($rows, 0, max(1, $limit));
+    }
+
     public function findByResetTokenHash(string $tokenHash): ?PasswordCredential
     {
         // An empty hash matches nothing, as it does in the real store —
