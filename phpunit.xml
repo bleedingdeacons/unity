@@ -40,6 +40,7 @@
                 Load-bearing: dropping this block on the move from <coverage>
                 to <source> would silently shift the Coveralls number.
             -->
+            <directory>src/Auth/Interfaces</directory>
             <directory>src/Committees/Interfaces</directory>
             <directory>src/Contacts/Interfaces</directory>
             <directory>src/Core/Interfaces</directory>

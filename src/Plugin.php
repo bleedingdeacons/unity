@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 }
 
 use RuntimeException;
+use Unity\Auth\WpdbPasswordCredentialRepository;
 use Unity\Core\DependencyContainer;
 use Unity\Core\Interfaces\Container;
 use Unity\Core\UnityServiceProvider;
@@ -115,7 +116,58 @@ class Plugin
 
         $this->servicesInitialized = true;
 
+        // Deferred to admin_init, as Amber defers its own: this runs
+        // dbDelta, which needs wp-admin's upgrade.php and the globals that
+        // come with a fully booted admin request. A front-end page load
+        // does not need the table to exist before it is next asked for.
+        add_action('admin_init', [self::class, 'maybeRunMigrations']);
+
         self::logDebug('Initialised', ['version' => defined('UNITY_VERSION') ? UNITY_VERSION : 'unknown']);
+    }
+
+    /**
+     * Create or update Unity's own tables when the plugin version changes.
+     *
+     * <b>Not an activation hook, because it would never fire.</b> Unity is
+     * already active wherever Reach or Fellowship are — they declare it as
+     * a requirement — and WordPress does not re-run activation hooks on an
+     * update. A version-gated check on admin_init is the only thing that
+     * reaches an existing install, which is every install that matters
+     * here. Amber's `maybe_run_migrations` works the same way and for the
+     * same reason.
+     *
+     * dbDelta is idempotent, and the credential absorb it performs is too,
+     * so a version that runs this twice costs a query and changes nothing.
+     * The option is written whatever happens: a migration that throws on
+     * every admin page load would turn one broken upgrade into a site
+     * nobody can use, and the failure is in the log for somebody to read.
+     */
+    public static function maybeRunMigrations(): void
+    {
+        $optionKey      = 'unity_db_version';
+        $currentVersion = defined('UNITY_VERSION') ? UNITY_VERSION : '0.0.0';
+        $storedVersion  = get_option($optionKey, '');
+
+        if ($storedVersion === $currentVersion) {
+            return;
+        }
+
+        try {
+            global $wpdb;
+
+            WpdbPasswordCredentialRepository::install($wpdb);
+
+            self::logInfo('Unity schema migration complete', [
+                'from' => is_string($storedVersion) && $storedVersion !== '' ? $storedVersion : '(none)',
+                'to'   => $currentVersion,
+            ]);
+        } catch (\Throwable $e) {
+            self::logError('Unity schema migration failed', [
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        update_option($optionKey, $currentVersion);
     }
 
     /**
