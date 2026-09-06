@@ -56,6 +56,27 @@ final class InMemoryPasswordCredentialRepository implements PasswordCredentialRe
     /** @var array<int, string> Emails passed to delete(), in order. */
     public array $deleted = [];
 
+    /**
+     * Give an address a real, verifiable password.
+     *
+     * <p>Hashes for real rather than storing the plaintext, because what
+     * the sign-in tests are actually exercising is password_verify() — a
+     * double that stored the plaintext and compared strings would pass
+     * while the thing it stands in for failed.</p>
+     */
+    public function seedPassword(string $email, string $plainPassword): void
+    {
+        $this->rows[$email] = new PasswordCredential(
+            $email,
+            password_hash($plainPassword, PASSWORD_DEFAULT),
+            '',
+            0,
+            0,
+            0,
+            0,
+        );
+    }
+
     public function find(string $email): ?PasswordCredential
     {
         return $this->rows[$email] ?? null;
