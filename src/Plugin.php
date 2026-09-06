@@ -143,6 +143,14 @@ class Plugin
      */
     public function validateRegistrations(): void
     {
+        // PasswordCredentialRepository is deliberately NOT in here, and
+        // that is the same call this list already makes about
+        // MemberRevisor. Everything below is asserted against every
+        // install in the wild the moment it is listed, and this binding
+        // is new — a site whose tsml-for-unity has not caught up yet
+        // would report a missing service at every boot for a store its
+        // two consumers feature-detect anyway. It goes in when the
+        // companion version that supplies it is the floor.
         $required = [
             MemberRepository::class,
             MemberFactory::class,
