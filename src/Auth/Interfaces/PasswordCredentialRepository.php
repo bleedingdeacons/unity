@@ -26,9 +26,17 @@ use Unity\Auth\PasswordCredential;
  * anywhere to say so. Both plugins require Unity, so the one answer lives
  * here and both resolve it from Unity's container.
  *
- * Bound to {@see \Unity\Auth\WpdbPasswordCredentialRepository}; split
- * behind an interface so authenticators can be unit-tested against an
- * in-memory fake.
+ * <b>Unity declares this and binds nothing to it</b>, exactly as it does
+ * for every other repository. The plugin ships as a headless service
+ * layer: the contract and its vocabulary live here so that Reach,
+ * Fellowship and Amber can all depend on one shape, and the
+ * implementation — the table, the SQL, the migration off the two private
+ * tables this replaces — is a companion plugin's business.
+ * tsml-for-unity binds it, alongside the other repositories it supplies.
+ *
+ * Split behind an interface for the usual second reason as well:
+ * authenticators are unit-tested against
+ * {@see \Unity\Testing\Doubles\InMemoryPasswordCredentialRepository}.
  */
 interface PasswordCredentialRepository
 {
