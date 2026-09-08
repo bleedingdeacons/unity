@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use Unity\Members\PreferredContact;
 use Unity\Members\ResponderCertification;
 
 /**
@@ -44,6 +45,8 @@ interface MemberFactory
      * @param mixed  $meetingPO                    Meeting PO reference
      * @param string $personalEmail                Personal email address
      * @param string $mobileNumber                 Mobile phone number
+     * @param string $landlineNumber               Landline phone number
+     * @param PreferredContact $preferredContact   Which number to ring; Mobile when there is no landline
      * @param bool   $twelfthStepper               Whether the member is available for 12th-step calls
      * @param bool   $telephoneResponder           Whether the member is available as a telephone responder
      * @param ResponderCertification $responderCertification Certification stage; None unless a telephone responder
@@ -70,6 +73,8 @@ interface MemberFactory
         mixed $meetingPO = null,
         string $personalEmail = '',
         string $mobileNumber = '',
+        string $landlineNumber = '',
+        PreferredContact $preferredContact = PreferredContact::Mobile,
         bool $twelfthStepper = false,
         bool $telephoneResponder = false,
         ResponderCertification $responderCertification = ResponderCertification::None,

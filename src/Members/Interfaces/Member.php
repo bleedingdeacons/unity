@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use Unity\Members\PreferredContact;
 use Unity\Members\ResponderCertification;
 
 /**
@@ -28,6 +29,27 @@ interface Member
     public function getMeetingPO(): mixed;
     public function getPersonalEmail(): string;
     public function getMobileNumber(): string;
+
+    /**
+     * The member's landline number
+     *
+     * Personal data on the same footing as {@see getMobileNumber()}, and
+     * obscured by Scrutiny alongside it.
+     *
+     * @return string The landline number, empty string if none
+     */
+    public function getLandlineNumber(): string;
+
+    /**
+     * Which of the member's two numbers should be rung
+     *
+     * {@see PreferredContact::Mobile} whenever
+     * {@see getLandlineNumber()} is empty — with one number there is
+     * nothing to choose between.
+     *
+     * @return PreferredContact
+     */
+    public function getPreferredContact(): PreferredContact;
 
     /**
      * Whether the member is available for 12th-step calls
