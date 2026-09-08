@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 }
 
 use Unity\Members\Interfaces\Member;
+use Unity\Members\PreferredContact;
 use Unity\Members\ResponderCertification;
 
 /**
@@ -53,6 +54,8 @@ class MemberStub implements Member
         private mixed $meetingPO = null,
         private string $personalEmail = '',
         private string $mobileNumber = '',
+        private string $landlineNumber = '',
+        private PreferredContact $preferredContact = PreferredContact::Mobile,
         private bool $twelfthStepper = false,
         private bool $telephoneResponder = false,
         private ResponderCertification $responderCertification = ResponderCertification::None,
@@ -125,6 +128,16 @@ class MemberStub implements Member
     public function getMobileNumber(): string
     {
         return $this->mobileNumber;
+    }
+
+    public function getLandlineNumber(): string
+    {
+        return $this->landlineNumber;
+    }
+
+    public function getPreferredContact(): PreferredContact
+    {
+        return $this->preferredContact;
     }
 
     public function isTwelfthStepper(): bool

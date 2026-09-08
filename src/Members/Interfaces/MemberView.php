@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use Unity\Members\PreferredContact;
 use Unity\Members\ResponderCertification;
 
 /**
@@ -49,6 +50,23 @@ interface MemberView
      * @return string The mobile number, empty string if none
      */
     public function getMobileNumber(): string;
+
+    /**
+     * Get the member's landline phone number
+     *
+     * @return string The landline number, empty string if none
+     */
+    public function getLandlineNumber(): string;
+
+    /**
+     * Which of the member's two numbers should be rung
+     *
+     * {@see PreferredContact::Mobile} whenever the member has no
+     * landline.
+     *
+     * @return PreferredContact
+     */
+    public function getPreferredContact(): PreferredContact;
 
     /**
      * Get the home group ID
