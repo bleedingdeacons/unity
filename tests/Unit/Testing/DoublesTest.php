@@ -230,6 +230,18 @@ final class DoublesTest extends TestCase
         self::assertSame(43200, $cache->expiries['unity_members/member_1']);
     }
 
+    public function testCacheMultiGetAnswersForEveryKeyAndCountsTheRoundTrip(): void
+    {
+        $cache = new InMemoryCache();
+        $cache->set('member_1', 'Alice', 'unity_members');
+
+        $found = $cache->getMultiple(['member_1', 'member_2'], 'unity_members');
+
+        self::assertSame(['member_1' => 'Alice', 'member_2' => false], $found);
+        self::assertSame(1, $cache->multiGets);
+        self::assertSame(['unity_members/member_1', 'unity_members/member_2'], $cache->reads);
+    }
+
     public function testCacheKeepsGroupsApart(): void
     {
         $cache = new InMemoryCache();

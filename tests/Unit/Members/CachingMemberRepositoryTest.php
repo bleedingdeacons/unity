@@ -163,6 +163,88 @@ class CachingMemberRepositoryTest extends TestCase
     /**
      * @test
      */
+    public function a_cached_listing_costs_one_round_trip_rather_than_one_per_member(): void
+    {
+        $this->repository->findAll();
+        $this->cache->multiGets = 0;
+
+        $this->repository->findAll();
+
+        // The point of the multi-get: a few hundred members is one round trip
+        // to Memcached, not a few hundred.
+        $this->assertSame(1, $this->cache->multiGets);
+    }
+
+    /**
+     * @test
+     */
+    public function members_evicted_from_a_cached_listing_are_re_read_in_one_query(): void
+    {
+        $listing = $this->repository->findAll();
+        $this->assertCount(2, $listing);
+
+        $this->inner->findAllCalls = 0;
+        foreach ([1, 2] as $id) {
+            $this->evictMember($id);
+        }
+
+        $refetched = $this->repository->findAll();
+
+        $this->assertSame([1, 2], array_map(static fn (Member $member): int => $member->getId(), $refetched));
+        $this->assertSame(1, $this->inner->findAllCalls);
+        $this->assertSame(0, $this->inner->findByIdCalls);
+    }
+
+    /**
+     * @test
+     */
+    public function a_listing_keeps_its_order_when_only_some_members_are_evicted(): void
+    {
+        $this->repository->findAll();
+        $this->evictMember(1);
+
+        $members = $this->repository->findAll();
+
+        $this->assertSame([1, 2], array_map(static fn (Member $member): int => $member->getId(), $members));
+    }
+
+    /**
+     * @test
+     */
+    public function a_member_deleted_behind_the_decorator_drops_out_of_a_cached_listing(): void
+    {
+        $this->repository->findAll();
+
+        $this->inner->inner()->delete(2);
+        $this->evictMember(2);
+
+        $members = $this->repository->findAll();
+
+        // The list is stale until the next bump, but serving a member who no
+        // longer exists would be worse than serving a short list.
+        $this->assertSame([1], array_map(static fn (Member $member): int => $member->getId(), $members));
+    }
+
+    /**
+     * @test
+     */
+    public function an_empty_listing_is_cached_and_asks_the_cache_for_nothing(): void
+    {
+        $inner = new CountingMemberRepository(new InMemoryMemberRepository([]));
+        $repository = new CachingMemberRepository($inner, $this->cache);
+
+        $this->assertSame([], $repository->findAll());
+
+        $this->cache->multiGets = 0;
+
+        $this->assertSame([], $repository->findAll());
+        $this->assertSame(1, $inner->findAllCalls);
+        $this->assertSame(0, $this->cache->multiGets);
+    }
+
+    /**
+     * @test
+     */
     public function a_filtered_listing_is_passed_straight_through(): void
     {
         $this->repository->findAll(['post__in' => [2]]);
@@ -293,6 +375,17 @@ class CachingMemberRepositoryTest extends TestCase
         // GDPR erasure can miss for as long as the cache holds it.
         $this->assertGreaterThan(0, $expiry);
         $this->assertLessThanOrEqual(86400, $expiry);
+    }
+
+    /**
+     * Drop one member's entry the way a cache short of memory would, leaving
+     * the cached id list — and the version it was written under — intact.
+     */
+    private function evictMember(int $id): void
+    {
+        $version = $this->cache->get('members_version', 'unity_members');
+
+        $this->cache->evict('member_' . $id . ':' . (is_string($version) ? $version : ''), 'unity_members');
     }
 }
 

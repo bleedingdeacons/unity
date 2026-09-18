@@ -60,6 +60,24 @@ class WordPressCacheTest extends TestCase
     /**
      * @test
      */
+    public function get_multiple_forwards_the_keys_and_group_and_returns_what_wordpress_answers(): void
+    {
+        Functions\expect('wp_cache_get_multiple')
+            ->once()
+            ->with(['member:1', 'member:2'], 'unity')
+            ->andReturn(['member:1' => ['id' => 1], 'member:2' => false]);
+
+        // The absent key still appears, carrying false — the contract callers
+        // rely on to tell a miss from a value.
+        $this->assertSame(
+            ['member:1' => ['id' => 1], 'member:2' => false],
+            $this->cache->getMultiple(['member:1', 'member:2'], 'unity')
+        );
+    }
+
+    /**
+     * @test
+     */
     public function set_forwards_all_arguments_and_returns_the_result(): void
     {
         Functions\expect('wp_cache_set')

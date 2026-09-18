@@ -34,6 +34,9 @@ final class InMemoryCache implements Cache
     /** @var array<int, string> Every key written, in order, as "group/key". */
     public array $writes = [];
 
+    /** How many getMultiple() calls were made — round trips, not keys. */
+    public int $multiGets = 0;
+
     /**
      * Expiry passed to the last set() for a key, as "group/key" to seconds.
      *
@@ -46,6 +49,30 @@ final class InMemoryCache implements Cache
         $this->reads[] = $group . '/' . $key;
 
         return $this->entries[$group][$key] ?? false;
+    }
+
+    /**
+     * Every key asked for comes back, false where the entry is absent, as
+     * wp_cache_get_multiple() does.
+     *
+     * Keys go into $reads through get() so that what was read stays visible,
+     * and $multiGets counts the calls — which is what a test asserting "one
+     * round trip, not four hundred" actually needs to look at.
+     *
+     * @param array<int, string> $keys
+     * @return array<string, mixed>
+     */
+    public function getMultiple(array $keys, string $group = ''): array
+    {
+        $this->multiGets++;
+
+        $found = [];
+
+        foreach ($keys as $key) {
+            $found[$key] = $this->get($key, $group);
+        }
+
+        return $found;
     }
 
     public function set(string $key, mixed $value, string $group = '', int $expire = 0): bool
