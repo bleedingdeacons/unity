@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 }
 
 use Unity\Core\Interfaces\Cache;
+use Unity\Core\Interfaces\CacheBumper;
 use Unity\Members\Interfaces\Member;
 use Unity\Members\Interfaces\MemberRepository;
 
@@ -35,7 +36,7 @@ use Unity\Members\Interfaces\MemberRepository;
  * {@see MemberCacheInvalidator}, which hooks WordPress's own post and meta
  * actions.
  */
-class CachingMemberRepository implements MemberRepository
+class CachingMemberRepository implements MemberRepository, CacheBumper
 {
     private const GROUP = 'unity_members';
     private const VERSION_KEY = 'members_version';

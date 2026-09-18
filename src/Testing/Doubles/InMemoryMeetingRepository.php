@@ -59,12 +59,40 @@ final class InMemoryMeetingRepository implements MeetingRepository
     }
 
     /**
-     * @param array<string, mixed> $args Accepted and ignored.
+     * Every meeting, or just the ids asked for.
+     *
+     * `post__in` is honoured for the same reason the member double honours it:
+     * consumers narrow with it to hydrate a known set in one query —
+     * CachingMeetingRepository re-reads evicted entries that way — and a
+     * double that ignored the filter would let that look right in tests while
+     * quietly handing back everybody. Order follows the ids given. Everything
+     * else in $args is still ignored; this is a double, not a query engine.
+     *
+     * @param array<string, mixed> $args
      * @return array<int, Meeting>
      */
     public function findAll(array $args = []): array
     {
-        return $this->meetings;
+        if (!isset($args['post__in']) || !is_array($args['post__in'])) {
+            return $this->meetings;
+        }
+
+        $wanted = array_map('intval', $args['post__in']);
+        $byId = [];
+
+        foreach ($this->meetings as $meeting) {
+            $byId[$meeting->getId()] = $meeting;
+        }
+
+        $found = [];
+
+        foreach ($wanted as $id) {
+            if (isset($byId[$id])) {
+                $found[] = $byId[$id];
+            }
+        }
+
+        return $found;
     }
 
     /**
