@@ -9,6 +9,7 @@ use Unity\Members\Interfaces\Member;
 use Unity\Members\Interfaces\MemberRepository;
 use Unity\Members\ResponderCertification;
 use Unity\Testing\Doubles\FakeContainer;
+use Unity\Testing\Doubles\InMemoryCache;
 use Unity\Testing\Doubles\InMemoryMemberRepository;
 use Unity\Testing\Doubles\MemberStub;
 use Unity\Tests\TestCase;
@@ -24,6 +25,7 @@ use Unity\Tests\TestCase;
  * responders, that rejectWrites throws.
  *
  * @covers \Unity\Testing\Doubles\FakeContainer
+ * @covers \Unity\Testing\Doubles\InMemoryCache
  * @covers \Unity\Testing\Doubles\InMemoryMemberRepository
  * @covers \Unity\Testing\Doubles\MemberStub
  */
@@ -212,5 +214,53 @@ final class DoublesTest extends TestCase
 
         $this->expectException(DependencyNotRegisteredException::class);
         $container->get('missing');
+    }
+
+    public function testCacheAnswersFalseForAMissAndTheValueForAHit(): void
+    {
+        $cache = new InMemoryCache();
+
+        // False rather than null, because that is what wp_cache_get() answers
+        // and what consumers branch on.
+        self::assertFalse($cache->get('absent', 'unity_members'));
+
+        $cache->set('member_1', ['id' => 1], 'unity_members', 43200);
+
+        self::assertSame(['id' => 1], $cache->get('member_1', 'unity_members'));
+        self::assertSame(43200, $cache->expiries['unity_members/member_1']);
+    }
+
+    public function testCacheKeepsGroupsApart(): void
+    {
+        $cache = new InMemoryCache();
+        $cache->set('same', 'members', 'unity_members');
+        $cache->set('same', 'meetings', 'unity_meetings');
+
+        self::assertSame('members', $cache->get('same', 'unity_members'));
+        self::assertSame('meetings', $cache->get('same', 'unity_meetings'));
+    }
+
+    public function testCacheEvictionLeavesNoTraceAndDeletingWhatIsGoneFails(): void
+    {
+        $cache = new InMemoryCache();
+        $cache->set('member_1', 'Alice', 'unity_members');
+
+        $cache->evict('member_1', 'unity_members');
+
+        self::assertFalse($cache->get('member_1', 'unity_members'));
+        self::assertSame(['unity_members/member_1'], $cache->writes);
+        self::assertFalse($cache->delete('member_1', 'unity_members'));
+    }
+
+    public function testCacheFlushEmptiesEveryGroup(): void
+    {
+        $cache = new InMemoryCache();
+        $cache->set('a', 1, 'unity_members');
+        $cache->set('b', 2, 'unity_meetings');
+
+        $cache->flush();
+
+        self::assertFalse($cache->get('a', 'unity_members'));
+        self::assertFalse($cache->get('b', 'unity_meetings'));
     }
 }
