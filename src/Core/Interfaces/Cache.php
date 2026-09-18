@@ -26,6 +26,20 @@ interface Cache
     public function get(string $key, string $group = '');
 
     /**
+     * Get several cached values in one call
+     *
+     * Mirrors wp_cache_get_multiple(): every key asked for appears in the
+     * result, with false for the ones the cache does not hold. One round trip
+     * to a remote cache rather than one per key, which is the whole point —
+     * over a few hundred members the difference is a few hundred round trips.
+     *
+     * @param array<int, string> $keys Cache keys
+     * @param string $group Optional cache group
+     * @return array<string, mixed> Keyed by cache key; false where not found
+     */
+    public function getMultiple(array $keys, string $group = ''): array;
+
+    /**
      * Set a cached value
      *
      * @param string $key Cache key

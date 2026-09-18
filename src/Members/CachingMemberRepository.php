@@ -212,13 +212,12 @@ class CachingMemberRepository implements MemberRepository
     }
 
     /**
-     * A cached list of ids, with each member fetched through findById() so
-     * that the single and list reads share one set of entries.
+     * A cached list of ids, with the members fetched in one multi-get so that
+     * the single and list reads share one set of entries.
      *
-     * One cache read per member is a lot of round trips for a few hundred
-     * members, and the Cache contract has no multi-get to do better with. It
-     * is still far cheaper than rebuilding each member through ACF; a
-     * getMultiple() on {@see Cache} is the obvious follow-up.
+     * The entries a multi-get does not find are re-read in one query through
+     * post__in rather than one findById() each: a cache that has evicted half
+     * a directory should cost one query, not two hundred.
      *
      * @param callable(): array<int, Member> $load
      * @return array<int, Member>
@@ -229,17 +228,10 @@ class CachingMemberRepository implements MemberRepository
         $ids = $this->cache->get($key, self::GROUP);
 
         if (is_array($ids)) {
-            $members = [];
+            /** @var array<int, int> $ids */
+            $ids = array_values(array_filter($ids, 'is_int'));
 
-            foreach ($ids as $id) {
-                $member = is_int($id) ? $this->findById($id) : null;
-
-                if ($member !== null) {
-                    $members[] = $member;
-                }
-            }
-
-            return $members;
+            return $this->membersFor($ids);
         }
 
         $members = $load();
@@ -251,6 +243,60 @@ class CachingMemberRepository implements MemberRepository
         }
 
         $this->cache->set($key, $ids, self::GROUP, self::TTL);
+
+        return $members;
+    }
+
+    /**
+     * The members for a known set of ids, in the order given.
+     *
+     * @param array<int, int> $ids
+     * @return array<int, Member>
+     */
+    private function membersFor(array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+
+        $keys = [];
+
+        foreach ($ids as $id) {
+            $keys[$this->key('member_' . $id)] = $id;
+        }
+
+        $cached = $this->cache->getMultiple(array_keys($keys), self::GROUP);
+
+        $found = [];
+        $missing = [];
+
+        foreach ($keys as $cacheKey => $id) {
+            $entry = $cached[$cacheKey] ?? false;
+
+            if ($entry instanceof Member) {
+                $found[$id] = $entry;
+                continue;
+            }
+
+            $missing[] = $id;
+        }
+
+        if ($missing !== []) {
+            foreach ($this->inner->findAll(['post__in' => $missing]) as $member) {
+                $found[$member->getId()] = $member;
+                $this->store($member);
+            }
+        }
+
+        $members = [];
+
+        foreach ($ids as $id) {
+            // A member deleted since the list was cached simply drops out;
+            // the next write bumps the version and rebuilds the list anyway.
+            if (isset($found[$id])) {
+                $members[] = $found[$id];
+            }
+        }
 
         return $members;
     }
