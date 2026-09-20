@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Meetings;
 
+use PHPUnit\Framework\Attributes\Test;
 use Unity\Meetings\CachingMeetingRepository;
 use Unity\Meetings\Interfaces\Meeting;
 use Unity\Meetings\Interfaces\MeetingRepository;
@@ -40,17 +41,13 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->repository = new CachingMeetingRepository($this->inner, $this->cache);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_is_a_meeting_repository(): void
     {
         $this->assertInstanceOf(MeetingRepository::class, $this->repository);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_second_read_of_the_same_meeting_does_not_reach_the_repository(): void
     {
         $first = $this->repository->findById(1);
@@ -60,9 +57,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame(1, $this->inner->findByIdCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_absent_meeting_is_not_cached_and_an_impossible_id_costs_nothing(): void
     {
         $this->assertNull($this->repository->findById(99));
@@ -73,9 +68,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame(2, $this->inner->findByIdCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_cached_listing_costs_one_round_trip(): void
     {
         $this->repository->findAll();
@@ -86,9 +79,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame(1, $this->cache->multiGets);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function each_day_is_cached_under_its_own_key(): void
     {
         $monday = $this->repository->findByDay(1);
@@ -102,9 +93,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame(2, $this->inner->findByDayCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function the_online_and_in_person_listings_do_not_share_an_entry(): void
     {
         $online = $this->repository->findOnline();
@@ -119,9 +108,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame(1, $this->inner->findInPersonCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_filtered_call_is_passed_straight_through(): void
     {
         $this->repository->findByDay(1, ['posts_per_page' => 1]);
@@ -139,9 +126,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame(2, $this->inner->findInPersonCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_search_is_never_cached(): void
     {
         $this->repository->search('monday');
@@ -152,9 +137,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame(2, $this->inner->searchCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_unfiltered_count_is_cached_and_a_filtered_one_is_not(): void
     {
         $this->repository->count();
@@ -164,9 +147,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame(2, $this->inner->countCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_bump_drops_every_listing_and_every_meeting(): void
     {
         $this->repository->findAll();
@@ -182,9 +163,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame(2, $this->inner->findByDayCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_edited_meeting_is_served_new_once_the_cache_is_bumped(): void
     {
         $this->assertSame('Monday Lunchtime', $this->repository->findById(1)?->getName());
@@ -197,9 +176,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame('Monday Noon', $this->repository->findById(1)?->getName());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_evicted_version_does_not_resurrect_a_stale_meeting(): void
     {
         $this->repository->findById(1);
@@ -215,9 +192,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame('Monday Noon', $this->repository->findById(1)?->getName());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function meetings_evicted_from_a_cached_listing_are_re_read_in_one_query(): void
     {
         $this->repository->findAll();
@@ -233,9 +208,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame(0, $this->inner->findByIdCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_meeting_deleted_behind_the_decorator_drops_out_of_a_cached_listing(): void
     {
         $this->repository->findAll();
@@ -246,9 +219,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame([1, 3], $this->ids($this->repository->findAll()));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_empty_listing_is_cached_and_asks_the_cache_for_nothing(): void
     {
         $inner = new CountingMeetingRepository(new MutableMeetingRepository([]));
@@ -263,9 +234,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame(0, $this->cache->multiGets);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function cached_meetings_expire_even_when_nothing_bumps_them(): void
     {
         $this->repository->findById(1);
@@ -276,9 +245,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertLessThanOrEqual(3600, $expiry);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function each_group_is_cached_under_its_own_key(): void
     {
         $inner = new CountingMeetingRepository(new MutableMeetingRepository([
@@ -298,9 +265,7 @@ class CachingMeetingRepositoryTest extends TestCase
         $this->assertSame(3, $inner->findByGroupIdCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function each_location_is_cached_under_its_own_key(): void
     {
         $inner = new CountingMeetingRepository(new MutableMeetingRepository([

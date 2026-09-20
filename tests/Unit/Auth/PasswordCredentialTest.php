@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Auth;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Unity\Auth\PasswordCredential;
 
@@ -33,9 +34,7 @@ final class PasswordCredentialTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_row_with_no_hash_has_no_password(): void
     {
         $this->assertFalse(self::credential(passwordHash: '')->hasPassword());
@@ -46,9 +45,8 @@ final class PasswordCredentialTest extends TestCase
      * The boundary is exclusive: a lockout that expires exactly now has
      * expired. Anything else leaves a member locked out for one more
      * second than they were told.
-     *
-     * @test
      */
+    #[Test]
     public function a_lockout_holds_until_its_deadline_and_no_longer(): void
     {
         $credential = self::credential(lockedUntil: 2000);
@@ -58,9 +56,7 @@ final class PasswordCredentialTest extends TestCase
         $this->assertFalse($credential->isLocked(2001));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_unlocked_row_is_never_locked(): void
     {
         $this->assertFalse(self::credential()->isLocked(0));
@@ -70,9 +66,8 @@ final class PasswordCredentialTest extends TestCase
      * Both halves matter. An expired token is no token, and so is an
      * absent one — and an absent one with a future expiry, which a
      * half-cleared row could hold, must not read as valid.
-     *
-     * @test
      */
+    #[Test]
     public function a_reset_token_is_valid_only_when_present_and_unexpired(): void
     {
         $this->assertTrue(self::credential(resetTokenHash: 'abc', resetExpiresAt: 2000)->hasValidResetToken(1999));

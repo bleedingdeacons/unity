@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Testing;
 
+use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\Test;
 use Unity\Committees\Interfaces\Committee;
 use Unity\Committees\Interfaces\CommitteeRepository;
 use Unity\Testing\Doubles\CommitteeStub;
@@ -18,10 +20,12 @@ use Unity\Tests\TestCase;
  * would let a consumer's test pass while the consumer walks the tree wrongly —
  * so the cases here are the walks: descendants, ancestors nearest-first, the
  * rollup, and a cycle, which wp-admin permits and which must not hang a suite.
- *
- * @covers \Unity\Testing\Doubles\CommitteeStub
- * @covers \Unity\Testing\Doubles\InMemoryCommitteeRepository
  */
+// src/Testing is excluded from coverage in phpunit.xml, so naming those
+// classes as covered targets attributes nothing and PHPUnit 13 rejects
+// them outright. The @covers these replace had the same problem; it was
+// simply never validated.
+#[CoversNothing]
 final class CommitteeDoublesTest extends TestCase
 {
     /**
@@ -55,7 +59,7 @@ final class CommitteeDoublesTest extends TestCase
         return array_map(static fn (Committee $c): string => $c->getSlug(), $committees);
     }
 
-    /** @test */
+    #[Test]
     public function the_stub_satisfies_the_contract(): void
     {
         $committee = new CommitteeStub(3, 'pi-health', 'Health', 2, 'Carrying the message');
@@ -70,13 +74,13 @@ final class CommitteeDoublesTest extends TestCase
         self::assertTrue((new CommitteeStub(1, 'intergroup', 'Intergroup'))->isRoot());
     }
 
-    /** @test */
+    #[Test]
     public function the_repository_satisfies_the_contract(): void
     {
         self::assertInstanceOf(CommitteeRepository::class, $this->repository());
     }
 
-    /** @test */
+    #[Test]
     public function it_finds_by_id_and_by_slug(): void
     {
         $repository = $this->repository();
@@ -88,13 +92,13 @@ final class CommitteeDoublesTest extends TestCase
         self::assertNull($repository->findBySlug(''));
     }
 
-    /** @test */
+    #[Test]
     public function roots_are_the_committees_with_no_parent(): void
     {
         self::assertSame(['intergroup'], $this->slugs($this->repository()->roots()));
     }
 
-    /** @test */
+    #[Test]
     public function children_are_one_level_and_descendants_are_the_branch(): void
     {
         $repository = $this->repository();
@@ -114,7 +118,7 @@ final class CommitteeDoublesTest extends TestCase
         self::assertSame([], $repository->descendantsOf('pi-health'));
     }
 
-    /** @test */
+    #[Test]
     public function ancestors_run_nearest_first_and_the_path_runs_root_first(): void
     {
         $repository = $this->repository();
@@ -132,7 +136,7 @@ final class CommitteeDoublesTest extends TestCase
         self::assertSame([], $repository->ancestorsOf('intergroup'));
     }
 
-    /** @test */
+    #[Test]
     public function member_ids_roll_descendants_up_by_default(): void
     {
         $repository = $this->repository();
@@ -144,7 +148,7 @@ final class CommitteeDoublesTest extends TestCase
         self::assertSame([20, 21], $repository->memberIdsIn('public-information', false));
     }
 
-    /** @test */
+    #[Test]
     public function a_member_in_two_committees_is_only_counted_once(): void
     {
         $repository = new InMemoryCommitteeRepository(
@@ -158,7 +162,7 @@ final class CommitteeDoublesTest extends TestCase
         self::assertSame([10], $repository->memberIdsIn('intergroup'));
     }
 
-    /** @test */
+    #[Test]
     public function it_answers_which_committees_a_post_belongs_to(): void
     {
         $repository = $this->repository();
@@ -168,7 +172,7 @@ final class CommitteeDoublesTest extends TestCase
         self::assertSame([], $repository->forMember(999));
     }
 
-    /** @test */
+    #[Test]
     public function positions_are_kept_separate_from_members(): void
     {
         $repository = $this->repository();
@@ -177,7 +181,7 @@ final class CommitteeDoublesTest extends TestCase
         self::assertSame([40], $repository->memberIdsIn('telephones'));
     }
 
-    /** @test */
+    #[Test]
     public function an_unknown_committee_is_empty_rather_than_an_error(): void
     {
         $repository = $this->repository();
@@ -194,9 +198,8 @@ final class CommitteeDoublesTest extends TestCase
      * wp-admin lets a term hierarchy be edited into a loop. The real repository
      * mis-draws such a tree; a double that recursed forever would hang whatever
      * suite depends on it, which is a worse failure than the one it models.
-     *
-     * @test
      */
+    #[Test]
     public function a_cyclic_hierarchy_terminates(): void
     {
         $repository = new InMemoryCommitteeRepository(

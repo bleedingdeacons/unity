@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Logger;
 
-use Brain\Monkey\Functions;
+use PHPUnit\Framework\Attributes\Test;
+use function Brain\Monkey\Functions\expect;
 use ReflectionClass;
 use Unity\Logger\HasLogger;
 use Unity\Tests\TestCase;
@@ -35,16 +36,14 @@ class HasLoggerTest extends TestCase
         parent::tearDown();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function log_resolves_the_channel_once_and_memoises_it(): void
     {
         $channel = new \Sentinel_Log_Channel();
 
         // logChannel() derives the name from the class basename via
         // sanitize_key(); wp_log() is called exactly once and the result cached.
-        Functions\expect('wp_log')->once()->with('traitloggerhost')->andReturn($channel);
+        expect('wp_log')->once()->with('traitloggerhost')->andReturn($channel);
 
         $first  = TraitLoggerHost::log();
         $second = TraitLoggerHost::log();
@@ -53,13 +52,11 @@ class HasLoggerTest extends TestCase
         $this->assertSame($channel, $second, 'channel must be memoised, not re-resolved');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function every_level_forwards_to_the_channel(): void
     {
         $channel = new \Sentinel_Log_Channel();
-        Functions\expect('wp_log')->andReturn($channel);
+        expect('wp_log')->andReturn($channel);
 
         TraitLoggerHost::logEmergency('m', ['k' => 'v']);
         TraitLoggerHost::logAlert('m');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Core;
 
+use PHPUnit\Framework\Attributes\Test;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\NotFoundExceptionInterface;
@@ -15,18 +16,14 @@ use Unity\Core\DependencyNotRegisteredException;
  */
 class DependencyNotRegisteredExceptionTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_is_a_psr11_not_found_exception(): void
     {
         $e = new DependencyNotRegisteredException('Some\\Service');
         $this->assertInstanceOf(NotFoundExceptionInterface::class, $e);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_carries_the_class_name_in_message_and_accessor(): void
     {
         $e = new DependencyNotRegisteredException('Some\\Service');
@@ -35,9 +32,7 @@ class DependencyNotRegisteredExceptionTest extends TestCase
         $this->assertStringContainsString('Some\\Service', $e->getMessage());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_preserves_code_and_previous(): void
     {
         $previous = new Exception('root cause');

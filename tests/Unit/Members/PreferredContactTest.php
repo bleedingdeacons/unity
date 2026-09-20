@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Members;
 
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Unity\Members\PreferredContact;
 
@@ -14,19 +16,15 @@ use Unity\Members\PreferredContact;
  */
 class PreferredContactTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_resolves_a_known_acf_value_to_its_case(): void
     {
         $this->assertSame(PreferredContact::Mobile, PreferredContact::fromAcfValue('Mobile'));
         $this->assertSame(PreferredContact::Landline, PreferredContact::fromAcfValue('Landline'));
     }
 
-    /**
-     * @test
-     * @dataProvider nonResolvingValues
-     */
+    #[DataProvider('nonResolvingValues')]
+    #[Test]
     public function it_falls_back_to_mobile_for_unusable_values(mixed $value): void
     {
         $this->assertSame(PreferredContact::Mobile, PreferredContact::fromAcfValue($value));
@@ -57,9 +55,8 @@ class PreferredContactTest extends TestCase
      * saved when a field is hidden again, so a member who had a landline and
      * lost it still has 'Landline' in postmeta. fromAcfValue() takes that at
      * face value; resolve() is what stops a call being placed to nothing.
-     *
-     * @test
      */
+    #[Test]
     public function a_member_with_no_landline_is_always_mobile(): void
     {
         $this->assertSame(PreferredContact::Mobile, PreferredContact::resolve('Landline', ''));
@@ -70,17 +67,14 @@ class PreferredContactTest extends TestCase
     /**
      * A number typed as spaces is no number, and ACF stores exactly what
      * was typed.
-     *
-     * @test
      */
+    #[Test]
     public function a_whitespace_only_landline_does_not_count_as_a_number(): void
     {
         $this->assertSame(PreferredContact::Mobile, PreferredContact::resolve('Landline', '   '));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_member_with_a_landline_keeps_their_stored_choice(): void
     {
         $this->assertSame(
@@ -96,17 +90,14 @@ class PreferredContactTest extends TestCase
     /**
      * Having a landline does not on its own make it preferred: an unsaved
      * field still resolves to Mobile, which is the ACF field's own default.
-     *
-     * @test
      */
+    #[Test]
     public function having_a_landline_does_not_promote_it_on_its_own(): void
     {
         $this->assertSame(PreferredContact::Mobile, PreferredContact::resolve(null, '0117 496 0000'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_labels_each_case_with_its_stored_value(): void
     {
         $this->assertSame('Mobile', PreferredContact::Mobile->label());
@@ -117,9 +108,8 @@ class PreferredContactTest extends TestCase
      * The case values are the ACF choice values verbatim. Changing one
      * without migrating the stored postmeta sends every existing member
      * back to Mobile, so pin them.
-     *
-     * @test
      */
+    #[Test]
     public function the_case_values_match_the_acf_field_export(): void
     {
         $this->assertSame('Mobile', PreferredContact::Mobile->value);

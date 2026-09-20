@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Testing;
 
+use PHPUnit\Framework\Attributes\CoversNothing;
 use Unity\Core\DependencyNotRegisteredException;
 use Unity\Members\Interfaces\Member;
 use Unity\Members\Interfaces\MemberRepository;
@@ -23,12 +24,12 @@ use Unity\Tests\TestCase;
  * here is the behaviour consumers actually lean on and that a signature check
  * would not catch: that the container caches, that the repository filters
  * responders, that rejectWrites throws.
- *
- * @covers \Unity\Testing\Doubles\FakeContainer
- * @covers \Unity\Testing\Doubles\InMemoryCache
- * @covers \Unity\Testing\Doubles\InMemoryMemberRepository
- * @covers \Unity\Testing\Doubles\MemberStub
  */
+// src/Testing is excluded from coverage in phpunit.xml, so naming those
+// classes as covered targets attributes nothing and PHPUnit 13 rejects
+// them outright. The @covers these replace had the same problem; it was
+// simply never validated.
+#[CoversNothing]
 final class DoublesTest extends TestCase
 {
     public function testMemberStubSatisfiesTheContractAndDefaultsEveryField(): void

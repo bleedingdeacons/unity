@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Testing;
 
+use PHPUnit\Framework\Attributes\CoversNothing;
 use LogicException;
 use Unity\Groups\Interfaces\Group;
 use Unity\Locations\Interfaces\Location;
@@ -26,15 +27,12 @@ use Unity\Tests\TestCase;
  * asserting here is the behaviour a signature check would not catch — the
  * fields these doubles *derive* rather than store, and the finders that model
  * real filtering rather than answering every call with the same set.
- *
- * @covers \Unity\Testing\Doubles\GroupStub
- * @covers \Unity\Testing\Doubles\InMemoryGroupRepository
- * @covers \Unity\Testing\Doubles\InMemoryMeetingRepository
- * @covers \Unity\Testing\Doubles\InMemoryPositionRepository
- * @covers \Unity\Testing\Doubles\LocationStub
- * @covers \Unity\Testing\Doubles\MeetingStub
- * @covers \Unity\Testing\Doubles\PositionStub
  */
+// src/Testing is excluded from coverage in phpunit.xml, so naming those
+// classes as covered targets attributes nothing and PHPUnit 13 rejects
+// them outright. The @covers these replace had the same problem; it was
+// simply never validated.
+#[CoversNothing]
 final class DirectoryDoublesTest extends TestCase
 {
     public function testEveryStubSatisfiesItsContractAndDefaultsEveryField(): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Auth;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Unity\Auth\PasswordCredential;
 use Unity\Testing\Doubles\InMemoryPasswordCredentialRepository;
@@ -27,9 +28,8 @@ final class CredentialListingTest extends TestCase
      * Newest change first. An alphabetical list buries the thing an admin
      * opened the screen for: who has just been locked out, whose reset is
      * still outstanding.
-     *
-     * @test
      */
+    #[Test]
     public function it_lists_the_most_recently_changed_first(): void
     {
         $repository = new InMemoryPasswordCredentialRepository([
@@ -49,9 +49,7 @@ final class CredentialListingTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_honours_the_bound(): void
     {
         $repository = new InMemoryPasswordCredentialRepository([
@@ -68,9 +66,8 @@ final class CredentialListingTest extends TestCase
      * nothing: answering an empty list would read on the screen exactly
      * as "no member has a password", which is a different and alarming
      * statement.
-     *
-     * @test
      */
+    #[Test]
     public function a_nonsense_bound_still_answers_something(): void
     {
         $repository = new InMemoryPasswordCredentialRepository([
@@ -81,9 +78,7 @@ final class CredentialListingTest extends TestCase
         $this->assertCount(1, $repository->all(-5));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_empty_store_lists_nothing(): void
     {
         $this->assertSame([], (new InMemoryPasswordCredentialRepository())->all());

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Members;
 
+use PHPUnit\Framework\Attributes\Test;
 use Unity\Members\CachingMemberRepository;
 use Unity\Members\Interfaces\Member;
 use Unity\Members\Interfaces\MemberRepository;
@@ -38,17 +39,13 @@ class CachingMemberRepositoryTest extends TestCase
         $this->repository = new CachingMemberRepository($this->inner, $this->cache);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_is_a_member_repository(): void
     {
         $this->assertInstanceOf(MemberRepository::class, $this->repository);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_second_read_of_the_same_member_does_not_reach_the_repository(): void
     {
         $first = $this->repository->findById(1);
@@ -58,9 +55,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame(1, $this->inner->findByIdCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_absent_member_is_not_cached(): void
     {
         $this->assertNull($this->repository->findById(99));
@@ -71,9 +66,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame(2, $this->inner->findByIdCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_impossible_id_never_reaches_the_repository_or_the_cache(): void
     {
         $this->assertNull($this->repository->findById(0));
@@ -81,9 +74,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame([], $this->cache->reads);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_member_found_by_email_is_cached_under_both_lookups(): void
     {
         $found = $this->repository->findByEmail('alice@example.com');
@@ -98,9 +89,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame(0, $this->inner->findByIdCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_blank_address_never_reaches_the_repository_or_the_cache(): void
     {
         $this->assertNull($this->repository->findByEmail('   '));
@@ -108,9 +97,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame([], $this->cache->reads);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_address_in_another_case_reuses_the_same_entry(): void
     {
         $this->repository->findByEmail('alice@example.com');
@@ -121,9 +108,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame(1, $this->inner->findByEmailCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_email_address_never_appears_in_a_cache_key(): void
     {
         $this->repository->findByEmail('alice@example.com');
@@ -133,9 +118,7 @@ class CachingMemberRepositoryTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_full_listing_is_served_from_the_cache_the_second_time(): void
     {
         $first = $this->repository->findAll();
@@ -149,9 +132,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame(1, $this->inner->findAllCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_listing_populates_the_entries_the_single_reads_use(): void
     {
         $this->repository->findAll();
@@ -160,9 +141,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame(0, $this->inner->findByIdCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_cached_listing_costs_one_round_trip_rather_than_one_per_member(): void
     {
         $this->repository->findAll();
@@ -175,9 +154,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame(1, $this->cache->multiGets);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function members_evicted_from_a_cached_listing_are_re_read_in_one_query(): void
     {
         $listing = $this->repository->findAll();
@@ -195,9 +172,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame(0, $this->inner->findByIdCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_listing_keeps_its_order_when_only_some_members_are_evicted(): void
     {
         $this->repository->findAll();
@@ -208,9 +183,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame([1, 2], array_map(static fn (Member $member): int => $member->getId(), $members));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_member_deleted_behind_the_decorator_drops_out_of_a_cached_listing(): void
     {
         $this->repository->findAll();
@@ -225,9 +198,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame([1], array_map(static fn (Member $member): int => $member->getId(), $members));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_empty_listing_is_cached_and_asks_the_cache_for_nothing(): void
     {
         $inner = new CountingMemberRepository(new InMemoryMemberRepository([]));
@@ -242,9 +213,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame(0, $this->cache->multiGets);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_filtered_listing_is_passed_straight_through(): void
     {
         $this->repository->findAll(['post__in' => [2]]);
@@ -255,9 +224,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame(2, $this->inner->findAllCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function telephone_responders_are_cached_separately_from_the_full_listing(): void
     {
         $responders = $this->repository->findTelephoneResponders();
@@ -269,9 +236,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame(0, $this->inner->findAllCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_unfiltered_count_is_cached_and_a_filtered_one_is_not(): void
     {
         $this->repository->count();
@@ -281,9 +246,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame(2, $this->inner->countCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function saving_a_member_invalidates_what_was_cached(): void
     {
         $this->repository->findById(1);
@@ -296,9 +259,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame(2, $this->inner->findByIdCalls);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function deleting_a_member_invalidates_the_listing(): void
     {
         $this->repository->findAll();
@@ -307,9 +268,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertCount(1, $this->repository->findAll());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function creating_and_updating_invalidate_too(): void
     {
         $this->repository->findAll();
@@ -322,9 +281,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame('Bob D.', $members[1]->getAnonymousName());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function bump_invalidates_a_write_made_behind_the_decorator(): void
     {
         $this->repository->findById(1);
@@ -340,9 +297,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame('Alice E.', $member->getAnonymousName());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function an_evicted_version_does_not_resurrect_stale_members(): void
     {
         $this->repository->findById(1);
@@ -362,9 +317,7 @@ class CachingMemberRepositoryTest extends TestCase
         $this->assertSame('Alice F.', $member->getAnonymousName());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function cached_members_expire_even_when_nothing_clears_them(): void
     {
         $this->repository->findById(1);

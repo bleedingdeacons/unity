@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Members;
 
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Unity\Members\ResponderCertification;
 
@@ -14,19 +16,15 @@ use Unity\Members\ResponderCertification;
  */
 class ResponderCertificationTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_resolves_a_known_acf_value_to_its_case(): void
     {
         $this->assertSame(ResponderCertification::Certified, ResponderCertification::fromAcfValue('Certified'));
         $this->assertSame(ResponderCertification::InTraining, ResponderCertification::fromAcfValue('In Training'));
     }
 
-    /**
-     * @test
-     * @dataProvider nonResolvingValues
-     */
+    #[DataProvider('nonResolvingValues')]
+    #[Test]
     public function it_falls_back_to_none_for_unusable_values(mixed $value): void
     {
         $this->assertSame(ResponderCertification::None, ResponderCertification::fromAcfValue($value));
@@ -47,9 +45,7 @@ class ResponderCertificationTest extends TestCase
         ];
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function only_certified_counts_as_certified(): void
     {
         $this->assertTrue(ResponderCertification::Certified->isCertified());
@@ -66,9 +62,7 @@ class ResponderCertificationTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function label_returns_the_backing_value(): void
     {
         $this->assertSame('Certified', ResponderCertification::Certified->label());

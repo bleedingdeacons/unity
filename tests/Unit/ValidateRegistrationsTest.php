@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Unity\Core\DependencyContainer;
@@ -68,9 +69,7 @@ class ValidateRegistrationsTest extends TestCase
         return $container;
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_passes_when_every_required_service_is_registered(): void
     {
         $plugin = Plugin::create($this->containerWith(self::REQUIRED));
@@ -81,9 +80,7 @@ class ValidateRegistrationsTest extends TestCase
         $this->assertTrue(true);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_names_the_service_that_is_missing(): void
     {
         $withoutGroups = array_values(array_diff(self::REQUIRED, [GroupRepository::class]));
@@ -96,9 +93,7 @@ class ValidateRegistrationsTest extends TestCase
         $plugin->validateRegistrations();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_lists_every_missing_service_not_just_the_first(): void
     {
         $plugin = Plugin::create($this->containerWith([]));
@@ -123,9 +118,8 @@ class ValidateRegistrationsTest extends TestCase
      * configured site running an older companion plugin as broken — and since
      * unity.php surfaces the result as an admin error notice, that lands in
      * front of the site owner as a false alarm on every page load.
-     *
-     * @test
      */
+    #[Test]
     public function it_does_not_require_member_revisor(): void
     {
         // Everything mandatory is present; MemberRevisor deliberately is not.
