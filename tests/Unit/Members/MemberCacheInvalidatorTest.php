@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Members;
 
-use Brain\Monkey\Functions;
+use PHPUnit\Framework\Attributes\Test;
+use function Brain\Monkey\Functions\when;
 use Unity\Members\CachingMemberRepository;
 use Unity\Members\MemberCacheInvalidator;
 use Unity\Testing\Doubles\InMemoryCache;
@@ -39,9 +40,7 @@ class MemberCacheInvalidatorTest extends TestCase
         $this->invalidator = new MemberCacheInvalidator($this->repository, self::POST_TYPE);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_hooks_the_post_actions(): void
     {
         $this->invalidator->register();
@@ -52,9 +51,7 @@ class MemberCacheInvalidatorTest extends TestCase
         $this->assertActionAdded('before_delete_post');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_hooks_the_meta_actions(): void
     {
         $this->invalidator->register();
@@ -66,12 +63,10 @@ class MemberCacheInvalidatorTest extends TestCase
         $this->assertActionAdded('deleted_post_meta');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_meta_write_on_a_member_invalidates_the_cache(): void
     {
-        Functions\when('get_post_type')->justReturn(self::POST_TYPE);
+        when('get_post_type')->justReturn(self::POST_TYPE);
 
         $version = $this->versionAfterAReadOfMemberOne();
 
@@ -80,12 +75,10 @@ class MemberCacheInvalidatorTest extends TestCase
         $this->assertNotSame($version, $this->version());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_meta_write_on_anything_else_leaves_the_cache_alone(): void
     {
-        Functions\when('get_post_type')->justReturn('page');
+        when('get_post_type')->justReturn('page');
 
         $version = $this->versionAfterAReadOfMemberOne();
 
@@ -97,12 +90,10 @@ class MemberCacheInvalidatorTest extends TestCase
         $this->assertSame($version, $this->version());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_deleted_meta_row_passes_an_array_of_ids_and_is_handled_anyway(): void
     {
-        Functions\when('get_post_type')->justReturn(self::POST_TYPE);
+        when('get_post_type')->justReturn(self::POST_TYPE);
 
         $version = $this->versionAfterAReadOfMemberOne();
 
@@ -114,12 +105,10 @@ class MemberCacheInvalidatorTest extends TestCase
         $this->assertNotSame($version, $this->version());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function a_member_post_save_invalidates_the_cache(): void
     {
-        Functions\when('get_post_type')->justReturn(self::POST_TYPE);
+        when('get_post_type')->justReturn(self::POST_TYPE);
 
         $version = $this->versionAfterAReadOfMemberOne();
 

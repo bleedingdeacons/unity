@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Core;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\NotFoundExceptionInterface;
 use Unity\Core\DependencyContainer;
-use Unity\Core\DependencyNotRegisteredException;
 
 /**
  * Tests for DependencyContainer
@@ -22,9 +22,7 @@ class DependencyContainerTest extends TestCase
         $this->container = new DependencyContainer();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_can_register_and_retrieve_a_service(): void
     {
         $service = new \stdClass();
@@ -40,9 +38,7 @@ class DependencyContainerTest extends TestCase
         $this->assertEquals('TestService', $retrieved->name);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_returns_same_instance_on_subsequent_calls(): void
     {
         $callCount = 0;
@@ -59,9 +55,7 @@ class DependencyContainerTest extends TestCase
         $this->assertEquals(1, $callCount, 'Factory should only be called once');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_throws_exception_for_unregistered_service(): void
     {
         $this->expectException(NotFoundExceptionInterface::class);
@@ -70,9 +64,7 @@ class DependencyContainerTest extends TestCase
         $this->container->get('nonexistent.service');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_can_check_if_service_is_registered(): void
     {
         $this->assertFalse($this->container->has('test.service'));
@@ -84,9 +76,7 @@ class DependencyContainerTest extends TestCase
         $this->assertTrue($this->container->has('test.service'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_passes_container_to_factory(): void
     {
         $this->container->register('dependency', function () {
@@ -105,9 +95,7 @@ class DependencyContainerTest extends TestCase
         $this->assertEquals('I am a dependency', $service->dependency);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_can_register_service_with_interface_as_key(): void
     {
         $this->container->register(TestInterface::class, function () {
@@ -120,9 +108,7 @@ class DependencyContainerTest extends TestCase
         $this->assertInstanceOf(TestImplementation::class, $service);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_can_override_registered_service(): void
     {
         $this->container->register('service', function () {
@@ -138,9 +124,7 @@ class DependencyContainerTest extends TestCase
         $this->assertEquals('overridden', $this->container->get('service'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function has_returns_true_for_instantiated_service(): void
     {
         $this->container->register('service', function () {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Core;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Unity\Core\Interfaces\Configuration;
 use Unity\Core\UnityConfiguration;
@@ -14,17 +15,13 @@ use Unity\Core\UnityConfiguration;
  */
 class UnityConfigurationTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_is_a_configuration(): void
     {
         $this->assertInstanceOf(Configuration::class, new UnityConfiguration());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_stores_and_returns_a_config_section(): void
     {
         $config = new UnityConfiguration();
@@ -33,17 +30,13 @@ class UnityConfigurationTest extends TestCase
         $this->assertSame(['post_type' => 'member'], $config->getConfig('members'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_returns_null_for_an_unknown_key(): void
     {
         $this->assertNull((new UnityConfiguration())->getConfig('missing'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_overwrites_a_section_on_a_second_set(): void
     {
         $config = new UnityConfiguration();

@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Core;
 
-use Brain\Monkey\Functions;
+use PHPUnit\Framework\Attributes\Test;
+use function Brain\Monkey\Functions\expect;
 use Unity\Core\Interfaces\Cache;
 use Unity\Core\WordPressCache;
 use Unity\Tests\TestCase;
@@ -24,32 +25,26 @@ class WordPressCacheTest extends TestCase
         $this->cache = new WordPressCache();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_is_a_cache(): void
     {
         $this->assertInstanceOf(Cache::class, $this->cache);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function flush_delegates_to_wp_cache_flush(): void
     {
-        Functions\expect('wp_cache_flush')->once()->andReturn(true);
+        expect('wp_cache_flush')->once()->andReturn(true);
 
         // flush() returns void; the ->once() expectation is verified on
         // tearDown. Assert on the void return so the test is not risky.
         $this->assertNull($this->cache->flush());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function get_forwards_key_and_group_and_returns_the_value(): void
     {
-        Functions\expect('wp_cache_get')
+        expect('wp_cache_get')
             ->once()
             ->with('member:1', 'unity')
             ->andReturn(['id' => 1]);
@@ -57,12 +52,10 @@ class WordPressCacheTest extends TestCase
         $this->assertSame(['id' => 1], $this->cache->get('member:1', 'unity'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function get_multiple_forwards_the_keys_and_group_and_returns_what_wordpress_answers(): void
     {
-        Functions\expect('wp_cache_get_multiple')
+        expect('wp_cache_get_multiple')
             ->once()
             ->with(['member:1', 'member:2'], 'unity')
             ->andReturn(['member:1' => ['id' => 1], 'member:2' => false]);
@@ -75,12 +68,10 @@ class WordPressCacheTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function set_forwards_all_arguments_and_returns_the_result(): void
     {
-        Functions\expect('wp_cache_set')
+        expect('wp_cache_set')
             ->once()
             ->with('member:1', ['id' => 1], 'unity', 300)
             ->andReturn(true);
@@ -88,12 +79,10 @@ class WordPressCacheTest extends TestCase
         $this->assertTrue($this->cache->set('member:1', ['id' => 1], 'unity', 300));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function delete_forwards_key_and_group_and_returns_the_result(): void
     {
-        Functions\expect('wp_cache_delete')
+        expect('wp_cache_delete')
             ->once()
             ->with('member:1', 'unity')
             ->andReturn(true);
