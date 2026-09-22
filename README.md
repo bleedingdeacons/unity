@@ -190,7 +190,7 @@ unity/
 │   ├── Members/Interfaces/
 │   └── Positions/Interfaces/
 ├── setup/                     # ACF field configuration JSON
-├── tests/                     # PHPUnit test suite
+├── tests/                     # Pest test suite (on PHPUnit)
 ├── build.php                  # Cross-platform build script
 ├── composer.json
 ├── phpunit.xml
@@ -308,7 +308,7 @@ composer install
 
 | Command | Description |
 |---|---|
-| `composer test` | Run the full PHPUnit test suite |
+| `composer test` | Run the full Pest test suite |
 | `composer test:unit` | Run unit tests only |
 | `composer test:integration` | Run integration tests only |
 | `composer test:coverage` | Generate an HTML coverage report |
@@ -327,7 +327,8 @@ composer build:clean        # Remove build artifacts
 
 ### Testing Stack
 
-- **PHPUnit** 10.5 for unit and integration tests
+- **[Pest](https://pestphp.com)** 5 (on PHPUnit 13) for unit tests — closure-based specs; run them with
+  `composer test` or `vendor/bin/pest`, since bare `vendor/bin/phpunit` cannot load them
 - **[bleedingdeacons/wp-mocks](https://github.com/bleedingdeacons/wp-mocks)** for the shared WordPress
   stand-ins, the base TestCase and the `$wpdb` / HTTP fakes
 - **Brain Monkey** for WordPress function and hook mocking, replacing WP_Mock —

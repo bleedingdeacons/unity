@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * PHPUnit bootstrap.
+ * Test bootstrap, loaded by Pest (via phpunit.xml).
  *
  * WordPress stand-ins, the Brain Monkey lifecycle and the Sentinel logger stub
  * all come from bleedingdeacons/wp-mocks, shared across the plugin suite. The

@@ -4,41 +4,31 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Core;
 
-use PHPUnit\Framework\Attributes\Test;
 use Exception;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\NotFoundExceptionInterface;
 use Unity\Core\DependencyNotRegisteredException;
 
-/**
+/*
  * Tests for {@see DependencyNotRegisteredException} — the PSR-11
  * not-found exception the container throws for an unregistered id.
  */
-class DependencyNotRegisteredExceptionTest extends TestCase
-{
-    #[Test]
-    public function it_is_a_psr11_not_found_exception(): void
-    {
-        $e = new DependencyNotRegisteredException('Some\\Service');
-        $this->assertInstanceOf(NotFoundExceptionInterface::class, $e);
-    }
 
-    #[Test]
-    public function it_carries_the_class_name_in_message_and_accessor(): void
-    {
-        $e = new DependencyNotRegisteredException('Some\\Service');
+it('is a PSR-11 not-found exception', function () {
+    $e = new DependencyNotRegisteredException('Some\\Service');
+    expect($e)->toBeInstanceOf(NotFoundExceptionInterface::class);
+});
 
-        $this->assertSame('Some\\Service', $e->getClassName());
-        $this->assertStringContainsString('Some\\Service', $e->getMessage());
-    }
+it('carries the class name in the message and the accessor', function () {
+    $e = new DependencyNotRegisteredException('Some\\Service');
 
-    #[Test]
-    public function it_preserves_code_and_previous(): void
-    {
-        $previous = new Exception('root cause');
-        $e = new DependencyNotRegisteredException('X', 42, $previous);
+    expect($e->getClassName())->toBe('Some\\Service')
+        ->and($e->getMessage())->toContain('Some\\Service');
+});
 
-        $this->assertSame(42, $e->getCode());
-        $this->assertSame($previous, $e->getPrevious());
-    }
-}
+it('preserves the code and the previous exception', function () {
+    $previous = new Exception('root cause');
+    $e = new DependencyNotRegisteredException('X', 42, $previous);
+
+    expect($e->getCode())->toBe(42)
+        ->and($e->getPrevious())->toBe($previous);
+});
