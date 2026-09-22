@@ -4,343 +4,290 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Members;
 
-use PHPUnit\Framework\Attributes\Test;
 use Unity\Members\CachingMemberRepository;
 use Unity\Members\Interfaces\Member;
 use Unity\Members\Interfaces\MemberRepository;
 use Unity\Testing\Doubles\InMemoryCache;
 use Unity\Testing\Doubles\InMemoryMemberRepository;
 use Unity\Testing\Doubles\MemberStub;
-use Unity\Tests\TestCase;
 
-/**
+/*
  * Tests for {@see CachingMemberRepository}.
  *
  * The decorator is only worth having if a second read costs nothing and a
  * write costs correctness nothing, so most of what follows counts calls
  * reaching the inner repository rather than inspecting cache internals.
  */
-class CachingMemberRepositoryTest extends TestCase
+
+/**
+ * Drop one member's entry the way a cache short of memory would, leaving
+ * the cached id list — and the version it was written under — intact.
+ */
+function evictMember(InMemoryCache $cache, int $id): void
 {
-    private CountingMemberRepository $inner;
-    private InMemoryCache $cache;
-    private CachingMemberRepository $repository;
+    $version = $cache->get('members_version', 'unity_members');
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->inner = new CountingMemberRepository(new InMemoryMemberRepository([
-            new MemberStub(id: 1, anonymousName: 'Alice A.', personalEmail: 'alice@example.com', telephoneResponder: true),
-            new MemberStub(id: 2, anonymousName: 'Bob B.', personalEmail: 'bob@example.com'),
-        ]));
-
-        $this->cache = new InMemoryCache();
-        $this->repository = new CachingMemberRepository($this->inner, $this->cache);
-    }
-
-    #[Test]
-    public function it_is_a_member_repository(): void
-    {
-        $this->assertInstanceOf(MemberRepository::class, $this->repository);
-    }
-
-    #[Test]
-    public function a_second_read_of_the_same_member_does_not_reach_the_repository(): void
-    {
-        $first = $this->repository->findById(1);
-        $second = $this->repository->findById(1);
-
-        $this->assertSame($first, $second);
-        $this->assertSame(1, $this->inner->findByIdCalls);
-    }
-
-    #[Test]
-    public function an_absent_member_is_not_cached(): void
-    {
-        $this->assertNull($this->repository->findById(99));
-        $this->assertNull($this->repository->findById(99));
-
-        // Caching the miss would mean telling a cached null from an empty
-        // slot, which Cache::get() cannot express.
-        $this->assertSame(2, $this->inner->findByIdCalls);
-    }
-
-    #[Test]
-    public function an_impossible_id_never_reaches_the_repository_or_the_cache(): void
-    {
-        $this->assertNull($this->repository->findById(0));
-        $this->assertSame(0, $this->inner->findByIdCalls);
-        $this->assertSame([], $this->cache->reads);
-    }
-
-    #[Test]
-    public function a_member_found_by_email_is_cached_under_both_lookups(): void
-    {
-        $found = $this->repository->findByEmail('alice@example.com');
-
-        $this->assertInstanceOf(Member::class, $found);
-        $this->assertSame(1, $found->getId());
-
-        $this->repository->findByEmail('alice@example.com');
-        $this->repository->findById(1);
-
-        $this->assertSame(1, $this->inner->findByEmailCalls);
-        $this->assertSame(0, $this->inner->findByIdCalls);
-    }
-
-    #[Test]
-    public function a_blank_address_never_reaches_the_repository_or_the_cache(): void
-    {
-        $this->assertNull($this->repository->findByEmail('   '));
-        $this->assertSame(0, $this->inner->findByEmailCalls);
-        $this->assertSame([], $this->cache->reads);
-    }
-
-    #[Test]
-    public function an_address_in_another_case_reuses_the_same_entry(): void
-    {
-        $this->repository->findByEmail('alice@example.com');
-        $this->repository->findByEmail('ALICE@Example.com');
-
-        // The real repository matches case-insensitively, so two spellings
-        // must not occupy two entries — nor cost two queries.
-        $this->assertSame(1, $this->inner->findByEmailCalls);
-    }
-
-    #[Test]
-    public function an_email_address_never_appears_in_a_cache_key(): void
-    {
-        $this->repository->findByEmail('alice@example.com');
-
-        foreach (array_merge($this->cache->reads, $this->cache->writes) as $key) {
-            $this->assertStringNotContainsString('alice@example.com', $key);
-        }
-    }
-
-    #[Test]
-    public function a_full_listing_is_served_from_the_cache_the_second_time(): void
-    {
-        $first = $this->repository->findAll();
-        $second = $this->repository->findAll();
-
-        $this->assertCount(2, $second);
-        $this->assertSame(
-            array_map(static fn (Member $member): int => $member->getId(), $first),
-            array_map(static fn (Member $member): int => $member->getId(), $second)
-        );
-        $this->assertSame(1, $this->inner->findAllCalls);
-    }
-
-    #[Test]
-    public function a_listing_populates_the_entries_the_single_reads_use(): void
-    {
-        $this->repository->findAll();
-        $this->repository->findById(2);
-
-        $this->assertSame(0, $this->inner->findByIdCalls);
-    }
-
-    #[Test]
-    public function a_cached_listing_costs_one_round_trip_rather_than_one_per_member(): void
-    {
-        $this->repository->findAll();
-        $this->cache->multiGets = 0;
-
-        $this->repository->findAll();
-
-        // The point of the multi-get: a few hundred members is one round trip
-        // to Memcached, not a few hundred.
-        $this->assertSame(1, $this->cache->multiGets);
-    }
-
-    #[Test]
-    public function members_evicted_from_a_cached_listing_are_re_read_in_one_query(): void
-    {
-        $listing = $this->repository->findAll();
-        $this->assertCount(2, $listing);
-
-        $this->inner->findAllCalls = 0;
-        foreach ([1, 2] as $id) {
-            $this->evictMember($id);
-        }
-
-        $refetched = $this->repository->findAll();
-
-        $this->assertSame([1, 2], array_map(static fn (Member $member): int => $member->getId(), $refetched));
-        $this->assertSame(1, $this->inner->findAllCalls);
-        $this->assertSame(0, $this->inner->findByIdCalls);
-    }
-
-    #[Test]
-    public function a_listing_keeps_its_order_when_only_some_members_are_evicted(): void
-    {
-        $this->repository->findAll();
-        $this->evictMember(1);
-
-        $members = $this->repository->findAll();
-
-        $this->assertSame([1, 2], array_map(static fn (Member $member): int => $member->getId(), $members));
-    }
-
-    #[Test]
-    public function a_member_deleted_behind_the_decorator_drops_out_of_a_cached_listing(): void
-    {
-        $this->repository->findAll();
-
-        $this->inner->inner()->delete(2);
-        $this->evictMember(2);
-
-        $members = $this->repository->findAll();
-
-        // The list is stale until the next bump, but serving a member who no
-        // longer exists would be worse than serving a short list.
-        $this->assertSame([1], array_map(static fn (Member $member): int => $member->getId(), $members));
-    }
-
-    #[Test]
-    public function an_empty_listing_is_cached_and_asks_the_cache_for_nothing(): void
-    {
-        $inner = new CountingMemberRepository(new InMemoryMemberRepository([]));
-        $repository = new CachingMemberRepository($inner, $this->cache);
-
-        $this->assertSame([], $repository->findAll());
-
-        $this->cache->multiGets = 0;
-
-        $this->assertSame([], $repository->findAll());
-        $this->assertSame(1, $inner->findAllCalls);
-        $this->assertSame(0, $this->cache->multiGets);
-    }
-
-    #[Test]
-    public function a_filtered_listing_is_passed_straight_through(): void
-    {
-        $this->repository->findAll(['post__in' => [2]]);
-        $this->repository->findAll(['post__in' => [2]]);
-
-        // A key built from arbitrary get_posts() arguments would be a key
-        // nobody can reason about; these reads are not cached at all.
-        $this->assertSame(2, $this->inner->findAllCalls);
-    }
-
-    #[Test]
-    public function telephone_responders_are_cached_separately_from_the_full_listing(): void
-    {
-        $responders = $this->repository->findTelephoneResponders();
-        $this->repository->findTelephoneResponders();
-
-        $this->assertCount(1, $responders);
-        $this->assertSame(1, $responders[0]->getId());
-        $this->assertSame(1, $this->inner->findResponderCalls);
-        $this->assertSame(0, $this->inner->findAllCalls);
-    }
-
-    #[Test]
-    public function an_unfiltered_count_is_cached_and_a_filtered_one_is_not(): void
-    {
-        $this->repository->count();
-        $this->repository->count();
-        $this->repository->count(['post_status' => 'draft']);
-
-        $this->assertSame(2, $this->inner->countCalls);
-    }
-
-    #[Test]
-    public function saving_a_member_invalidates_what_was_cached(): void
-    {
-        $this->repository->findById(1);
-        $this->repository->save(new MemberStub(id: 1, anonymousName: 'Alice C.'));
-
-        $member = $this->repository->findById(1);
-
-        $this->assertInstanceOf(Member::class, $member);
-        $this->assertSame('Alice C.', $member->getAnonymousName());
-        $this->assertSame(2, $this->inner->findByIdCalls);
-    }
-
-    #[Test]
-    public function deleting_a_member_invalidates_the_listing(): void
-    {
-        $this->repository->findAll();
-        $this->repository->delete(2);
-
-        $this->assertCount(1, $this->repository->findAll());
-    }
-
-    #[Test]
-    public function creating_and_updating_invalidate_too(): void
-    {
-        $this->repository->findAll();
-        $this->repository->create('Carol C.');
-        $this->assertCount(3, $this->repository->findAll());
-
-        $this->repository->update(new MemberStub(id: 2, anonymousName: 'Bob D.'));
-        $members = $this->repository->findAll();
-
-        $this->assertSame('Bob D.', $members[1]->getAnonymousName());
-    }
-
-    #[Test]
-    public function bump_invalidates_a_write_made_behind_the_decorator(): void
-    {
-        $this->repository->findById(1);
-
-        // What Reconcile, the ACF admin screen and Scrutiny's pruner all do:
-        // change the member without going through this repository at all.
-        $this->inner->inner()->save(new MemberStub(id: 1, anonymousName: 'Alice E.'));
-        $this->repository->bump();
-
-        $member = $this->repository->findById(1);
-
-        $this->assertInstanceOf(Member::class, $member);
-        $this->assertSame('Alice E.', $member->getAnonymousName());
-    }
-
-    #[Test]
-    public function an_evicted_version_does_not_resurrect_stale_members(): void
-    {
-        $this->repository->findById(1);
-
-        $this->inner->inner()->save(new MemberStub(id: 1, anonymousName: 'Alice F.'));
-        $this->repository->bump();
-
-        // Memcached discards entries when it runs short of memory, and the
-        // version counter is as evictable as anything else. Regenerating it
-        // from a fixed starting point would bring the pre-bump entries back
-        // into reach — the stale member returning because the cache filled up.
-        $this->cache->evict('members_version', 'unity_members');
-
-        $member = $this->repository->findById(1);
-
-        $this->assertInstanceOf(Member::class, $member);
-        $this->assertSame('Alice F.', $member->getAnonymousName());
-    }
-
-    #[Test]
-    public function cached_members_expire_even_when_nothing_clears_them(): void
-    {
-        $this->repository->findById(1);
-
-        $expiry = $this->cache->expiries[array_key_last($this->cache->expiries)] ?? 0;
-
-        // Members carry personal data. An entry that never expires is one a
-        // GDPR erasure can miss for as long as the cache holds it.
-        $this->assertGreaterThan(0, $expiry);
-        $this->assertLessThanOrEqual(86400, $expiry);
-    }
-
-    /**
-     * Drop one member's entry the way a cache short of memory would, leaving
-     * the cached id list — and the version it was written under — intact.
-     */
-    private function evictMember(int $id): void
-    {
-        $version = $this->cache->get('members_version', 'unity_members');
-
-        $this->cache->evict('member_' . $id . ':' . (is_string($version) ? $version : ''), 'unity_members');
-    }
+    $cache->evict('member_' . $id . ':' . (is_string($version) ? $version : ''), 'unity_members');
 }
+
+/**
+ * @param array<int, Member> $members
+ * @return array<int, int>
+ */
+function memberIds(array $members): array
+{
+    return array_map(static fn (Member $member): int => $member->getId(), $members);
+}
+
+beforeEach(function () {
+    $this->inner = new CountingMemberRepository(new InMemoryMemberRepository([
+        new MemberStub(id: 1, anonymousName: 'Alice A.', personalEmail: 'alice@example.com', telephoneResponder: true),
+        new MemberStub(id: 2, anonymousName: 'Bob B.', personalEmail: 'bob@example.com'),
+    ]));
+
+    $this->cache = new InMemoryCache();
+    $this->repository = new CachingMemberRepository($this->inner, $this->cache);
+});
+
+it('is a member repository', function () {
+    expect($this->repository)->toBeInstanceOf(MemberRepository::class);
+});
+
+it('does not reach the repository on a second read of the same member', function () {
+    $first = $this->repository->findById(1);
+    $second = $this->repository->findById(1);
+
+    expect($second)->toBe($first)
+        ->and($this->inner->findByIdCalls)->toBe(1);
+});
+
+it('does not cache an absent member', function () {
+    expect($this->repository->findById(99))->toBeNull()
+        ->and($this->repository->findById(99))->toBeNull();
+
+    // Caching the miss would mean telling a cached null from an empty
+    // slot, which Cache::get() cannot express.
+    expect($this->inner->findByIdCalls)->toBe(2);
+});
+
+it('never takes an impossible id to the repository or the cache', function () {
+    expect($this->repository->findById(0))->toBeNull()
+        ->and($this->inner->findByIdCalls)->toBe(0)
+        ->and($this->cache->reads)->toBe([]);
+});
+
+it('caches a member found by email under both lookups', function () {
+    $found = $this->repository->findByEmail('alice@example.com');
+
+    expect($found)->toBeInstanceOf(Member::class)
+        ->and($found->getId())->toBe(1);
+
+    $this->repository->findByEmail('alice@example.com');
+    $this->repository->findById(1);
+
+    expect($this->inner->findByEmailCalls)->toBe(1)
+        ->and($this->inner->findByIdCalls)->toBe(0);
+});
+
+it('never takes a blank address to the repository or the cache', function () {
+    expect($this->repository->findByEmail('   '))->toBeNull()
+        ->and($this->inner->findByEmailCalls)->toBe(0)
+        ->and($this->cache->reads)->toBe([]);
+});
+
+it('reuses the same entry for an address in another case', function () {
+    $this->repository->findByEmail('alice@example.com');
+    $this->repository->findByEmail('ALICE@Example.com');
+
+    // The real repository matches case-insensitively, so two spellings
+    // must not occupy two entries — nor cost two queries.
+    expect($this->inner->findByEmailCalls)->toBe(1);
+});
+
+it('never puts an email address in a cache key', function () {
+    $this->repository->findByEmail('alice@example.com');
+
+    foreach (array_merge($this->cache->reads, $this->cache->writes) as $key) {
+        expect($key)->not->toContain('alice@example.com');
+    }
+});
+
+it('serves a full listing from the cache the second time', function () {
+    $first = $this->repository->findAll();
+    $second = $this->repository->findAll();
+
+    expect($second)->toHaveCount(2)
+        ->and(memberIds($second))->toBe(memberIds($first))
+        ->and($this->inner->findAllCalls)->toBe(1);
+});
+
+it('populates the entries the single reads use from a listing', function () {
+    $this->repository->findAll();
+    $this->repository->findById(2);
+
+    expect($this->inner->findByIdCalls)->toBe(0);
+});
+
+it('costs one round trip for a cached listing rather than one per member', function () {
+    $this->repository->findAll();
+    $this->cache->multiGets = 0;
+
+    $this->repository->findAll();
+
+    // The point of the multi-get: a few hundred members is one round trip
+    // to Memcached, not a few hundred.
+    expect($this->cache->multiGets)->toBe(1);
+});
+
+it('re-reads members evicted from a cached listing in one query', function () {
+    $listing = $this->repository->findAll();
+    expect($listing)->toHaveCount(2);
+
+    $this->inner->findAllCalls = 0;
+    foreach ([1, 2] as $id) {
+        evictMember($this->cache, $id);
+    }
+
+    $refetched = $this->repository->findAll();
+
+    expect(memberIds($refetched))->toBe([1, 2])
+        ->and($this->inner->findAllCalls)->toBe(1)
+        ->and($this->inner->findByIdCalls)->toBe(0);
+});
+
+it('keeps a listing in order when only some members are evicted', function () {
+    $this->repository->findAll();
+    evictMember($this->cache, 1);
+
+    $members = $this->repository->findAll();
+
+    expect(memberIds($members))->toBe([1, 2]);
+});
+
+it('drops a member deleted behind the decorator out of a cached listing', function () {
+    $this->repository->findAll();
+
+    $this->inner->inner()->delete(2);
+    evictMember($this->cache, 2);
+
+    $members = $this->repository->findAll();
+
+    // The list is stale until the next bump, but serving a member who no
+    // longer exists would be worse than serving a short list.
+    expect(memberIds($members))->toBe([1]);
+});
+
+it('caches an empty listing and asks the cache for nothing', function () {
+    $inner = new CountingMemberRepository(new InMemoryMemberRepository([]));
+    $repository = new CachingMemberRepository($inner, $this->cache);
+
+    expect($repository->findAll())->toBe([]);
+
+    $this->cache->multiGets = 0;
+
+    expect($repository->findAll())->toBe([])
+        ->and($inner->findAllCalls)->toBe(1)
+        ->and($this->cache->multiGets)->toBe(0);
+});
+
+it('passes a filtered listing straight through', function () {
+    $this->repository->findAll(['post__in' => [2]]);
+    $this->repository->findAll(['post__in' => [2]]);
+
+    // A key built from arbitrary get_posts() arguments would be a key
+    // nobody can reason about; these reads are not cached at all.
+    expect($this->inner->findAllCalls)->toBe(2);
+});
+
+it('caches telephone responders separately from the full listing', function () {
+    $responders = $this->repository->findTelephoneResponders();
+    $this->repository->findTelephoneResponders();
+
+    expect($responders)->toHaveCount(1)
+        ->and($responders[0]->getId())->toBe(1)
+        ->and($this->inner->findResponderCalls)->toBe(1)
+        ->and($this->inner->findAllCalls)->toBe(0);
+});
+
+it('caches an unfiltered count and not a filtered one', function () {
+    $this->repository->count();
+    $this->repository->count();
+    $this->repository->count(['post_status' => 'draft']);
+
+    expect($this->inner->countCalls)->toBe(2);
+});
+
+it('invalidates what was cached when a member is saved', function () {
+    $this->repository->findById(1);
+    $this->repository->save(new MemberStub(id: 1, anonymousName: 'Alice C.'));
+
+    $member = $this->repository->findById(1);
+
+    expect($member)->toBeInstanceOf(Member::class)
+        ->and($member->getAnonymousName())->toBe('Alice C.')
+        ->and($this->inner->findByIdCalls)->toBe(2);
+});
+
+it('invalidates the listing when a member is deleted', function () {
+    $this->repository->findAll();
+    $this->repository->delete(2);
+
+    expect($this->repository->findAll())->toHaveCount(1);
+});
+
+it('invalidates on create and update too', function () {
+    $this->repository->findAll();
+    $this->repository->create('Carol C.');
+    expect($this->repository->findAll())->toHaveCount(3);
+
+    $this->repository->update(new MemberStub(id: 2, anonymousName: 'Bob D.'));
+    $members = $this->repository->findAll();
+
+    expect($members[1]->getAnonymousName())->toBe('Bob D.');
+});
+
+it('invalidates a write made behind the decorator on bump', function () {
+    $this->repository->findById(1);
+
+    // What Reconcile, the ACF admin screen and Scrutiny's pruner all do:
+    // change the member without going through this repository at all.
+    $this->inner->inner()->save(new MemberStub(id: 1, anonymousName: 'Alice E.'));
+    $this->repository->bump();
+
+    $member = $this->repository->findById(1);
+
+    expect($member)->toBeInstanceOf(Member::class)
+        ->and($member->getAnonymousName())->toBe('Alice E.');
+});
+
+it('does not resurrect stale members when the version is evicted', function () {
+    $this->repository->findById(1);
+
+    $this->inner->inner()->save(new MemberStub(id: 1, anonymousName: 'Alice F.'));
+    $this->repository->bump();
+
+    // Memcached discards entries when it runs short of memory, and the
+    // version counter is as evictable as anything else. Regenerating it
+    // from a fixed starting point would bring the pre-bump entries back
+    // into reach — the stale member returning because the cache filled up.
+    $this->cache->evict('members_version', 'unity_members');
+
+    $member = $this->repository->findById(1);
+
+    expect($member)->toBeInstanceOf(Member::class)
+        ->and($member->getAnonymousName())->toBe('Alice F.');
+});
+
+it('expires cached members even when nothing clears them', function () {
+    $this->repository->findById(1);
+
+    $expiry = $this->cache->expiries[array_key_last($this->cache->expiries)] ?? 0;
+
+    // Members carry personal data. An entry that never expires is one a
+    // GDPR erasure can miss for as long as the cache holds it.
+    expect($expiry)->toBeGreaterThan(0)
+        ->toBeLessThanOrEqual(86400);
+});
 
 /**
  * A MemberRepository that counts the reads reaching it.

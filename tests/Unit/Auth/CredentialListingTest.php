@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Auth;
 
-use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 use Unity\Auth\PasswordCredential;
 use Unity\Testing\Doubles\InMemoryPasswordCredentialRepository;
 
-/**
+/*
  * Listing the store, which is what the admin screen in Amber reads.
  *
  * <p>Asserted against the double rather than the SQL, because what the
@@ -17,70 +15,53 @@ use Unity\Testing\Doubles\InMemoryPasswordCredentialRepository;
  * what the screen's own tests will run against, so the two had better
  * agree about both.</p>
  */
-final class CredentialListingTest extends TestCase
+
+function listedCredential(string $email, int $updatedAt): PasswordCredential
 {
-    private static function credential(string $email, int $updatedAt): PasswordCredential
-    {
-        return new PasswordCredential($email, 'hash', '', 0, 0, 0, $updatedAt);
-    }
-
-    /**
-     * Newest change first. An alphabetical list buries the thing an admin
-     * opened the screen for: who has just been locked out, whose reset is
-     * still outstanding.
-     */
-    #[Test]
-    public function it_lists_the_most_recently_changed_first(): void
-    {
-        $repository = new InMemoryPasswordCredentialRepository([
-            self::credential('old@example.test', 1000),
-            self::credential('newest@example.test', 3000),
-            self::credential('middle@example.test', 2000),
-        ]);
-
-        $emails = array_map(
-            static fn(PasswordCredential $c): string => $c->email,
-            $repository->all()
-        );
-
-        $this->assertSame(
-            ['newest@example.test', 'middle@example.test', 'old@example.test'],
-            $emails
-        );
-    }
-
-    #[Test]
-    public function it_honours_the_bound(): void
-    {
-        $repository = new InMemoryPasswordCredentialRepository([
-            self::credential('a@example.test', 1000),
-            self::credential('b@example.test', 2000),
-            self::credential('c@example.test', 3000),
-        ]);
-
-        $this->assertCount(2, $repository->all(2));
-    }
-
-    /**
-     * A limit of zero or less is a caller error, not a request for
-     * nothing: answering an empty list would read on the screen exactly
-     * as "no member has a password", which is a different and alarming
-     * statement.
-     */
-    #[Test]
-    public function a_nonsense_bound_still_answers_something(): void
-    {
-        $repository = new InMemoryPasswordCredentialRepository([
-            self::credential('a@example.test', 1000),
-        ]);
-
-        $this->assertCount(1, $repository->all(0));
-        $this->assertCount(1, $repository->all(-5));
-    }
-
-    #[Test]
-    public function an_empty_store_lists_nothing(): void
-    {
-        $this->assertSame([], (new InMemoryPasswordCredentialRepository())->all());
-    }
+    return new PasswordCredential($email, 'hash', '', 0, 0, 0, $updatedAt);
 }
+
+// Newest change first. An alphabetical list buries the thing an admin
+// opened the screen for: who has just been locked out, whose reset is
+// still outstanding.
+it('lists the most recently changed first', function () {
+    $repository = new InMemoryPasswordCredentialRepository([
+        listedCredential('old@example.test', 1000),
+        listedCredential('newest@example.test', 3000),
+        listedCredential('middle@example.test', 2000),
+    ]);
+
+    $emails = array_map(
+        static fn(PasswordCredential $c): string => $c->email,
+        $repository->all()
+    );
+
+    expect($emails)->toBe(['newest@example.test', 'middle@example.test', 'old@example.test']);
+});
+
+it('honours the bound', function () {
+    $repository = new InMemoryPasswordCredentialRepository([
+        listedCredential('a@example.test', 1000),
+        listedCredential('b@example.test', 2000),
+        listedCredential('c@example.test', 3000),
+    ]);
+
+    expect($repository->all(2))->toHaveCount(2);
+});
+
+// A limit of zero or less is a caller error, not a request for
+// nothing: answering an empty list would read on the screen exactly
+// as "no member has a password", which is a different and alarming
+// statement.
+it('still answers something for a nonsense bound', function () {
+    $repository = new InMemoryPasswordCredentialRepository([
+        listedCredential('a@example.test', 1000),
+    ]);
+
+    expect($repository->all(0))->toHaveCount(1)
+        ->and($repository->all(-5))->toHaveCount(1);
+});
+
+it('lists nothing from an empty store', function () {
+    expect((new InMemoryPasswordCredentialRepository())->all())->toBe([]);
+});

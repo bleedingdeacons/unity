@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Meetings;
 
-use PHPUnit\Framework\Attributes\Test;
 use Unity\Meetings\CachingMeetingRepository;
 use Unity\Meetings\Interfaces\Meeting;
 use Unity\Meetings\Interfaces\MeetingRepository;
@@ -12,293 +11,247 @@ use Unity\Testing\Doubles\InMemoryCache;
 use Unity\Testing\Doubles\InMemoryMeetingRepository;
 use Unity\Testing\Doubles\LocationStub;
 use Unity\Testing\Doubles\MeetingStub;
-use Unity\Tests\TestCase;
 
-/**
+/*
  * Tests for {@see CachingMeetingRepository}.
  *
  * MeetingRepository is read-only, so this decorator cannot invalidate itself:
  * everything here either proves a read is served from the cache, or proves a
  * bump makes it stop being.
  */
-class CachingMeetingRepositoryTest extends TestCase
+
+/**
+ * @param array<int, Meeting> $meetings
+ * @return array<int, int>
+ */
+function meetingIds(array $meetings): array
 {
-    private CountingMeetingRepository $inner;
-    private InMemoryCache $cache;
-    private CachingMeetingRepository $repository;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->inner = new CountingMeetingRepository(new MutableMeetingRepository([
-            new MeetingStub(id: 1, name: 'Monday Lunchtime', day: 1, online: false),
-            new MeetingStub(id: 2, name: 'Monday Evening', day: 1, online: true),
-            new MeetingStub(id: 3, name: 'Tuesday Evening', day: 2, online: false),
-        ]));
-
-        $this->cache = new InMemoryCache();
-        $this->repository = new CachingMeetingRepository($this->inner, $this->cache);
-    }
-
-    #[Test]
-    public function it_is_a_meeting_repository(): void
-    {
-        $this->assertInstanceOf(MeetingRepository::class, $this->repository);
-    }
-
-    #[Test]
-    public function a_second_read_of_the_same_meeting_does_not_reach_the_repository(): void
-    {
-        $first = $this->repository->findById(1);
-        $second = $this->repository->findById(1);
-
-        $this->assertSame($first, $second);
-        $this->assertSame(1, $this->inner->findByIdCalls);
-    }
-
-    #[Test]
-    public function an_absent_meeting_is_not_cached_and_an_impossible_id_costs_nothing(): void
-    {
-        $this->assertNull($this->repository->findById(99));
-        $this->assertNull($this->repository->findById(99));
-        $this->assertSame(2, $this->inner->findByIdCalls);
-
-        $this->assertNull($this->repository->findById(0));
-        $this->assertSame(2, $this->inner->findByIdCalls);
-    }
-
-    #[Test]
-    public function a_cached_listing_costs_one_round_trip(): void
-    {
-        $this->repository->findAll();
-        $this->cache->multiGets = 0;
-
-        $this->assertCount(3, $this->repository->findAll());
-        $this->assertSame(1, $this->inner->findAllCalls);
-        $this->assertSame(1, $this->cache->multiGets);
-    }
-
-    #[Test]
-    public function each_day_is_cached_under_its_own_key(): void
-    {
-        $monday = $this->repository->findByDay(1);
-        $tuesday = $this->repository->findByDay(2);
-
-        $this->repository->findByDay(1);
-        $this->repository->findByDay(2);
-
-        $this->assertSame([1, 2], $this->ids($monday));
-        $this->assertSame([3], $this->ids($tuesday));
-        $this->assertSame(2, $this->inner->findByDayCalls);
-    }
-
-    #[Test]
-    public function the_online_and_in_person_listings_do_not_share_an_entry(): void
-    {
-        $online = $this->repository->findOnline();
-        $inPerson = $this->repository->findInPerson();
-
-        $this->repository->findOnline();
-        $this->repository->findInPerson();
-
-        $this->assertSame([2], $this->ids($online));
-        $this->assertSame([1, 3], $this->ids($inPerson));
-        $this->assertSame(1, $this->inner->findOnlineCalls);
-        $this->assertSame(1, $this->inner->findInPersonCalls);
-    }
-
-    #[Test]
-    public function a_filtered_call_is_passed_straight_through(): void
-    {
-        $this->repository->findByDay(1, ['posts_per_page' => 1]);
-        $this->repository->findByDay(1, ['posts_per_page' => 1]);
-        $this->repository->findAll(['orderby' => 'title']);
-        $this->repository->findAll(['orderby' => 'title']);
-        $this->repository->findOnline(['posts_per_page' => 1]);
-        $this->repository->findOnline(['posts_per_page' => 1]);
-        $this->repository->findInPerson(['posts_per_page' => 1]);
-        $this->repository->findInPerson(['posts_per_page' => 1]);
-
-        $this->assertSame(2, $this->inner->findByDayCalls);
-        $this->assertSame(2, $this->inner->findAllCalls);
-        $this->assertSame(2, $this->inner->findOnlineCalls);
-        $this->assertSame(2, $this->inner->findInPersonCalls);
-    }
-
-    #[Test]
-    public function a_search_is_never_cached(): void
-    {
-        $this->repository->search('monday');
-        $this->repository->search('monday');
-
-        // The keyword space is unbounded; caching it would mostly store
-        // one-off misses.
-        $this->assertSame(2, $this->inner->searchCalls);
-    }
-
-    #[Test]
-    public function an_unfiltered_count_is_cached_and_a_filtered_one_is_not(): void
-    {
-        $this->repository->count();
-        $this->repository->count();
-        $this->repository->count(['post_status' => 'draft']);
-
-        $this->assertSame(2, $this->inner->countCalls);
-    }
-
-    #[Test]
-    public function a_bump_drops_every_listing_and_every_meeting(): void
-    {
-        $this->repository->findAll();
-        $this->repository->findByDay(1);
-        $this->repository->findById(1);
-
-        $this->repository->bump();
-
-        $this->repository->findAll();
-        $this->repository->findByDay(1);
-
-        $this->assertSame(2, $this->inner->findAllCalls);
-        $this->assertSame(2, $this->inner->findByDayCalls);
-    }
-
-    #[Test]
-    public function an_edited_meeting_is_served_new_once_the_cache_is_bumped(): void
-    {
-        $this->assertSame('Monday Lunchtime', $this->repository->findById(1)?->getName());
-
-        // What editing a meeting in the admin does: the row changes without
-        // the repository knowing, and PostTypeCacheInvalidator calls bump().
-        $this->inner->inner()->replace(new MeetingStub(id: 1, name: 'Monday Noon', day: 1));
-        $this->repository->bump();
-
-        $this->assertSame('Monday Noon', $this->repository->findById(1)?->getName());
-    }
-
-    #[Test]
-    public function an_evicted_version_does_not_resurrect_a_stale_meeting(): void
-    {
-        $this->repository->findById(1);
-
-        $this->inner->inner()->replace(new MeetingStub(id: 1, name: 'Monday Noon', day: 1));
-        $this->repository->bump();
-
-        // Memcached discards entries under memory pressure, the version
-        // counter included. Regenerating it from a fixed starting point would
-        // put the pre-bump entries back in reach.
-        $this->cache->evict('meetings_version', 'unity_meetings');
-
-        $this->assertSame('Monday Noon', $this->repository->findById(1)?->getName());
-    }
-
-    #[Test]
-    public function meetings_evicted_from_a_cached_listing_are_re_read_in_one_query(): void
-    {
-        $this->repository->findAll();
-
-        $this->inner->findAllCalls = 0;
-        $this->evictMeeting(1);
-        $this->evictMeeting(3);
-
-        $meetings = $this->repository->findAll();
-
-        $this->assertSame([1, 2, 3], $this->ids($meetings));
-        $this->assertSame(1, $this->inner->findAllCalls);
-        $this->assertSame(0, $this->inner->findByIdCalls);
-    }
-
-    #[Test]
-    public function a_meeting_deleted_behind_the_decorator_drops_out_of_a_cached_listing(): void
-    {
-        $this->repository->findAll();
-
-        $this->inner->inner()->remove(2);
-        $this->evictMeeting(2);
-
-        $this->assertSame([1, 3], $this->ids($this->repository->findAll()));
-    }
-
-    #[Test]
-    public function an_empty_listing_is_cached_and_asks_the_cache_for_nothing(): void
-    {
-        $inner = new CountingMeetingRepository(new MutableMeetingRepository([]));
-        $repository = new CachingMeetingRepository($inner, $this->cache);
-
-        $this->assertSame([], $repository->findAll());
-
-        $this->cache->multiGets = 0;
-
-        $this->assertSame([], $repository->findAll());
-        $this->assertSame(1, $inner->findAllCalls);
-        $this->assertSame(0, $this->cache->multiGets);
-    }
-
-    #[Test]
-    public function cached_meetings_expire_even_when_nothing_bumps_them(): void
-    {
-        $this->repository->findById(1);
-
-        $expiry = $this->cache->expiries[array_key_last($this->cache->expiries)] ?? 0;
-
-        $this->assertGreaterThan(0, $expiry);
-        $this->assertLessThanOrEqual(3600, $expiry);
-    }
-
-    #[Test]
-    public function each_group_is_cached_under_its_own_key(): void
-    {
-        $inner = new CountingMeetingRepository(new MutableMeetingRepository([
-            new MeetingStub(id: 1, name: 'Monday Lunchtime', day: 1),
-            new MeetingStub(id: 2, name: 'Tuesday Evening', day: 2),
-        ], [1 => 10, 2 => 11]));
-        $repository = new CachingMeetingRepository($inner, $this->cache);
-
-        $ten = $repository->findByGroupId(10);
-        $repository->findByGroupId(10);
-        $repository->findByGroupId(11);
-        $repository->findByGroupId(10, ['posts_per_page' => 1]);
-
-        $this->assertSame([1], $this->ids($ten));
-
-        // One per group, plus the filtered call, which is never cached.
-        $this->assertSame(3, $inner->findByGroupIdCalls);
-    }
-
-    #[Test]
-    public function each_location_is_cached_under_its_own_key(): void
-    {
-        $inner = new CountingMeetingRepository(new MutableMeetingRepository([
-            new MeetingStub(id: 1, name: 'Church Hall', location: new LocationStub(id: 20)),
-            new MeetingStub(id: 2, name: 'Community Centre', location: new LocationStub(id: 21)),
-        ]));
-        $repository = new CachingMeetingRepository($inner, $this->cache);
-
-        $twenty = $repository->findByLocationId(20);
-        $repository->findByLocationId(20);
-        $repository->findByLocationId(21);
-        $repository->findByLocationId(20, ['orderby' => 'title']);
-
-        $this->assertSame([1], $this->ids($twenty));
-        $this->assertSame(3, $inner->findByLocationIdCalls);
-    }
-
-    /**
-     * @param array<int, Meeting> $meetings
-     * @return array<int, int>
-     */
-    private function ids(array $meetings): array
-    {
-        return array_map(static fn (Meeting $meeting): int => $meeting->getId(), $meetings);
-    }
-
-    private function evictMeeting(int $id): void
-    {
-        $version = $this->cache->get('meetings_version', 'unity_meetings');
-
-        $this->cache->evict('meeting_' . $id . ':' . (is_string($version) ? $version : ''), 'unity_meetings');
-    }
+    return array_map(static fn (Meeting $meeting): int => $meeting->getId(), $meetings);
 }
+
+function evictMeeting(InMemoryCache $cache, int $id): void
+{
+    $version = $cache->get('meetings_version', 'unity_meetings');
+
+    $cache->evict('meeting_' . $id . ':' . (is_string($version) ? $version : ''), 'unity_meetings');
+}
+
+beforeEach(function () {
+    $this->inner = new CountingMeetingRepository(new MutableMeetingRepository([
+        new MeetingStub(id: 1, name: 'Monday Lunchtime', day: 1, online: false),
+        new MeetingStub(id: 2, name: 'Monday Evening', day: 1, online: true),
+        new MeetingStub(id: 3, name: 'Tuesday Evening', day: 2, online: false),
+    ]));
+
+    $this->cache = new InMemoryCache();
+    $this->repository = new CachingMeetingRepository($this->inner, $this->cache);
+});
+
+it('is a meeting repository', function () {
+    expect($this->repository)->toBeInstanceOf(MeetingRepository::class);
+});
+
+it('does not reach the repository on a second read of the same meeting', function () {
+    $first = $this->repository->findById(1);
+    $second = $this->repository->findById(1);
+
+    expect($second)->toBe($first)
+        ->and($this->inner->findByIdCalls)->toBe(1);
+});
+
+it('does not cache an absent meeting, and an impossible id costs nothing', function () {
+    expect($this->repository->findById(99))->toBeNull()
+        ->and($this->repository->findById(99))->toBeNull()
+        ->and($this->inner->findByIdCalls)->toBe(2);
+
+    expect($this->repository->findById(0))->toBeNull()
+        ->and($this->inner->findByIdCalls)->toBe(2);
+});
+
+it('costs one round trip for a cached listing', function () {
+    $this->repository->findAll();
+    $this->cache->multiGets = 0;
+
+    expect($this->repository->findAll())->toHaveCount(3)
+        ->and($this->inner->findAllCalls)->toBe(1)
+        ->and($this->cache->multiGets)->toBe(1);
+});
+
+it('caches each day under its own key', function () {
+    $monday = $this->repository->findByDay(1);
+    $tuesday = $this->repository->findByDay(2);
+
+    $this->repository->findByDay(1);
+    $this->repository->findByDay(2);
+
+    expect(meetingIds($monday))->toBe([1, 2])
+        ->and(meetingIds($tuesday))->toBe([3])
+        ->and($this->inner->findByDayCalls)->toBe(2);
+});
+
+it('does not share an entry between the online and in-person listings', function () {
+    $online = $this->repository->findOnline();
+    $inPerson = $this->repository->findInPerson();
+
+    $this->repository->findOnline();
+    $this->repository->findInPerson();
+
+    expect(meetingIds($online))->toBe([2])
+        ->and(meetingIds($inPerson))->toBe([1, 3])
+        ->and($this->inner->findOnlineCalls)->toBe(1)
+        ->and($this->inner->findInPersonCalls)->toBe(1);
+});
+
+it('passes a filtered call straight through', function () {
+    $this->repository->findByDay(1, ['posts_per_page' => 1]);
+    $this->repository->findByDay(1, ['posts_per_page' => 1]);
+    $this->repository->findAll(['orderby' => 'title']);
+    $this->repository->findAll(['orderby' => 'title']);
+    $this->repository->findOnline(['posts_per_page' => 1]);
+    $this->repository->findOnline(['posts_per_page' => 1]);
+    $this->repository->findInPerson(['posts_per_page' => 1]);
+    $this->repository->findInPerson(['posts_per_page' => 1]);
+
+    expect($this->inner->findByDayCalls)->toBe(2)
+        ->and($this->inner->findAllCalls)->toBe(2)
+        ->and($this->inner->findOnlineCalls)->toBe(2)
+        ->and($this->inner->findInPersonCalls)->toBe(2);
+});
+
+it('never caches a search', function () {
+    $this->repository->search('monday');
+    $this->repository->search('monday');
+
+    // The keyword space is unbounded; caching it would mostly store
+    // one-off misses.
+    expect($this->inner->searchCalls)->toBe(2);
+});
+
+it('caches an unfiltered count and not a filtered one', function () {
+    $this->repository->count();
+    $this->repository->count();
+    $this->repository->count(['post_status' => 'draft']);
+
+    expect($this->inner->countCalls)->toBe(2);
+});
+
+it('drops every listing and every meeting on a bump', function () {
+    $this->repository->findAll();
+    $this->repository->findByDay(1);
+    $this->repository->findById(1);
+
+    $this->repository->bump();
+
+    $this->repository->findAll();
+    $this->repository->findByDay(1);
+
+    expect($this->inner->findAllCalls)->toBe(2)
+        ->and($this->inner->findByDayCalls)->toBe(2);
+});
+
+it('serves an edited meeting new once the cache is bumped', function () {
+    expect($this->repository->findById(1)?->getName())->toBe('Monday Lunchtime');
+
+    // What editing a meeting in the admin does: the row changes without
+    // the repository knowing, and PostTypeCacheInvalidator calls bump().
+    $this->inner->inner()->replace(new MeetingStub(id: 1, name: 'Monday Noon', day: 1));
+    $this->repository->bump();
+
+    expect($this->repository->findById(1)?->getName())->toBe('Monday Noon');
+});
+
+it('does not resurrect a stale meeting when the version is evicted', function () {
+    $this->repository->findById(1);
+
+    $this->inner->inner()->replace(new MeetingStub(id: 1, name: 'Monday Noon', day: 1));
+    $this->repository->bump();
+
+    // Memcached discards entries under memory pressure, the version
+    // counter included. Regenerating it from a fixed starting point would
+    // put the pre-bump entries back in reach.
+    $this->cache->evict('meetings_version', 'unity_meetings');
+
+    expect($this->repository->findById(1)?->getName())->toBe('Monday Noon');
+});
+
+it('re-reads meetings evicted from a cached listing in one query', function () {
+    $this->repository->findAll();
+
+    $this->inner->findAllCalls = 0;
+    evictMeeting($this->cache, 1);
+    evictMeeting($this->cache, 3);
+
+    $meetings = $this->repository->findAll();
+
+    expect(meetingIds($meetings))->toBe([1, 2, 3])
+        ->and($this->inner->findAllCalls)->toBe(1)
+        ->and($this->inner->findByIdCalls)->toBe(0);
+});
+
+it('drops a meeting deleted behind the decorator out of a cached listing', function () {
+    $this->repository->findAll();
+
+    $this->inner->inner()->remove(2);
+    evictMeeting($this->cache, 2);
+
+    expect(meetingIds($this->repository->findAll()))->toBe([1, 3]);
+});
+
+it('caches an empty listing and asks the cache for nothing', function () {
+    $inner = new CountingMeetingRepository(new MutableMeetingRepository([]));
+    $repository = new CachingMeetingRepository($inner, $this->cache);
+
+    expect($repository->findAll())->toBe([]);
+
+    $this->cache->multiGets = 0;
+
+    expect($repository->findAll())->toBe([])
+        ->and($inner->findAllCalls)->toBe(1)
+        ->and($this->cache->multiGets)->toBe(0);
+});
+
+it('expires cached meetings even when nothing bumps them', function () {
+    $this->repository->findById(1);
+
+    $expiry = $this->cache->expiries[array_key_last($this->cache->expiries)] ?? 0;
+
+    expect($expiry)->toBeGreaterThan(0)
+        ->toBeLessThanOrEqual(3600);
+});
+
+it('caches each group under its own key', function () {
+    $inner = new CountingMeetingRepository(new MutableMeetingRepository([
+        new MeetingStub(id: 1, name: 'Monday Lunchtime', day: 1),
+        new MeetingStub(id: 2, name: 'Tuesday Evening', day: 2),
+    ], [1 => 10, 2 => 11]));
+    $repository = new CachingMeetingRepository($inner, $this->cache);
+
+    $ten = $repository->findByGroupId(10);
+    $repository->findByGroupId(10);
+    $repository->findByGroupId(11);
+    $repository->findByGroupId(10, ['posts_per_page' => 1]);
+
+    expect(meetingIds($ten))->toBe([1]);
+
+    // One per group, plus the filtered call, which is never cached.
+    expect($inner->findByGroupIdCalls)->toBe(3);
+});
+
+it('caches each location under its own key', function () {
+    $inner = new CountingMeetingRepository(new MutableMeetingRepository([
+        new MeetingStub(id: 1, name: 'Church Hall', location: new LocationStub(id: 20)),
+        new MeetingStub(id: 2, name: 'Community Centre', location: new LocationStub(id: 21)),
+    ]));
+    $repository = new CachingMeetingRepository($inner, $this->cache);
+
+    $twenty = $repository->findByLocationId(20);
+    $repository->findByLocationId(20);
+    $repository->findByLocationId(21);
+    $repository->findByLocationId(20, ['orderby' => 'title']);
+
+    expect(meetingIds($twenty))->toBe([1])
+        ->and($inner->findByLocationIdCalls)->toBe(3);
+});
 
 /**
  * A MeetingRepository that counts the reads reaching it.

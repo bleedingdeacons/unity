@@ -4,143 +4,130 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Core;
 
-use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\NotFoundExceptionInterface;
 use Unity\Core\DependencyContainer;
 
-/**
+/*
  * Tests for DependencyContainer
  */
-class DependencyContainerTest extends TestCase
-{
-    private DependencyContainer $container;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->container = new DependencyContainer();
-    }
+beforeEach(function () {
+    $this->container = new DependencyContainer();
+});
 
-    #[Test]
-    public function it_can_register_and_retrieve_a_service(): void
-    {
-        $service = new \stdClass();
-        $service->name = 'TestService';
+it('can register and retrieve a service', function () {
+    $service = new \stdClass();
+    $service->name = 'TestService';
 
-        $this->container->register('test.service', function () use ($service) {
-            return $service;
-        });
+    $this->container->register('test.service', function () use ($service) {
+        return $service;
+    });
 
-        $retrieved = $this->container->get('test.service');
+    $retrieved = $this->container->get('test.service');
 
-        $this->assertSame($service, $retrieved);
-        $this->assertEquals('TestService', $retrieved->name);
-    }
+    expect($retrieved)->toBe($service)
+        ->and($retrieved->name)->toEqual('TestService');
+});
 
-    #[Test]
-    public function it_returns_same_instance_on_subsequent_calls(): void
-    {
-        $callCount = 0;
+it('returns the same instance on subsequent calls', function () {
+    $callCount = 0;
 
-        $this->container->register('singleton.service', function () use (&$callCount) {
-            $callCount++;
-            return new \stdClass();
-        });
+    $this->container->register('singleton.service', function () use (&$callCount) {
+        $callCount++;
+        return new \stdClass();
+    });
 
-        $first = $this->container->get('singleton.service');
-        $second = $this->container->get('singleton.service');
+    $first = $this->container->get('singleton.service');
+    $second = $this->container->get('singleton.service');
 
-        $this->assertSame($first, $second);
-        $this->assertEquals(1, $callCount, 'Factory should only be called once');
-    }
+    expect($second)->toBe($first)
+        ->and($callCount)->toEqual(1, 'Factory should only be called once');
+});
 
-    #[Test]
-    public function it_throws_exception_for_unregistered_service(): void
-    {
-        $this->expectException(NotFoundExceptionInterface::class);
-        $this->expectExceptionMessage('Dependency not registered: nonexistent.service');
+// Caught by hand rather than with ->throws() or toThrow(): both only treat
+// their argument as an exception type when it names a class (a typed
+// toThrow() closure included), and NotFoundExceptionInterface is an interface,
+// so Pest reads it as a message instead. The PSR-11 contract, not the concrete
+// class, is the thing being asserted.
+it('throws an exception for an unregistered service', function () {
+    $thrown = null;
 
+    try {
         $this->container->get('nonexistent.service');
+    } catch (\Throwable $e) {
+        $thrown = $e;
     }
 
-    #[Test]
-    public function it_can_check_if_service_is_registered(): void
-    {
-        $this->assertFalse($this->container->has('test.service'));
+    expect($thrown)->toBeInstanceOf(NotFoundExceptionInterface::class)
+        ->and($thrown?->getMessage())->toContain('Dependency not registered: nonexistent.service');
+});
 
-        $this->container->register('test.service', function () {
-            return new \stdClass();
-        });
+it('can check if a service is registered', function () {
+    expect($this->container->has('test.service'))->toBeFalse();
 
-        $this->assertTrue($this->container->has('test.service'));
-    }
+    $this->container->register('test.service', function () {
+        return new \stdClass();
+    });
 
-    #[Test]
-    public function it_passes_container_to_factory(): void
-    {
-        $this->container->register('dependency', function () {
-            return 'I am a dependency';
-        });
+    expect($this->container->has('test.service'))->toBeTrue();
+});
 
-        $this->container->register('service.with.dependency', function (DependencyContainer $c) {
-            $dependency = $c->get('dependency');
-            $service = new \stdClass();
-            $service->dependency = $dependency;
-            return $service;
-        });
+it('passes the container to the factory', function () {
+    $this->container->register('dependency', function () {
+        return 'I am a dependency';
+    });
 
-        $service = $this->container->get('service.with.dependency');
+    $this->container->register('service.with.dependency', function (DependencyContainer $c) {
+        $dependency = $c->get('dependency');
+        $service = new \stdClass();
+        $service->dependency = $dependency;
+        return $service;
+    });
 
-        $this->assertEquals('I am a dependency', $service->dependency);
-    }
+    $service = $this->container->get('service.with.dependency');
 
-    #[Test]
-    public function it_can_register_service_with_interface_as_key(): void
-    {
-        $this->container->register(TestInterface::class, function () {
-            return new TestImplementation();
-        });
+    expect($service->dependency)->toEqual('I am a dependency');
+});
 
-        $service = $this->container->get(TestInterface::class);
+it('can register a service with an interface as key', function () {
+    $this->container->register(TestInterface::class, function () {
+        return new TestImplementation();
+    });
 
-        $this->assertInstanceOf(TestInterface::class, $service);
-        $this->assertInstanceOf(TestImplementation::class, $service);
-    }
+    $service = $this->container->get(TestInterface::class);
 
-    #[Test]
-    public function it_can_override_registered_service(): void
-    {
-        $this->container->register('service', function () {
-            return 'original';
-        });
+    expect($service)->toBeInstanceOf(TestInterface::class)
+        ->toBeInstanceOf(TestImplementation::class);
+});
 
-        $this->container->register('service', function () {
-            return 'overridden';
-        });
+it('can override a registered service', function () {
+    $this->container->register('service', function () {
+        return 'original';
+    });
 
-        // Note: The factory is overridden, but if the service was already instantiated,
-        // it would still return the original. In this case, we haven't called get() yet.
-        $this->assertEquals('overridden', $this->container->get('service'));
-    }
+    $this->container->register('service', function () {
+        return 'overridden';
+    });
 
-    #[Test]
-    public function has_returns_true_for_instantiated_service(): void
-    {
-        $this->container->register('service', function () {
-            return new \stdClass();
-        });
+    // Note: The factory is overridden, but if the service was already instantiated,
+    // it would still return the original. In this case, we haven't called get() yet.
+    expect($this->container->get('service'))->toEqual('overridden');
+});
 
-        // Before getting, has() should still return true (factory is registered)
-        $this->assertTrue($this->container->has('service'));
+it('has() returns true for an instantiated service', function () {
+    $this->container->register('service', function () {
+        return new \stdClass();
+    });
 
-        // Get the service to instantiate it
-        $this->container->get('service');
+    // Before getting, has() should still return true (factory is registered)
+    expect($this->container->has('service'))->toBeTrue();
 
-        // After getting, has() should still return true
-        $this->assertTrue($this->container->has('service'));
-    }
-}
+    // Get the service to instantiate it
+    $this->container->get('service');
+
+    // After getting, has() should still return true
+    expect($this->container->has('service'))->toBeTrue();
+});
 
 /**
  * Test interface for DI testing

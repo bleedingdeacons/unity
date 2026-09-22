@@ -15,6 +15,10 @@ use Unity\Plugin;
  * and assertFilterAdded() used to be defined here — and in four other plugins —
  * over WP_Mock::onActionAdded(); they now come from the shared HookAssertions
  * trait. What remains below is only what is specific to Unity.
+ *
+ * The tests are closure-based Pest files with no class to extend this from;
+ * tests/Pest.php binds the WordPress-coupled directories and files to it, and
+ * the pure-PHP tests run on Pest's default, plain PHPUnit.
  */
 abstract class TestCase extends WpMocksTestCase
 {

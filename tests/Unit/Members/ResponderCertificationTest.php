@@ -4,68 +4,46 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Members;
 
-use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Unity\Members\ResponderCertification;
 
-/**
+/*
  * Tests for the {@see ResponderCertification} enum: the ACF-value coercion
  * that read paths rely on, the deliberately narrow "certified" check, and the
  * admin label.
  */
-class ResponderCertificationTest extends TestCase
-{
-    #[Test]
-    public function it_resolves_a_known_acf_value_to_its_case(): void
-    {
-        $this->assertSame(ResponderCertification::Certified, ResponderCertification::fromAcfValue('Certified'));
-        $this->assertSame(ResponderCertification::InTraining, ResponderCertification::fromAcfValue('In Training'));
-    }
 
-    #[DataProvider('nonResolvingValues')]
-    #[Test]
-    public function it_falls_back_to_none_for_unusable_values(mixed $value): void
-    {
-        $this->assertSame(ResponderCertification::None, ResponderCertification::fromAcfValue($value));
-    }
+it('resolves a known ACF value to its case', function () {
+    expect(ResponderCertification::fromAcfValue('Certified'))->toBe(ResponderCertification::Certified)
+        ->and(ResponderCertification::fromAcfValue('In Training'))->toBe(ResponderCertification::InTraining);
+});
 
-    /**
-     * @return array<string, array{0: mixed}>
-     */
-    public static function nonResolvingValues(): array
-    {
-        return [
-            'unknown string' => ['Retired'],
-            'empty string'   => [''],
-            'null'           => [null],
-            'false'          => [false],
-            'array'          => [['Certified']],
-            'int'            => [3],
-        ];
-    }
+it('falls back to none for unusable values', function (mixed $value) {
+    expect(ResponderCertification::fromAcfValue($value))->toBe(ResponderCertification::None);
+})->with([
+    'unknown string' => ['Retired'],
+    'empty string'   => [''],
+    'null'           => [null],
+    'false'          => [false],
+    'array'          => [['Certified']],
+    'int'            => [3],
+]);
 
-    #[Test]
-    public function only_certified_counts_as_certified(): void
-    {
-        $this->assertTrue(ResponderCertification::Certified->isCertified());
+it('counts only certified as certified', function () {
+    expect(ResponderCertification::Certified->isCertified())->toBeTrue();
 
-        foreach (
-            [
-            ResponderCertification::None,
-            ResponderCertification::Applied,
-            ResponderCertification::InTraining,
-            ResponderCertification::Pending,
-            ] as $stage
-        ) {
-            $this->assertFalse($stage->isCertified(), $stage->name . ' must not count as certified');
-        }
+    foreach (
+        [
+        ResponderCertification::None,
+        ResponderCertification::Applied,
+        ResponderCertification::InTraining,
+        ResponderCertification::Pending,
+        ] as $stage
+    ) {
+        expect($stage->isCertified())->toBeFalse($stage->name . ' must not count as certified');
     }
+});
 
-    #[Test]
-    public function label_returns_the_backing_value(): void
-    {
-        $this->assertSame('Certified', ResponderCertification::Certified->label());
-        $this->assertSame('In Training', ResponderCertification::InTraining->label());
-    }
-}
+it('labels each case with its backing value', function () {
+    expect(ResponderCertification::Certified->label())->toBe('Certified')
+        ->and(ResponderCertification::InTraining->label())->toBe('In Training');
+});

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Testing;
 
-use PHPUnit\Framework\Attributes\CoversNothing;
 use Unity\Core\DependencyNotRegisteredException;
 use Unity\Members\Interfaces\Member;
 use Unity\Members\Interfaces\MemberRepository;
@@ -13,9 +12,8 @@ use Unity\Testing\Doubles\FakeContainer;
 use Unity\Testing\Doubles\InMemoryCache;
 use Unity\Testing\Doubles\InMemoryMemberRepository;
 use Unity\Testing\Doubles\MemberStub;
-use Unity\Tests\TestCase;
 
-/**
+/*
  * The doubles Unity ships for the rest of the suite.
  *
  * PHP already enforces the contracts at class-load time — a method added to
@@ -25,27 +23,27 @@ use Unity\Tests\TestCase;
  * would not catch: that the container caches, that the repository filters
  * responders, that rejectWrites throws.
  */
-// src/Testing is excluded from coverage in phpunit.xml, so naming those
-// classes as covered targets attributes nothing and PHPUnit 13 rejects
+
+// No covers(): src/Testing is excluded from coverage in phpunit.xml, so naming
+// those classes as covered targets attributes nothing and PHPUnit 13 rejects
 // them outright. The @covers these replace had the same problem; it was
-// simply never validated.
-#[CoversNothing]
-final class DoublesTest extends TestCase
-{
-    public function testMemberStubSatisfiesTheContractAndDefaultsEveryField(): void
-    {
+// simply never validated. The PHPUnit class carried #[CoversNothing]; Pest has
+// no coversNothing(), so these tests now attribute whatever non-excluded
+// source they happen to run.
+
+describe('MemberStub', function () {
+    it('satisfies the contract and defaults every field', function () {
         $member = new MemberStub();
 
-        self::assertInstanceOf(Member::class, $member);
-        self::assertSame(0, $member->getId());
-        self::assertSame('', $member->getAnonymousName());
-        self::assertFalse($member->isTelephoneResponder());
-        self::assertSame([], $member->getAccepts());
-        self::assertSame(ResponderCertification::None, $member->getResponderCertification());
-    }
+        expect($member)->toBeInstanceOf(Member::class)
+            ->and($member->getId())->toBe(0)
+            ->and($member->getAnonymousName())->toBe('')
+            ->and($member->isTelephoneResponder())->toBeFalse()
+            ->and($member->getAccepts())->toBe([])
+            ->and($member->getResponderCertification())->toBe(ResponderCertification::None);
+    });
 
-    public function testMemberStubReturnsWhatItWasNamedWith(): void
-    {
+    it('returns what it was named with', function () {
         $member = new MemberStub(
             id: 7,
             anonymousName: 'Alice B',
@@ -55,63 +53,59 @@ final class DoublesTest extends TestCase
             accepts: ['phone', 'email'],
         );
 
-        self::assertSame(7, $member->getId());
-        self::assertSame('Alice B', $member->getAnonymousName());
-        self::assertSame('alice@example.test', $member->getPersonalEmail());
-        self::assertTrue($member->isTelephoneResponder());
-        self::assertSame(ResponderCertification::Certified, $member->getResponderCertification());
-        self::assertSame(['phone', 'email'], $member->getAccepts());
-    }
+        expect($member->getId())->toBe(7)
+            ->and($member->getAnonymousName())->toBe('Alice B')
+            ->and($member->getPersonalEmail())->toBe('alice@example.test')
+            ->and($member->isTelephoneResponder())->toBeTrue()
+            ->and($member->getResponderCertification())->toBe(ResponderCertification::Certified)
+            ->and($member->getAccepts())->toBe(['phone', 'email']);
+    });
+});
 
-    public function testRepositoryReadsBackWhatItWasSeededWith(): void
-    {
+describe('InMemoryMemberRepository', function () {
+    it('reads back what it was seeded with', function () {
         $repository = new InMemoryMemberRepository([
             new MemberStub(id: 7, anonymousName: 'Alice B', personalEmail: 'alice@example.test'),
             new MemberStub(id: 8, anonymousName: 'Bob C'),
         ]);
 
-        self::assertInstanceOf(MemberRepository::class, $repository);
-        self::assertSame(2, $repository->count());
-        self::assertSame('Alice B', $repository->findById(7)?->getAnonymousName());
-        self::assertSame(7, $repository->findByEmail('alice@example.test')?->getId());
-        self::assertNull($repository->findById(404));
-        self::assertNull($repository->findByEmail('nobody@example.test'));
-    }
+        expect($repository)->toBeInstanceOf(MemberRepository::class)
+            ->and($repository->count())->toBe(2)
+            ->and($repository->findById(7)?->getAnonymousName())->toBe('Alice B')
+            ->and($repository->findByEmail('alice@example.test')?->getId())->toBe(7)
+            ->and($repository->findById(404))->toBeNull()
+            ->and($repository->findByEmail('nobody@example.test'))->toBeNull();
+    });
 
-    public function testRepositoryMatchesEmailWithoutRegardToCase(): void
-    {
+    it('matches email without regard to case', function () {
         // The real repository queries MySQL with '=' against a _ci collation,
         // so case does not matter there and must not matter here.
         $repository = new InMemoryMemberRepository([
             new MemberStub(id: 7, personalEmail: 'alice@example.test'),
         ]);
 
-        self::assertSame(7, $repository->findByEmail('ALICE@EXAMPLE.TEST')?->getId());
-        self::assertSame(7, $repository->findByEmail('Alice@Example.Test')?->getId());
-    }
+        expect($repository->findByEmail('ALICE@EXAMPLE.TEST')?->getId())->toBe(7)
+            ->and($repository->findByEmail('Alice@Example.Test')?->getId())->toBe(7);
+    });
 
-    public function testRepositoryFiltersTelephoneResponders(): void
-    {
+    it('filters telephone responders', function () {
         $repository = new InMemoryMemberRepository([
             new MemberStub(id: 7, telephoneResponder: true),
             new MemberStub(id: 8, telephoneResponder: false),
         ]);
 
         // findAll() sees both; only the flagged one is a responder.
-        self::assertCount(2, $repository->findAll());
+        expect($repository->findAll())->toHaveCount(2);
 
         $responders = $repository->findTelephoneResponders();
-        self::assertCount(1, $responders);
-        self::assertSame(7, $responders[0]->getId());
-    }
+        expect($responders)->toHaveCount(1)
+            ->and($responders[0]->getId())->toBe(7);
+    });
 
-    /**
-     * Consumers hydrate a set of ids in one call rather than one at a time —
-     * Reach's committee messaging does — and a double that ignored the filter
-     * would let that look right in tests while handing back everybody.
-     */
-    public function testRepositoryNarrowsToPostIn(): void
-    {
+    // Consumers hydrate a set of ids in one call rather than one at a time —
+    // Reach's committee messaging does — and a double that ignored the filter
+    // would let that look right in tests while handing back everybody.
+    it('narrows to post__in', function () {
         $repository = new InMemoryMemberRepository([
             new MemberStub(id: 7),
             new MemberStub(id: 8),
@@ -121,49 +115,47 @@ final class DoublesTest extends TestCase
         $found = $repository->findAll(['post__in' => [9, 7]]);
 
         // Ordered by the ids given, not by insertion.
-        self::assertSame([9, 7], array_map(
+        expect(array_map(
             static fn ($member): int => $member->getId(),
             $found
-        ));
+        ))->toBe([9, 7]);
 
         // An id nobody holds is simply absent, not an error.
-        self::assertCount(1, $repository->findAll(['post__in' => [7, 404]]));
+        expect($repository->findAll(['post__in' => [7, 404]]))->toHaveCount(1);
 
         // Anything else in $args is still ignored: this is a double, not a
         // query engine.
-        self::assertCount(3, $repository->findAll(['orderby' => 'title']));
-        self::assertCount(3, $repository->findAll());
-    }
+        expect($repository->findAll(['orderby' => 'title']))->toHaveCount(3)
+            ->and($repository->findAll())->toHaveCount(3);
+    });
 
-    public function testRepositoryRecordsWritesAndAppliesThem(): void
-    {
+    it('records writes and applies them', function () {
         $repository = new InMemoryMemberRepository([new MemberStub(id: 7, anonymousName: 'Alice B')]);
 
         $id = $repository->create('Carol D');
-        self::assertSame(8, $id);
-        self::assertSame(['Carol D'], $repository->created);
-        self::assertSame('Carol D', $repository->findById(8)?->getAnonymousName());
+        expect($id)->toBe(8)
+            ->and($repository->created)->toBe(['Carol D'])
+            ->and($repository->findById(8)?->getAnonymousName())->toBe('Carol D');
 
         $renamed = new MemberStub(id: 7, anonymousName: 'Alice Z');
-        self::assertTrue($repository->update($renamed));
-        self::assertSame([$renamed], $repository->updated);
-        self::assertSame('Alice Z', $repository->findById(7)?->getAnonymousName());
+        expect($repository->update($renamed))->toBeTrue()
+            ->and($repository->updated)->toBe([$renamed])
+            ->and($repository->findById(7)?->getAnonymousName())->toBe('Alice Z');
 
-        self::assertTrue($repository->delete(7));
-        self::assertSame([7], $repository->deleted);
-        self::assertNull($repository->findById(7));
-    }
+        expect($repository->delete(7))->toBeTrue()
+            ->and($repository->deleted)->toBe([7])
+            ->and($repository->findById(7))->toBeNull();
+    });
 
-    public function testRepositoryRejectsWritesWhenAskedTo(): void
-    {
+    it('rejects writes when asked to', function () {
         $repository = new InMemoryMemberRepository([new MemberStub(id: 7)], rejectWrites: true);
 
-        $this->expectException(\LogicException::class);
         $repository->delete(7);
-    }
+    })->throws(\LogicException::class);
+});
 
-    public function testContainerResolvesRegisteredFactoriesOnceAndCaches(): void
-    {
+describe('FakeContainer', function () {
+    it('resolves registered factories once and caches', function () {
         $container = new FakeContainer();
         $calls = 0;
 
@@ -173,107 +165,99 @@ final class DoublesTest extends TestCase
             return new \stdClass();
         });
 
-        self::assertTrue($container->has('service'));
-        self::assertSame(['service'], $container->registeredIds());
+        expect($container->has('service'))->toBeTrue()
+            ->and($container->registeredIds())->toBe(['service']);
 
         $first = $container->get('service');
-        self::assertSame($first, $container->get('service'));
-        self::assertSame(1, $calls);
-    }
+        expect($container->get('service'))->toBe($first)
+            ->and($calls)->toBe(1);
+    });
 
-    public function testContainerPrefersPresetsAndPassesItselfToFactories(): void
-    {
+    it('prefers presets and passes itself to factories', function () {
         $seeded = new MemberStub(id: 7);
         $container = new FakeContainer([Member::class => $seeded]);
         $container->prime('answer', 42);
 
         $container->register('derived', static fn ($c): int => $c->get(Member::class)->getId());
 
-        self::assertSame($seeded, $container->get(Member::class));
-        self::assertSame(42, $container->get('answer'));
-        self::assertSame(7, $container->get('derived'));
-    }
+        expect($container->get(Member::class))->toBe($seeded)
+            ->and($container->get('answer'))->toBe(42)
+            ->and($container->get('derived'))->toBe(7);
+    });
 
-    public function testContainerBuildRunsTheFactoryWithoutCaching(): void
-    {
+    it('runs the factory without caching on build', function () {
         $container = new FakeContainer();
         $container->register('service', static fn (): object => new \stdClass());
 
-        self::assertNotSame($container->build('service'), $container->build('service'));
-    }
+        expect($container->build('service'))->not->toBe($container->build('service'));
+    });
 
-    public function testContainerFallsBackToTheResolverForUnknownIds(): void
-    {
+    it('falls back to the resolver for unknown ids', function () {
         $container = new FakeContainer([], static fn (string $id): string => 'resolved:' . $id);
 
-        self::assertSame('resolved:whatever', $container->get('whatever'));
-    }
+        expect($container->get('whatever'))->toBe('resolved:whatever');
+    });
 
-    public function testContainerThrowsTheRealExceptionForUnknownIdsWithoutAResolver(): void
-    {
+    it('throws the real exception for unknown ids without a resolver', function () {
         $container = new FakeContainer();
 
-        $this->expectException(DependencyNotRegisteredException::class);
         $container->get('missing');
-    }
+    })->throws(DependencyNotRegisteredException::class);
+});
 
-    public function testCacheAnswersFalseForAMissAndTheValueForAHit(): void
-    {
+describe('InMemoryCache', function () {
+    it('answers false for a miss and the value for a hit', function () {
         $cache = new InMemoryCache();
 
         // False rather than null, because that is what wp_cache_get() answers
         // and what consumers branch on.
-        self::assertFalse($cache->get('absent', 'unity_members'));
+        expect($cache->get('absent', 'unity_members'))->toBeFalse();
 
         $cache->set('member_1', ['id' => 1], 'unity_members', 43200);
 
-        self::assertSame(['id' => 1], $cache->get('member_1', 'unity_members'));
-        self::assertSame(43200, $cache->expiries['unity_members/member_1']);
-    }
+        expect($cache->get('member_1', 'unity_members'))->toBe(['id' => 1])
+            ->and($cache->expiries['unity_members/member_1'])->toBe(43200);
+    });
 
-    public function testCacheMultiGetAnswersForEveryKeyAndCountsTheRoundTrip(): void
-    {
+    it('answers a multi-get for every key and counts the round trip', function () {
         $cache = new InMemoryCache();
         $cache->set('member_1', 'Alice', 'unity_members');
 
         $found = $cache->getMultiple(['member_1', 'member_2'], 'unity_members');
 
-        self::assertSame(['member_1' => 'Alice', 'member_2' => false], $found);
-        self::assertSame(1, $cache->multiGets);
-        self::assertSame(['unity_members/member_1', 'unity_members/member_2'], $cache->reads);
-    }
+        expect($found)->toBe(['member_1' => 'Alice', 'member_2' => false])
+            ->and($cache->multiGets)->toBe(1)
+            ->and($cache->reads)->toBe(['unity_members/member_1', 'unity_members/member_2']);
+    });
 
-    public function testCacheKeepsGroupsApart(): void
-    {
+    it('keeps groups apart', function () {
         $cache = new InMemoryCache();
         $cache->set('same', 'members', 'unity_members');
         $cache->set('same', 'meetings', 'unity_meetings');
 
-        self::assertSame('members', $cache->get('same', 'unity_members'));
-        self::assertSame('meetings', $cache->get('same', 'unity_meetings'));
-    }
+        expect($cache->get('same', 'unity_members'))->toBe('members')
+            ->and($cache->get('same', 'unity_meetings'))->toBe('meetings');
+    });
 
-    public function testCacheEvictionLeavesNoTraceAndDeletingWhatIsGoneFails(): void
-    {
+    it('leaves no trace on eviction, and deleting what is gone fails', function () {
         $cache = new InMemoryCache();
         $cache->set('member_1', 'Alice', 'unity_members');
 
         $cache->evict('member_1', 'unity_members');
 
-        self::assertFalse($cache->get('member_1', 'unity_members'));
-        self::assertSame(['unity_members/member_1'], $cache->writes);
-        self::assertFalse($cache->delete('member_1', 'unity_members'));
-    }
+        expect($cache->get('member_1', 'unity_members'))->toBeFalse()
+            ->and($cache->writes)->toBe(['unity_members/member_1'])
+            ->and($cache->delete('member_1', 'unity_members'))->toBeFalse();
+    });
 
-    public function testCacheFlushEmptiesEveryGroup(): void
-    {
+    it('empties every group on flush', function () {
         $cache = new InMemoryCache();
         $cache->set('a', 1, 'unity_members');
         $cache->set('b', 2, 'unity_meetings');
 
         $cache->flush();
 
-        self::assertFalse($cache->get('a', 'unity_members'));
-        self::assertFalse($cache->get('b', 'unity_meetings'));
-    }
-}
+        expect($cache->get('a', 'unity_members'))->toBeFalse()
+            ->and($cache->get('b', 'unity_meetings'))->toBeFalse();
+    });
+});

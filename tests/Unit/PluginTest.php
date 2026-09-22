@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit;
 
-use PHPUnit\Framework\Attributes\Test;
-use function Brain\Monkey\Functions\when;
-use function Brain\Monkey\Functions\expect;
+use Brain\Monkey\Functions;
 use Mockery;
 use RuntimeException;
 use stdClass;
@@ -17,9 +15,8 @@ use Unity\IntergroupMeetings\Interfaces\IntergroupMeetingChangeTracker;
 use Unity\Members\Interfaces\MemberChangeTracker;
 use Unity\Plugin;
 use Unity\Positions\Interfaces\PositionChangeTracker;
-use Unity\Tests\TestCase;
 
-/**
+/*
  * Tests for {@see Plugin} — the instance-based bootstrap with a
  * backward-compatible static façade over a global default instance.
  *
@@ -29,122 +26,94 @@ use Unity\Tests\TestCase;
  * deactivate) including their not-initialised guards. The base TestCase resets
  * the global instance between tests, so no static state leaks.
  */
-class PluginTest extends TestCase
-{
-    #[Test]
-    public function create_without_a_container_builds_one_with_unitys_own_bindings(): void
-    {
-        $plugin = Plugin::create();
 
-        $container = $plugin->getContainerInstance();
-        $this->assertInstanceOf(Container::class, $container);
+it('builds a container with Unity\'s own bindings when created without one', function () {
+    $plugin = Plugin::create();
+
+    $container = $plugin->getContainerInstance();
+    expect($container)->toBeInstanceOf(Container::class)
         // UnityServiceProvider registered Cache (and Configuration) into it.
-        $this->assertTrue($container->has(Cache::class));
+        ->and($container->has(Cache::class))->toBeTrue();
+});
+
+it('wraps a supplied container verbatim', function () {
+    $container = Mockery::mock(Container::class);
+    $plugin = Plugin::create($container);
+
+    expect($plugin->getContainerInstance())->toBe($container);
+});
+
+it('resolves the four trackers exactly once in initializeServices', function () {
+    Functions\when('wp_log')->justReturn(null); // logDebug no-ops
+
+    $container = Mockery::mock(Container::class);
+    foreach (
+        [
+        GroupChangeTracker::class,
+        MemberChangeTracker::class,
+        PositionChangeTracker::class,
+        IntergroupMeetingChangeTracker::class,
+        ] as $tracker
+    ) {
+        $container->shouldReceive('get')->with($tracker)->once()->andReturn(new stdClass());
     }
 
-    #[Test]
-    public function create_wraps_a_supplied_container_verbatim(): void
-    {
-        $container = Mockery::mock(Container::class);
-        $plugin = Plugin::create($container);
+    $plugin = Plugin::create($container);
+    $plugin->initializeServices();
+    // Second call must short-circuit — the ->once() expectations above
+    // would fail if the trackers were resolved again.
+    $plugin->initializeServices();
+});
 
-        $this->assertSame($container, $plugin->getContainerInstance());
-    }
+it('creates the default and registers the deactivation hook in initContainer', function () {
+    Functions\expect('register_deactivation_hook')->once();
 
-    #[Test]
-    public function initialize_services_resolves_the_four_trackers_exactly_once(): void
-    {
-        when('wp_log')->justReturn(null); // logDebug no-ops
+    Plugin::initContainer();
+    expect(Plugin::getContainer())->toBeInstanceOf(Container::class);
 
-        $container = Mockery::mock(Container::class);
-        foreach (
-            [
-            GroupChangeTracker::class,
-            MemberChangeTracker::class,
-            PositionChangeTracker::class,
-            IntergroupMeetingChangeTracker::class,
-            ] as $tracker
-        ) {
-            $container->shouldReceive('get')->with($tracker)->once()->andReturn(new stdClass());
-        }
+    // Idempotent: a second call must not create another instance or
+    // re-register the hook (the ->once() above enforces the latter).
+    Plugin::initContainer();
+});
 
-        $plugin = Plugin::create($container);
-        $plugin->initializeServices();
-        // Second call must short-circuit — the ->once() expectations above
-        // would fail if the trackers were resolved again.
-        $plugin->initializeServices();
-    }
+it('resolves services on the seeded default instance in init', function () {
+    Functions\when('wp_log')->justReturn(null);
 
-    #[Test]
-    public function init_container_creates_the_default_and_registers_the_deactivation_hook(): void
-    {
-        expect('register_deactivation_hook')->once();
+    $container = Mockery::mock(Container::class);
+    $container->shouldReceive('get')->times(4)->andReturn(new stdClass());
 
-        Plugin::initContainer();
-        $this->assertInstanceOf(Container::class, Plugin::getContainer());
+    // Seed the default instance so init()'s initContainer() is a no-op and
+    // initServices() resolves against this (tracker-bound) container.
+    Plugin::setInstance(Plugin::create($container));
 
-        // Idempotent: a second call must not create another instance or
-        // re-register the hook (the ->once() above enforces the latter).
-        Plugin::initContainer();
-    }
+    Plugin::init();
+});
 
-    #[Test]
-    public function init_resolves_services_on_the_seeded_default_instance(): void
-    {
-        when('wp_log')->justReturn(null);
+it('throws from initServices when the container was not initialised', function () {
+    Plugin::setInstance(null);
 
-        $container = Mockery::mock(Container::class);
-        $container->shouldReceive('get')->times(4)->andReturn(new stdClass());
+    Plugin::initServices();
+})->throws(RuntimeException::class);
 
-        // Seed the default instance so init()'s initContainer() is a no-op and
-        // initServices() resolves against this (tracker-bound) container.
-        Plugin::setInstance(Plugin::create($container));
+it('throws from getInstance before boot', function () {
+    Plugin::setInstance(null);
 
-        Plugin::init();
-    }
+    Plugin::getInstance();
+})->throws(RuntimeException::class);
 
-    #[Test]
-    public function init_services_throws_when_the_container_was_not_initialised(): void
-    {
-        Plugin::setInstance(null);
+it('throws from getContainer before boot', function () {
+    Plugin::setInstance(null);
 
-        $this->expectException(RuntimeException::class);
-        Plugin::initServices();
-    }
+    Plugin::getContainer();
+})->throws(RuntimeException::class);
 
-    #[Test]
-    public function get_instance_throws_before_boot(): void
-    {
-        Plugin::setInstance(null);
+it('manages the global instance through set, get and deactivate', function () {
+    $plugin = Plugin::create(Mockery::mock(Container::class));
 
-        $this->expectException(RuntimeException::class);
-        Plugin::getInstance();
-    }
+    Plugin::setInstance($plugin);
+    expect(Plugin::getInstance())->toBe($plugin);
 
-    #[Test]
-    public function get_container_throws_before_boot(): void
-    {
-        Plugin::setInstance(null);
+    Plugin::deactivate();
 
-        $this->expectException(RuntimeException::class);
-        Plugin::getContainer();
-    }
-
-    #[Test]
-    public function set_get_and_deactivate_manage_the_global_instance(): void
-    {
-        $plugin = Plugin::create(Mockery::mock(Container::class));
-
-        Plugin::setInstance($plugin);
-        $this->assertSame($plugin, Plugin::getInstance());
-
-        Plugin::deactivate();
-
-        try {
-            Plugin::getInstance();
-            $this->fail('Expected getInstance() to throw after deactivate().');
-        } catch (RuntimeException $e) {
-            $this->assertStringContainsString('not initialized', $e->getMessage());
-        }
-    }
-}
+    expect(fn () => Plugin::getInstance())->toThrow(RuntimeException::class, 'not initialized');
+});
