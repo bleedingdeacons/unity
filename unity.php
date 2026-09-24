@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Unity
  * Description: An intergroup management plugin.
- * Version: 2.0.2
+ * Version: 2.0.3
  * Requires at least: 6.1
  * Requires PHP: 8.4
  * GitHub Plugin URI: https://github.com/bleedingdeacons/unity
