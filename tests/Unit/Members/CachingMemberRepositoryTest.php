@@ -76,6 +76,23 @@ it('never takes an impossible id to the repository or the cache', function () {
         ->and($this->cache->reads)->toBe([]);
 });
 
+it('asks the repository on every lookup by extended value', function () {
+    $this->inner->inner()->findById(1)?->setUnityExtendedValue('AppleUserId', 'apple-sub-1');
+
+    expect($this->repository->findByValue('AppleUserId', 'apple-sub-1')?->getId())->toBe(1)
+        ->and($this->repository->findByValue('AppleUserId', 'apple-sub-1')?->getId())->toBe(1)
+        ->and($this->inner->findByValueCalls)->toBe(2);
+});
+
+it('serves a member found by extended value from the cache by id', function () {
+    $this->inner->inner()->findById(2)?->setUnityExtendedValue('AppleUserId', 'apple-sub-2');
+
+    $found = $this->repository->findByValue('AppleUserId', 'apple-sub-2');
+
+    expect($this->repository->findById(2))->toBe($found)
+        ->and($this->inner->findByIdCalls)->toBe(0);
+});
+
 it('caches a member found by email under both lookups', function () {
     $found = $this->repository->findByEmail('alice@example.com');
 
@@ -300,6 +317,7 @@ final class CountingMemberRepository implements MemberRepository
 {
     public int $findByIdCalls = 0;
     public int $findByEmailCalls = 0;
+    public int $findByValueCalls = 0;
     public int $findAllCalls = 0;
     public int $findResponderCalls = 0;
     public int $countCalls = 0;
@@ -326,6 +344,13 @@ final class CountingMemberRepository implements MemberRepository
         $this->findByEmailCalls++;
 
         return $this->inner->findByEmail($email);
+    }
+
+    public function findByValue(string $key, string $value): ?Member
+    {
+        $this->findByValueCalls++;
+
+        return $this->inner->findByValue($key, $value);
     }
 
     /**

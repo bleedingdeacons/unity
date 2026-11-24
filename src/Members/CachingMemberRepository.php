@@ -115,6 +115,25 @@ class CachingMemberRepository implements MemberRepository, CacheBumper
     /**
      * {@inheritdoc}
      *
+     * Not cached. It answers "who is this?" at sign-in, where a stale answer
+     * would let a link that has just been removed keep working, and it is
+     * asked once per sign-in rather than once per page. The member it finds
+     * is still served from, and stored in, the cache by id.
+     */
+    public function findByValue(string $key, string $value): ?Member
+    {
+        $member = $this->inner->findByValue($key, $value);
+
+        if ($member !== null) {
+            $this->store($member);
+        }
+
+        return $member;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
      * Only the unfiltered call is cached. Callers pass arbitrary get_posts()
      * arguments — post__in, meta queries, orderby — and a key built from those
      * would either be wrong or be a hash of a structure nobody can reason

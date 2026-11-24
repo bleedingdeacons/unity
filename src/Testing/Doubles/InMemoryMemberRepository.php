@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 }
 
 use LogicException;
+use Unity\Core\StoredValueKey;
 use Unity\Members\Interfaces\Member;
 use Unity\Members\Interfaces\MemberRepository;
 
@@ -101,6 +102,26 @@ final class InMemoryMemberRepository implements MemberRepository
         }
 
         return null;
+    }
+
+    /**
+     * The one member whose extended value matches, as the real repository
+     * answers: exact match, null for none, more than one, or an empty value.
+     */
+    public function findByValue(string $key, string $value): ?Member
+    {
+        StoredValueKey::assertValid($key);
+
+        if ($value === '') {
+            return null;
+        }
+
+        $found = array_values(array_filter(
+            $this->members,
+            static fn (Member $member): bool => $member->getUnityExtendedValue($key) === $value
+        ));
+
+        return count($found) === 1 ? $found[0] : null;
     }
 
     /**

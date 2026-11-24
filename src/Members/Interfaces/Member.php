@@ -9,13 +9,19 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use Unity\Core\Interfaces\KeyValueStoreInterface;
 use Unity\Members\PreferredContact;
 use Unity\Members\ResponderCertification;
 
 /**
  * Member Interface
+ *
+ * Extends {@see KeyValueStoreInterface}: a member carries a store of named
+ * values beside its fields, for what a plugin needs to remember about a
+ * member that Unity's own fields don't cover (Reach's `AppleUserId`, for
+ * one). The values are live, not part of this immutable snapshot.
  */
-interface Member
+interface Member extends KeyValueStoreInterface
 {
     public function getId(): int;
     public function getAnonymousName(): string;
