@@ -9,10 +9,14 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use Unity\Core\Interfaces\ValueLookup;
+
 /**
  * Member Repository Interface
+ *
+ * @extends ValueLookup<Member>
  */
-interface MemberRepository
+interface MemberRepository extends ValueLookup
 {
     /**
      * Find a member by ID
@@ -33,6 +37,21 @@ interface MemberRepository
      * @return Member|null The matching member, or null if none found
      */
     public function findByEmail(string $email): ?Member;
+
+    /**
+     * Find the one member carrying a stored value
+     *
+     * Matches the value exactly under the given key of the member's
+     * {@see \Unity\Core\Interfaces\KeyValueStoreInterface} store. Null
+     * when no member matches, when more than one does, or when the value is
+     * empty: this is used to decide who somebody is, and must not guess.
+     *
+     * @param string $key   Stored value key
+     * @param string $value Value to match exactly
+     * @return Member|null
+     * @throws \InvalidArgumentException When the key is not a valid stored value key.
+     */
+    public function findByValue(string $key, string $value): ?Member;
 
     /**
      * Find all members matching the given arguments

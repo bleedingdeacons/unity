@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use Unity\Core\StoredValueKey;
 use Unity\Members\Interfaces\Member;
 use Unity\Members\PreferredContact;
 use Unity\Members\ResponderCertification;
@@ -36,11 +37,18 @@ use Unity\Members\ResponderCertification;
  * to fix its own defaults in one place rather than repeating them at every
  * call site — see Trusted\Tests\Fixtures\ResponderStub.
  *
+ * The extended values live in an array on the stub, seeded through
+ * `extendedValues:`. Unlike a real member's, they belong to this one object:
+ * a second stub built for the same id does not see them.
+ *
  * @phpstan-consistent-constructor
  */
 class MemberStub implements Member
 {
-    /** @param array<int, string> $accepts */
+    /**
+     * @param array<int, string> $accepts
+     * @param array<string, string> $extendedValues
+     */
     public function __construct(
         private int $id = 0,
         private string $anonymousName = '',
@@ -66,8 +74,42 @@ class MemberStub implements Member
         private string $gdprAcceptanceVersion = '',
         private string $gdprAcceptanceMethod = '',
         private string $gdprAcceptanceStatement = '',
-        private string $updated = ''
+        private string $updated = '',
+        private array $extendedValues = []
     ) {
+        foreach (array_keys($this->extendedValues) as $key) {
+            StoredValueKey::assertValid((string) $key);
+        }
+    }
+
+    public function getUnityExtendedValue(string $key): ?string
+    {
+        StoredValueKey::assertValid($key);
+
+        return $this->extendedValues[$key] ?? null;
+    }
+
+    public function setUnityExtendedValue(string $key, string $value): void
+    {
+        StoredValueKey::assertValid($key);
+
+        $this->extendedValues[$key] = $value;
+    }
+
+    public function deleteUnityExtendedValue(string $key): void
+    {
+        StoredValueKey::assertValid($key);
+
+        unset($this->extendedValues[$key]);
+    }
+
+    /** @return array<string, string> */
+    public function allUnityExtendedValues(): array
+    {
+        $values = $this->extendedValues;
+        ksort($values, SORT_STRING);
+
+        return $values;
     }
 
     public function getId(): int

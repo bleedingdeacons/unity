@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Unity\Tests\Unit\Testing;
 
+use InvalidArgumentException;
 use Unity\Core\DependencyNotRegisteredException;
 use Unity\Members\Interfaces\Member;
 use Unity\Members\Interfaces\MemberRepository;
@@ -60,9 +61,42 @@ describe('MemberStub', function () {
             ->and($member->getResponderCertification())->toBe(ResponderCertification::Certified)
             ->and($member->getAccepts())->toBe(['phone', 'email']);
     });
+
+    it('keeps extended values, sorted by key, and keeps their case', function () {
+        $member = new MemberStub(extendedValues: ['Zeta' => 'z']);
+
+        $member->setUnityExtendedValue('AppleUserId', 'apple-sub');
+
+        expect($member->getUnityExtendedValue('AppleUserId'))->toBe('apple-sub')
+            ->and($member->getUnityExtendedValue('appleuserid'))->toBeNull()
+            ->and($member->allUnityExtendedValues())->toBe(['AppleUserId' => 'apple-sub', 'Zeta' => 'z']);
+
+        $member->deleteUnityExtendedValue('AppleUserId');
+        $member->deleteUnityExtendedValue('NeverSet');
+
+        expect($member->allUnityExtendedValues())->toBe(['Zeta' => 'z']);
+    });
+
+    it('refuses an extended value key outside the pattern', function (string $key) {
+        (new MemberStub())->getUnityExtendedValue($key);
+    })->with(['', 'has space', 'dash-ed', str_repeat('a', 65)])
+        ->throws(InvalidArgumentException::class);
 });
 
 describe('InMemoryMemberRepository', function () {
+    it('finds the one member carrying an extended value', function () {
+        $repository = new InMemoryMemberRepository([
+            new MemberStub(id: 7, extendedValues: ['AppleUserId' => 'sub-7']),
+            new MemberStub(id: 8, extendedValues: ['AppleUserId' => 'shared']),
+            new MemberStub(id: 9, extendedValues: ['AppleUserId' => 'shared']),
+        ]);
+
+        expect($repository->findByValue('AppleUserId', 'sub-7')?->getId())->toBe(7)
+            ->and($repository->findByValue('AppleUserId', 'nobody'))->toBeNull()
+            ->and($repository->findByValue('AppleUserId', 'shared'))->toBeNull()
+            ->and($repository->findByValue('AppleUserId', ''))->toBeNull();
+    });
+
     it('reads back what it was seeded with', function () {
         $repository = new InMemoryMemberRepository([
             new MemberStub(id: 7, anonymousName: 'Alice B', personalEmail: 'alice@example.test'),
